@@ -48,7 +48,7 @@ class TransformersProvider:
     the orchestration layer) never pulls them in.
     """
 
-    def __init__(self, *, max_new_tokens: int = 220) -> None:
+    def __init__(self, *, max_new_tokens: int = 160) -> None:
         self.max_new_tokens = max_new_tokens
         self._cache: dict[tuple, tuple] = {}
 
@@ -77,7 +77,15 @@ class TransformersProvider:
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         tok = AutoTokenizer.from_pretrained(repo, revision=revision, token=token)
-        kwargs: dict[str, Any] = {"device_map": "auto"}
+        kwargs: dict[str, Any] = {}
+        if torch.cuda.is_available():
+            # Pin to ONE GPU: the pilot models fit a single T4. 'auto' needlessly
+            # splits a small model across GPUs and serialises generation (slower,
+            # CPU-bound coordination). Override with $FAITHFULIDS_DEVICE_MAP=auto.
+            import os as _os
+
+            dm = _os.environ.get("FAITHFULIDS_DEVICE_MAP", "single")
+            kwargs["device_map"] = "auto" if dm == "auto" else {"": 0}
         if quant == "4bit":
             from transformers import BitsAndBytesConfig
 

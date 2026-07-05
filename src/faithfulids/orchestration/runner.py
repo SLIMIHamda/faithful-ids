@@ -109,6 +109,8 @@ def run_cells(
                 })
 
     # Generation → extraction → Layer-1 per (instance, generator).
+    total = len(generators) * len(cases)
+    done = 0
     for gen_id, generator in generators:
         for case in cases:
             ctx = GenerationContext(
@@ -132,6 +134,9 @@ def run_cells(
                     # grouping (generator identity) attached HERE, post-computation
                     "grouping": {"instance_id": case.instance_id, "generator_id": gen_id},
                 })
+            done += 1
+            if done == 1 or done % 5 == 0 or done == total:
+                print(f"[run] generation {done}/{total} (current: {gen_id})", flush=True)
     return art
 
 
