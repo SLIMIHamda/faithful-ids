@@ -33,21 +33,21 @@ def lineage_lines(asset_id: str) -> list[str]:
         raise KeyError(f"asset {asset_id!r} not found in paper/mapping.yaml")
     asset = assets[asset_id]
     lines = [f"{asset_id} ({asset.get('kind', 'asset')})"]
-    lines.append(f"  ← analysis: {asset.get('analysis')}")
+    lines.append(f"  <- analysis: {asset.get('analysis')}")
     for run_id in asset.get("runs", []):
-        lines.append(f"    ← run: {run_id}")
+        lines.append(f"    <- run: {run_id}")
         try:
             handle = load_run(run_id)
             m = handle.manifest
             lines.append(f"        commit: {m.code_version.short}  status: {m.status.value}")
             for inp in m.inputs:
-                lines.append(f"        input: {inp.artifact_id} @ {inp.content_sha256[:12]}…")
+                lines.append(f"        input: {inp.artifact_id} @ {inp.content_sha256[:12]}")
             for model in m.models:
                 lines.append(f"        model[{model.role}]: {model.identity}")
         except ResultError as exc:
             lines.append(f"        (run artifacts unavailable: {exc})")
     for gate in asset.get("gates", []):
-        lines.append(f"    ← gate: {gate}")
+        lines.append(f"    <- gate: {gate}")
     return lines
 
 
