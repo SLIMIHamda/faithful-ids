@@ -53,17 +53,30 @@ class TransformersProvider:
         self._cache: dict[tuple, tuple] = {}
 
     def _load(self, model: Mapping[str, Any]):
+        import os
+
         weights = model.get("weights") or {}
         repo = weights.get("hf_repo")
         revision = weights.get("revision")
         quant = model.get("quantisation", "none")
+        # 'pin-pending' is the honest "not yet pinned" sentinel; passing it to the
+        # Hub raises (it is not a valid ref). For a NON-CITABLE run fall back to the
+        # model's default branch and say so. Pin a real commit sha for a citable run.
+        if not revision or revision == "pin-pending":
+            print(
+                f"[TransformersProvider] {repo}: revision unpinned ({revision!r}) -> "
+                "using the default branch (NON-CITABLE; pin a commit sha to make it citable)."
+            )
+            revision = None
+        token = os.environ.get("HF_TOKEN") or None
+
         key = (repo, revision, quant)
         if key in self._cache:
             return self._cache[key]
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
-        tok = AutoTokenizer.from_pretrained(repo, revision=revision)
+        tok = AutoTokenizer.from_pretrained(repo, revision=revision, token=token)
         kwargs: dict[str, Any] = {"device_map": "auto"}
         if quant == "4bit":
             from transformers import BitsAndBytesConfig
@@ -75,7 +88,9 @@ class TransformersProvider:
             )
         else:
             kwargs["torch_dtype"] = torch.float16
-        mdl = AutoModelForCausalLM.from_pretrained(repo, revision=revision, **kwargs)
+        mdl = AutoModelForCausalLM.from_pretrained(
+            repo, revision=revision, token=token, **kwargs
+        )
         mdl.eval()
         self._cache[key] = (tok, mdl)
         return tok, mdl
