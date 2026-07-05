@@ -1,0 +1,161 @@
+[build-system]
+requires = ["hatchling==1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "beyond-plausibility"
+version = "1.0.0-dev"
+description = "Reproducibility infrastructure for 'Beyond Plausibility: Measuring and Enforcing Faithfulness in LLM-Generated Explanations for Intrusion Detection'."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = { file = "LICENSE" }
+authors = [{ name = "Beyond Plausibility authors" }]
+keywords = ["intrusion-detection", "explainability", "faithfulness", "reproducibility", "shap", "llm"]
+
+# Scientific dependencies are pinned to exact versions. There are NO optional
+# scientific dependencies and NO `try/except ImportError` fallbacks anywhere in
+# the library (immutable constraint #: no silent degradation of a science path).
+# The exact, hashed resolution lives in `uv.lock` (regenerate with `uv lock`).
+dependencies = [
+  "numpy==2.1.3",
+  "pandas==2.2.3",
+  "scipy==1.14.1",
+  "pyarrow==17.0.0",
+  "scikit-learn==1.5.2",
+  "xgboost==2.1.2",
+  "shap==0.46.0",
+  "torch==2.5.1",
+  "transformers==4.46.2",
+  "statsmodels==0.14.4",
+  "matplotlib==3.9.2",
+  "networkx==3.4.2",
+  "pyyaml==6.0.2",
+  "jsonschema==4.23.0",
+  "dvc==3.56.0",
+]
+
+[project.optional-dependencies]
+# Repository self-auditing / CI tooling. These are NOT scientific components;
+# they never gate a scientific result, so grouping them is admissible.
+dev = [
+  "pytest==8.3.3",
+  "import-linter==2.1",
+  "ruff==0.7.2",
+  "mypy==1.13.0",
+]
+
+[project.scripts]
+faithfulids = "faithfulids.orchestration.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/faithfulids"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests", "tools"]
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src/faithfulids"]
+
+# --------------------------------------------------------------------------- #
+# import-linter — the layered architecture (blueprint §5) and the named
+# forbidden edges. CI job `.github/workflows/import-contracts.yml` runs
+# `lint-imports`. Edge 5 (notebooks) is enforced by `no-notebook-in-pipeline.yml`
+# because `notebooks/` is deliberately NOT an importable package.
+# --------------------------------------------------------------------------- #
+[tool.importlinter]
+root_packages = ["faithfulids", "analysis"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layered architecture L0->L5 (a layer imports strictly downward)"
+type = "layers"
+containers = ["faithfulids"]
+layers = [
+  "orchestration | results",
+  "metrics",
+  "generation | extraction | corruption",
+  "detectors | attribution | llm",
+  "datasets",
+  "framework | provenance",
+]
+
+[[tool.importlinter.contracts]]
+name = "Edge 1: metrics.* -> generation.* (metrics are generator-blind)"
+type = "forbidden"
+source_modules = ["faithfulids.metrics"]
+forbidden_modules = ["faithfulids.generation"]
+
+[[tool.importlinter.contracts]]
+name = "Edge 3: generation.* -> metrics.* (generators cannot peek at scoring)"
+type = "forbidden"
+source_modules = ["faithfulids.generation"]
+forbidden_modules = ["faithfulids.metrics"]
+
+[[tool.importlinter.contracts]]
+name = "Edge 2a (firewall): extraction.* -> generation.* forbidden"
+type = "forbidden"
+source_modules = ["faithfulids.extraction"]
+forbidden_modules = ["faithfulids.generation"]
+
+[[tool.importlinter.contracts]]
+name = "Edge 2b (firewall): generation.b4_vte.verifier.* -> extraction.* forbidden"
+type = "forbidden"
+source_modules = ["faithfulids.generation.b4_vte.verifier"]
+forbidden_modules = ["faithfulids.extraction"]
+
+[[tool.importlinter.contracts]]
+name = "Edge 7: framework.* imports nothing internal (theory layer stays pure)"
+type = "forbidden"
+source_modules = ["faithfulids.framework"]
+forbidden_modules = [
+  "faithfulids.provenance",
+  "faithfulids.datasets",
+  "faithfulids.detectors",
+  "faithfulids.attribution",
+  "faithfulids.llm",
+  "faithfulids.generation",
+  "faithfulids.extraction",
+  "faithfulids.corruption",
+  "faithfulids.metrics",
+  "faithfulids.orchestration",
+  "faithfulids.results",
+]
+
+[[tool.importlinter.contracts]]
+name = "Edge 6: detector inference paths cannot import training entrypoints"
+type = "forbidden"
+source_modules = [
+  "faithfulids.detectors.xgboost.predict",
+  "faithfulids.detectors.ft_transformer.predict",
+  "faithfulids.detectors.random_forest.predict",
+]
+forbidden_modules = [
+  "faithfulids.detectors.xgboost.train",
+  "faithfulids.detectors.ft_transformer.train",
+  "faithfulids.detectors.random_forest.train",
+]
+
+[[tool.importlinter.contracts]]
+name = "Edge 4: analysis is a pure consumer (no orchestration/generation/llm)"
+type = "forbidden"
+source_modules = ["analysis"]
+forbidden_modules = [
+  "faithfulids.orchestration",
+  "faithfulids.generation",
+  "faithfulids.llm",
+  "faithfulids.detectors",
+  "faithfulids.attribution",
+  "faithfulids.datasets",
+  "faithfulids.extraction",
+  "faithfulids.corruption",
+  "faithfulids.metrics",
+]

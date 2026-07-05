@@ -1,0 +1,20 @@
+id: EXP-H-001
+schema_version: v1
+kind: experiment
+tier: human_study
+title: SOC triage human study
+research_question: >-
+  H4: does faithful (not merely plausible) explanation improve analyst triage
+  accuracy and speed? Four surface-matched condition sets built from run
+  artifacts; computation lives in analysis/ (h4), evidence here.
+hypothesis_family: [H4]
+design:
+  mode: single
+seed_ref: seeds:human_study
+metric_refs: [metrics:plausibility_judge]
+config_refs:
+  materials_build: human_study/materials_build
+  preregistration: human_study/preregistration
+flags:
+  exploratory: false
+status: registered

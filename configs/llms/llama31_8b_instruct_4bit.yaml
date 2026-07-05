@@ -1,0 +1,11 @@
+id: llama31_8b_instruct_4bit
+schema_version: v1
+kind: llm
+model_family: llama3
+provider: local_open_weights
+quantisation: 4bit
+role: tier_b
+weights:
+  hf_repo: meta-llama/Llama-3.1-8B-Instruct
+  revision: pin-pending
+  sha256: null

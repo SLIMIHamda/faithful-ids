@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/dataset.v1.json",
+  "title": "Dataset config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "role", "source", "correction", "split", "checksums"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "dataset"},
+    "role": {"enum": ["headline", "appendix", "tier_b_transfer"]},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "provider", "redistributable"],
+      "properties": {
+        "name": {"type": "string"},
+        "provider": {"type": "string"},
+        "redistributable": {"type": "boolean"},
+        "acquisition_url": {"type": ["string", "null"]}
+      }
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pipeline_version", "applies"],
+      "properties": {
+        "pipeline_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "applies": {"type": "boolean"},
+        "corrections_applied_ref": {"type": ["string", "null"], "pattern": "^(?![A-Za-z]:)(?!/).+"}
+      }
+    },
+    "split": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "ratios", "stratify_by", "seed_ref", "label_column"],
+      "properties": {
+        "strategy": {"enum": ["stratified_holdout"]},
+        "ratios": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["train", "dev", "test"],
+          "properties": {
+            "train": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+            "dev": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+            "test": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1}
+          }
+        },
+        "stratify_by": {"type": "string"},
+        "seed_ref": {"type": "string", "pattern": "^seeds:[a-z0-9_]+$"},
+        "label_column": {"type": "string"}
+      }
+    },
+    "checksums": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw_sha256", "corrected_sha256", "processed_sha256"],
+      "properties": {
+        "raw_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "corrected_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "processed_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "kb_ref": {"type": ["string", "null"], "pattern": "^kb:[a-z0-9_]+@[0-9]+\\.[0-9]+\\.[0-9]+$"}
+  }
+}

@@ -1,0 +1,20 @@
+id: eval_extractor
+schema_version: v1
+kind: extraction
+# FIREWALL SIDE B. model.model_family must be disjoint from every generator LLM
+# family {mistral, llama3, frontier} AND the VtE verifier family {phi}.
+model:
+  model_family: gemma
+  provider: local_open_weights
+  quantisation: none
+  weights:
+    hf_repo: google/gemma-2-9b-it
+    revision: pin-pending
+    sha256: null
+rule_assisted: true
+prompt:
+  name: eval_extractor
+  version: 1.0.0
+  sha256: 7d1443ffe615656b339bc22aee6de85b66b6f45a0dd4331c5333ec63a8b7924a
+temperature: 0
+audit_gate_ref: EXP-G-001

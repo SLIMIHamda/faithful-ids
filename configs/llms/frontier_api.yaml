@@ -1,0 +1,11 @@
+id: frontier_api
+schema_version: v1
+kind: llm
+model_family: frontier
+provider: frontier_api
+quantisation: none
+role: generator_llm
+api:
+  provider: pin-pending
+  snapshot_id: pin-pending
+  replay_cache_policy: required

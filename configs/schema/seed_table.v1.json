@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/seed_table.v1.json",
+  "title": "The committed seed table",
+  "description": "Explicit per-experiment/section, per-stage seeds. No seed literal exists in code; every seed is referenced from here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "sections"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "seed_table"},
+    "sections": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "minProperties": 1,
+        "additionalProperties": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

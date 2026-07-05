@@ -1,0 +1,23 @@
+id: EXP-B-003
+schema_version: v1
+kind: experiment
+tier: tier_b
+title: Tier B detector continuity (Random Forest)
+research_question: >-
+  Anchored one-factor change: swap the detector to Random Forest to check
+  detector-continuity of the faithfulness findings. B1/B2/B4 only.
+hypothesis_family: [H-T]
+design:
+  mode: anchored
+  anchor_ref: ANCHOR
+  one_factor_overrides:
+    detector: random_forest
+    generators: [b1_template, b2_zeroshot, b4_vte]
+seed_ref: seeds:tier_b
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+status: registered

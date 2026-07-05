@@ -1,0 +1,12 @@
+id: b2_zeroshot
+schema_version: v1
+kind: generator
+code: b2_zeroshot
+llm_dependent: true
+params:
+  top_k: 5
+  temperature: 0
+prompt:
+  name: b2_zeroshot
+  version: 1.0.0
+  sha256: fdff0dc355f2135960f616f0c09a85aa9d0a96b4b7afed37164322ca27da55ae

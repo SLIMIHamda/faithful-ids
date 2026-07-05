@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/sampling.v1.json",
+  "title": "Sampling protocol config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "sampling_type", "seed_ref"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "sampling"},
+    "sampling_type": {"enum": ["explanation_set", "stochasticity"]},
+    "seed_ref": {"type": "string", "pattern": "^seeds:[a-z0-9_]+$"},
+    "n_per_dataset": {"type": "integer", "minimum": 1},
+    "stratify_by": {"type": "string"},
+    "minority_floor": {"type": "integer", "minimum": 0},
+    "oversample_explanation_set": {"type": "boolean"},
+    "subsample_n": {"type": "integer", "minimum": 1},
+    "k_generations": {"type": "integer", "minimum": 1},
+    "operating_temperature": {"type": "number", "minimum": 0},
+    "headline_temperature": {"type": "number", "minimum": 0}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"sampling_type": {"const": "explanation_set"}}},
+      "then": {"required": ["n_per_dataset", "stratify_by", "minority_floor", "oversample_explanation_set"]}
+    },
+    {
+      "if": {"properties": {"sampling_type": {"const": "stochasticity"}}},
+      "then": {"required": ["subsample_n", "k_generations", "operating_temperature", "headline_temperature"]}
+    }
+  ]
+}

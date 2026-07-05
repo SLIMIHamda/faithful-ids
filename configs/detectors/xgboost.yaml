@@ -1,0 +1,20 @@
+id: xgboost
+schema_version: v1
+kind: detector
+family: xgboost
+role: anchor
+attribution_ref: attribution:treeshap
+hyperparameters:
+  n_estimators: 400
+  max_depth: 6
+  learning_rate: 0.1
+  subsample: 0.9
+  colsample_bytree: 0.9
+  min_child_weight: 1
+  objective: "binary:logistic"
+  tree_method: hist
+determinism:
+  device: cpu
+  byte_identical: true
+  torch_deterministic: null
+  notes: "Exact TreeSHAP over a frozen booster on CPU is byte-identical (see docs/reproducibility-guide.md)."

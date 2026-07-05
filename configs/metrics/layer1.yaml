@@ -1,0 +1,24 @@
+id: layer1
+schema_version: v1
+kind: metric
+family: layer1
+formula_version: 1.0.0
+metrics:
+  - name: mention_precision
+    formula_version: 1.0.0
+    notes: Precision of claimed features against top-k attributed features.
+  - name: mention_recall
+    formula_version: 1.0.0
+    notes: Recall of top-k attributed features among claimed features.
+  - name: mention_f1
+    formula_version: 1.0.0
+    notes: Harmonic mean of mention precision and recall.
+  - name: dsa
+    formula_version: 1.0.0
+    notes: Directional Sign Agreement between claimed direction and attribution sign.
+  - name: arc
+    formula_version: 1.0.0
+    notes: Attribution Rank Correlation (Spearman) between claimed and true ranks.
+  - name: hfr
+    formula_version: 1.0.0
+    notes: Hallucinated-Feature Rate (claimed features absent from the attribution).

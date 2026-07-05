@@ -1,0 +1,20 @@
+name: import-contracts
+# Enforces the layered architecture (blueprint §5) and the named forbidden
+# edges declared in pyproject.toml [tool.importlinter]. grimp analyses the AST
+# statically, so heavy scientific deps need not be installed here.
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint-imports:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install import-linter only (static analysis; no science stack)
+        run: pip install "import-linter==2.1"
+      - name: Enforce layers + forbidden edges
+        run: lint-imports --config pyproject.toml

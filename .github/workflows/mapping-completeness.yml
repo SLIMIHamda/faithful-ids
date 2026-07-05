@@ -1,0 +1,22 @@
+name: mapping-completeness
+# Every figure/table/claim in paper/mapping.yaml must resolve to COMPLETE,
+# non-exploratory, hash-verifying runs (Stage 5 of the lifecycle). Guarantees no
+# paper number exists outside the traceability chain (hostile-audit A7).
+on:
+  push:
+  pull_request:
+
+jobs:
+  mapping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install light stack
+        run: pip install "pyyaml==6.0.2" "jsonschema==4.23.0"
+      - name: Verify paper/mapping.yaml closure
+        run: python -m faithfulids.results.mapping_check
+        env:
+          PYTHONPATH: src

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/hypothesis_families.v1.json",
+  "title": "Pre-registered hypothesis families (Holm-Bonferroni memberships)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "families"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "hypothesis_families"},
+    "families": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description", "members", "correction"],
+        "properties": {
+          "description": {"type": "string"},
+          "members": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "correction": {"const": "holm_bonferroni"}
+        }
+      }
+    }
+  }
+}

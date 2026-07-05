@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/generator.v1.json",
+  "title": "Generator config (the paper's axis)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "code", "llm_dependent", "params"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "generator"},
+    "code": {"enum": ["b0_raw_shap", "b1_template", "b2_zeroshot", "b3_dte_style", "b4_vte"]},
+    "llm_dependent": {"type": "boolean"},
+    "params": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["top_k", "temperature"],
+      "properties": {
+        "top_k": {"type": "integer", "minimum": 1},
+        "temperature": {"type": "number", "minimum": 0}
+      }
+    },
+    "prompt": {"$ref": "#/$defs/prompt_ref"},
+    "kb_ref": {"type": ["string", "null"], "pattern": "^kb:[a-z0-9_]+@[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "verifier": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["model_family", "prompt", "threshold_ref"],
+      "properties": {
+        "model_family": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "prompt": {"$ref": "#/$defs/prompt_ref"},
+        "threshold_ref": {"type": "string", "pattern": "^statistics:decision_thresholds:[a-z0-9_]+$"},
+        "threshold_scope": {"const": "dev_split"}
+      }
+    },
+    "abstention": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["enabled", "fallback_generator", "reporting"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "fallback_generator": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "reporting": {"const": "coverage_risk"}
+      }
+    }
+  },
+  "$defs": {
+    "prompt_ref": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["name", "version", "sha256"],
+      "properties": {
+        "name": {"type": "string"},
+        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

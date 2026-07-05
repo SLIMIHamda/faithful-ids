@@ -1,0 +1,22 @@
+name: determinism-smoke
+# Runs the 5-instance toy pipeline TWICE with identical seeds and asserts
+# byte-identical metrics. Uses a fake deterministic LLM — no dataset, no GPU,
+# no API. This is immutable-constraint "determinism is tested".
+on:
+  push:
+  pull_request:
+
+jobs:
+  determinism:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install light scientific stack (no torch / xgboost needed for toy)
+        run: pip install "pyyaml==6.0.2" "jsonschema==4.23.0" "numpy==2.1.3" "pandas==2.2.3" "pyarrow==17.0.0" "scikit-learn==1.5.2" "pytest==8.3.3"
+      - name: Toy pipeline determinism + smoke
+        run: python -m pytest tests/pipeline_smoke tests/determinism -q
+        env:
+          PYTHONPATH: src

@@ -1,0 +1,30 @@
+name: docs-build
+# Documentation is a first-class contribution (blueprint §2). This job asserts
+# every documentation file named in the blueprint tree exists and is non-empty,
+# and that intra-repo markdown links resolve.
+on:
+  push:
+  pull_request:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Required docs present and non-empty
+        run: |
+          set -e
+          required="docs/architecture.md docs/experiment-lifecycle.md docs/dependency-graph.md \
+                    docs/firewall.md docs/lineage.md docs/configuration.md \
+                    docs/registering-experiments.md docs/reproducibility-guide.md \
+                    docs/reviewer-guide.md docs/naming-conventions.md docs/coding-standards.md \
+                    docs/contributing.md README.md REPRODUCING.md CHANGELOG.md \
+                    LICENSE LICENSE-ARTIFACTS.md CITATION.cff"
+          for f in $required; do
+            if [ ! -s "$f" ]; then echo "::error::missing or empty: $f"; exit 1; fi
+          done
+      - name: Intra-repo markdown links resolve
+        run: python tools/check_doc_links.py

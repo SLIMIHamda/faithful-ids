@@ -1,0 +1,23 @@
+id: EXP-B-002
+schema_version: v1
+kind: experiment
+tier: tier_b
+title: Tier B 4-bit quantisation
+research_question: >-
+  Anchored one-factor change: 4-bit quantisation of Mistral-7B and
+  Llama-3.1-8B. B2 and B4 only.
+hypothesis_family: [H-T]
+design:
+  mode: anchored
+  anchor_ref: ANCHOR
+  one_factor_overrides:
+    llms: [mistral_7b_instruct_4bit, llama31_8b_instruct_4bit]
+    generators: [b2_zeroshot, b4_vte]
+seed_ref: seeds:tier_b
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+status: registered

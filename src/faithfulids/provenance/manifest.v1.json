@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "faithfulids/provenance/manifest.v1.json",
+  "title": "Artifact manifest (blueprint §6)",
+  "description": "Every artifact directory (dataset stratum, model, cache entry, run, analysis output, generated figure) carries a MANIFEST.json conforming to this schema. inputs are (id, hash) pairs so lineage closure is reconstructible.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identity",
+    "producer",
+    "configuration",
+    "inputs",
+    "environment",
+    "randomness",
+    "models",
+    "timestamps",
+    "outputs",
+    "status"
+  ],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_type", "schema_version"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_type": {
+          "enum": ["dataset", "model", "cache", "run", "analysis_output", "figure", "table"]
+        },
+        "schema_version": {"type": "string", "pattern": "^v[0-9]+$"}
+      }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pipeline_stage", "code_version"],
+      "properties": {
+        "experiment_id": {"type": ["string", "null"]},
+        "pipeline_stage": {"type": "string", "minLength": 1},
+        "code_version": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["git_commit", "dirty"],
+          "properties": {
+            "git_commit": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"},
+            "dirty": {"type": "boolean"},
+            "citable": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resolved_config_sha256"],
+      "properties": {
+        "resolved_config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "resolved_config_path": {"type": ["string", "null"]}
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact_id", "content_sha256"],
+        "properties": {
+          "artifact_id": {"type": "string", "minLength": 1},
+          "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "kind": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "required": ["environment_hash"],
+      "properties": {
+        "environment_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "randomness": {
+      "type": "object",
+      "description": "Every seed consumed, keyed by 'stage/cell'.",
+      "additionalProperties": {"type": "integer"}
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity"],
+        "properties": {
+          "role": {"enum": ["detector", "llm", "extractor", "judge", "imputation"]},
+          "identity": {"type": "string", "minLength": 1},
+          "quantisation": {"type": ["string", "null"]},
+          "revision": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "timestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_utc", "end_utc"],
+      "properties": {
+        "start_utc": {"type": "string"},
+        "end_utc": {"type": ["string", "null"]}
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Repo/run-relative path. No drive letters or leading slash (hostile-audit A10).",
+            "pattern": "^(?![A-Za-z]:)(?!/).+"
+          },
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "status": {"enum": ["RUNNING", "COMPLETE", "FAILED"]},
+    "gate": {"enum": ["PASSED", "FAILED", null]}
+  }
+}

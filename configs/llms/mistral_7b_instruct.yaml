@@ -1,0 +1,11 @@
+id: mistral_7b_instruct
+schema_version: v1
+kind: llm
+model_family: mistral
+provider: local_open_weights
+quantisation: none
+role: generator_llm
+weights:
+  hf_repo: mistralai/Mistral-7B-Instruct-v0.3
+  revision: pin-pending
+  sha256: null

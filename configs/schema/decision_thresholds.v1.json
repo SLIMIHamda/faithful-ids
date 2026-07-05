@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/decision_thresholds.v1.json",
+  "title": "Pre-registered decision thresholds",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "thresholds"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "decision_thresholds"},
+    "thresholds": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["value", "description"],
+        "properties": {
+          "value": {"type": ["number", "array"], "items": {"type": "number"}},
+          "unit": {"type": ["string", "null"]},
+          "description": {"type": "string"}
+        }
+      }
+    }
+  }
+}

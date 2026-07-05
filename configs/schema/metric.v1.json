@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/metric.v1.json",
+  "title": "Metric config (carries formula versions)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "family", "formula_version", "metrics"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "metric"},
+    "family": {"enum": ["layer1", "layer2", "meta", "plausibility", "cost"]},
+    "formula_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "metrics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "formula_version"],
+        "properties": {
+          "name": {"type": "string"},
+          "formula_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+          "notes": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "erasure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "secondary", "k_values", "background_is_shap_baseline"],
+      "properties": {
+        "primary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operator", "imputation_model"],
+          "properties": {
+            "operator": {"const": "conditional_expectation_imputation"},
+            "imputation_model": {"enum": ["per_class_knn", "light_generative"]},
+            "fitted_artifact_manifested": {"const": true}
+          }
+        },
+        "secondary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operator", "scope"],
+          "properties": {
+            "operator": {"const": "retrain_roar"},
+            "scope": {"const": "anchor_only"}
+          }
+        },
+        "k_values": {"type": "array", "items": {"type": "integer", "minimum": 1}},
+        "background_is_shap_baseline": {"const": false}
+      }
+    },
+    "judge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_family", "scope", "validation"],
+      "properties": {
+        "model_family": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "scope": {"const": "plausibility_only"},
+        "prompt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "sha256"],
+          "properties": {
+            "name": {"type": "string"},
+            "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+            "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        },
+        "validation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["statistic", "threshold", "drop_if_below"],
+          "properties": {
+            "statistic": {"const": "spearman_rho_vs_human"},
+            "threshold": {"type": "number"},
+            "drop_if_below": {"const": true}
+          }
+        }
+      }
+    },
+    "accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fields": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"family": {"const": "layer2"}}}, "then": {"required": ["erasure"]}},
+    {"if": {"properties": {"family": {"const": "plausibility"}}}, "then": {"required": ["judge"]}}
+  ]
+}

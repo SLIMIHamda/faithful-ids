@@ -1,0 +1,30 @@
+name: figure-regen
+# L1 reproduction gate: regenerate every figure/table from analysis/outputs and
+# diff the hashes against the committed copies. A figure whose expected-hash
+# mismatches the committed asset fails (Principle 4: figures are generated).
+# Also asserts the paper boundary: nothing under paper/ imports faithfulids.
+on:
+  push:
+  pull_request:
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install plotting stack (pure consumer of analysis outputs)
+        run: pip install "pyyaml==6.0.2" "numpy==2.1.3" "pandas==2.2.3" "pyarrow==17.0.0" "matplotlib==3.9.2"
+      - name: Assert paper/ imports no faithfulids code
+        run: |
+          if grep -RInE '^\s*(import|from)\s+faithfulids' paper/figures/src paper/tables/src 2>/dev/null; then
+            echo "::error::paper/ scripts may only read analysis/outputs — no faithfulids imports."
+            exit 1
+          fi
+      - name: Regenerate figures + tables and diff hashes
+        run: |
+          python -m paper.figures.build
+          python -m paper.tables.build
+          git diff --exit-code -- paper/figures/generated paper/tables/generated

@@ -1,0 +1,25 @@
+id: plausibility_judge
+schema_version: v1
+kind: metric
+family: plausibility
+formula_version: 1.0.0
+metrics:
+  - name: clarity
+    formula_version: 1.0.0
+  - name: helpfulness
+    formula_version: 1.0.0
+  - name: believability
+    formula_version: 1.0.0
+judge:
+  # Plausibility ONLY, never faithfulness. Judge family disjoint from every
+  # explainer family (generators, verifier, extractor).
+  model_family: command_r
+  scope: plausibility_only
+  prompt:
+    name: plausibility
+    version: 1.0.0
+    sha256: 471133c19be0d8f2b3db9aa0e2bc5772ed3c211201a29b8277605fc3df5fd7cf
+  validation:
+    statistic: spearman_rho_vs_human
+    threshold: 0.6
+    drop_if_below: true

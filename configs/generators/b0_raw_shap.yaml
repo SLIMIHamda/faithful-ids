@@ -1,0 +1,10 @@
+id: b0_raw_shap
+schema_version: v1
+kind: generator
+code: b0_raw_shap
+# LLM-independent: the cell-expansion logic yields 2 + 3x3 = 11 cells per
+# dataset x detector because B0 and B1 carry llm_dependent: false.
+llm_dependent: false
+params:
+  top_k: 5
+  temperature: 0

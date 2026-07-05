@@ -1,0 +1,37 @@
+id: decision_thresholds
+schema_version: v1
+kind: decision_thresholds
+# PRE-REGISTERED. Frozen at tag prereg-v1.
+thresholds:
+  h2_absolute_drop:
+    value: 10
+    unit: percentage_points
+    description: "H2 decision: >= 10-point absolute Layer-1 F1/DSA drop."
+  ht_cohens_d:
+    value: 0.4
+    unit: cohens_d
+    description: "H-T: effect size threshold (d >= 0.4)."
+  ht_faithfulness_deficit:
+    value: 5
+    unit: percentage_points
+    description: "H-T: at a faithfulness deficit of <= 5 points."
+  rq0_sensitivity:
+    value: 0.9
+    unit: proportion
+    description: "RQ0 gate: per-metric sensitivity >= 0.9."
+  rq0_specificity:
+    value: 0.9
+    unit: proportion
+    description: "RQ0 gate: per-metric specificity >= 0.9."
+  extractor_f1:
+    value: 0.95
+    unit: f1
+    description: "Extractor-audit gate: F1 >= 0.95 vs adjudicated gold."
+  plausibility_judge_rho:
+    value: 0.6
+    unit: spearman_rho
+    description: "Judge validation gate: Spearman rho >= 0.6 vs human, else the judge is dropped."
+  verifier_threshold:
+    value: [0.3, 0.5, 0.7]
+    unit: score
+    description: "B4 verifier decision thresholds (dev-split tuned only); 3 levels for the sensitivity sweep."

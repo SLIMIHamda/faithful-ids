@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/detector.v1.json",
+  "title": "Detector config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "family", "role", "attribution_ref", "hyperparameters", "determinism"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "detector"},
+    "family": {"enum": ["xgboost", "ft_transformer", "random_forest"]},
+    "role": {"enum": ["anchor", "tier_a", "tier_b_continuity"]},
+    "attribution_ref": {"type": "string", "pattern": "^attribution:[a-z0-9_]+$"},
+    "hyperparameters": {"type": "object"},
+    "determinism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device", "byte_identical"],
+      "properties": {
+        "device": {"enum": ["cpu", "gpu"]},
+        "byte_identical": {"type": "boolean"},
+        "torch_deterministic": {"type": ["boolean", "null"]},
+        "notes": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

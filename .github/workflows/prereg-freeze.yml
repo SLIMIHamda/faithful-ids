@@ -1,0 +1,21 @@
+name: prereg-freeze
+# Pre-registered files (configs/statistics/**) must be unchanged since tag
+# prereg-v1 unless the change arrives as an append-only amendment file
+# (hostile-audit A5). Git dates are forgeable; the OSF DOI provides the external
+# timestamp — this job enforces the on-repo freeze.
+on:
+  push:
+  pull_request:
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # need tags + history for the diff
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Diff pre-registered tree against tag prereg-v1
+        run: python tools/prereg_diff.py --require-tag

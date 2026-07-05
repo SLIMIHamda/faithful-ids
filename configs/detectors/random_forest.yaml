@@ -1,0 +1,18 @@
+id: random_forest
+schema_version: v1
+kind: detector
+family: random_forest
+role: tier_b_continuity
+attribution_ref: attribution:treeshap
+hyperparameters:
+  n_estimators: 300
+  max_depth: null
+  min_samples_leaf: 1
+  criterion: gini
+  n_jobs: 1
+  bootstrap: true
+determinism:
+  device: cpu
+  byte_identical: true
+  torch_deterministic: null
+  notes: "Tier-B detector-continuity check; exact TreeSHAP on CPU."

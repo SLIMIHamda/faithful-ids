@@ -1,0 +1,23 @@
+name: data-integrity
+# Verifies the dataset chain checksums: download checksums -> corrected
+# checksums -> processed checksums, and the correction pipeline's declared
+# fix-set (hostile-audit A3). Raw payloads are NOT redistributed — only their
+# checksums and the deterministic pipeline are checked here.
+on:
+  push:
+  pull_request:
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install light stack
+        run: pip install "pyyaml==6.0.2" "jsonschema==4.23.0"
+      - name: Verify dataset + correction-pipeline checksum chain
+        run: python -m faithfulids.datasets.integrity_check
+        env:
+          PYTHONPATH: src

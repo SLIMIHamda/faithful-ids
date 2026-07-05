@@ -1,0 +1,27 @@
+id: unsw_nb15
+schema_version: v1
+kind: dataset
+role: headline
+source:
+  name: UNSW-NB15
+  provider: UNSW Canberra (ADFA)
+  redistributable: false
+  acquisition_url: https://research.unsw.edu.au/projects/unsw-nb15-dataset
+correction:
+  pipeline_version: 1.0.0
+  applies: false
+  corrections_applied_ref: null
+split:
+  strategy: stratified_holdout
+  ratios:
+    train: 0.6
+    dev: 0.2
+    test: 0.2
+  stratify_by: attack_cat
+  seed_ref: seeds:splits
+  label_column: label
+checksums:
+  raw_sha256: null
+  corrected_sha256: null
+  processed_sha256: null
+kb_ref: kb:unsw_nb15@1.0.0

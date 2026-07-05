@@ -1,0 +1,18 @@
+id: EXP-TOY-001
+schema_version: v1
+kind: experiment
+tier: toy
+title: Toy smoke pipeline (CI determinism fixture)
+research_question: >-
+  Not a scientific experiment. A 5-instance, offline, deterministic end-to-end
+  run (fixed linear detector + exact linear attribution + B1/B2 + firewalled
+  extractor + Layer-1/Layer-2 metrics) that powers the determinism-smoke CI gate.
+  NON-CITABLE by construction.
+hypothesis_family: []
+design:
+  mode: toy
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+flags:
+  exploratory: false
+  headline_eligible: false
+status: registered

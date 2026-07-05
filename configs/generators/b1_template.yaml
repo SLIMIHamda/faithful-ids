@@ -1,0 +1,11 @@
+id: b1_template
+schema_version: v1
+kind: generator
+code: b1_template
+# Deterministic template, faithful by construction (epsilon_nar ~ 0). Also the
+# base over which the RQ0 corruption operators inject known errors, and the
+# fallback target for B4 abstention (never silence).
+llm_dependent: false
+params:
+  top_k: 5
+  temperature: 0

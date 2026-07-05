@@ -1,0 +1,21 @@
+{
+  "description": "Hand-computed Layer-2 fixture. Toy linear detector proba = bias + sum_f w_f * x_f. Instance all-ones; SimpleBackgroundErasure sets erased features to 0. p_full = 0.3 + 0.2 + 0.1 + 0.05 = 0.65. k=1 -> top feature by |attr| is A. comprehensiveness = p_full - p(erase A) = 0.65 - 0.45 = 0.20. sufficiency = p_full - p(keep only A) = 0.65 - 0.50 = 0.15.",
+  "detector": {
+    "bias": 0.3,
+    "weights": {"A": 0.2, "B": 0.1, "C": 0.05},
+    "feature_names": ["A", "B", "C"]
+  },
+  "attribution": {
+    "instance_id": "i0",
+    "feature_names": ["A", "B", "C"],
+    "values": [0.2, 0.1, 0.05],
+    "base_value": 0.3,
+    "method": "treeshap",
+    "exact": true,
+    "background_policy": "reference"
+  },
+  "instance": {"A": 1.0, "B": 1.0, "C": 1.0},
+  "background": {"A": 0.0, "B": 0.0, "C": 0.0},
+  "k": 1,
+  "expected": {"p_full": 0.65, "comprehensiveness": 0.20, "sufficiency": 0.15}
+}

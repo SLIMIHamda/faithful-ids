@@ -1,0 +1,21 @@
+name: validate-configs
+# Every config and experiment YAML validated against its JSON Schema in
+# configs/schema/. A missing required key is a hard error (no silent defaults).
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install light stack (schema validation needs no science deps)
+        run: pip install "pyyaml==6.0.2" "jsonschema==4.23.0"
+      - name: Validate all configs + experiments against schemas
+        run: python -m faithfulids.orchestration.validate_configs
+        env:
+          PYTHONPATH: src

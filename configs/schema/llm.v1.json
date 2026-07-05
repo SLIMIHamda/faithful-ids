@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/llm.v1.json",
+  "title": "LLM identity config",
+  "description": "model_family is firewall-load-bearing: the firewall audit checks disjointness of extractor/verifier/generator families.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "model_family", "provider", "quantisation", "role"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "llm"},
+    "model_family": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "provider": {"enum": ["local_open_weights", "frontier_api"]},
+    "quantisation": {"enum": ["none", "4bit"]},
+    "role": {"enum": ["generator_llm", "tier_b"]},
+    "weights": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["hf_repo", "revision", "sha256"],
+      "properties": {
+        "hf_repo": {"type": "string"},
+        "revision": {"type": "string"},
+        "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "api": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["provider", "snapshot_id", "replay_cache_policy"],
+      "properties": {
+        "provider": {"type": "string"},
+        "snapshot_id": {"type": "string"},
+        "replay_cache_policy": {"const": "required"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"provider": {"const": "frontier_api"}}},
+      "then": {"required": ["api"], "properties": {"api": {"type": "object"}}}
+    },
+    {
+      "if": {"properties": {"provider": {"const": "local_open_weights"}}},
+      "then": {"required": ["weights"], "properties": {"weights": {"type": "object"}}}
+    }
+  ]
+}

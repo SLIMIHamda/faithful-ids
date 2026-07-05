@@ -1,0 +1,12 @@
+id: b3_dte_style
+schema_version: v1
+kind: generator
+code: b3_dte_style
+llm_dependent: true
+params:
+  top_k: 5
+  temperature: 0
+prompt:
+  name: b3_dte_style
+  version: 1.0.0
+  sha256: a2f8ffc64b258b9358fb82168dcef74379ec45f1dbcb963f8756c15e33e3bd7a

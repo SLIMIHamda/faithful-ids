@@ -1,0 +1,27 @@
+id: cicids2017_raw
+schema_version: v1
+kind: dataset
+role: appendix
+source:
+  name: CICIDS2017
+  provider: Canadian Institute for Cybersecurity (UNB)
+  redistributable: false
+  acquisition_url: https://www.unb.ca/cic/datasets/ids-2017.html
+correction:
+  pipeline_version: 1.0.0
+  applies: false
+  corrections_applied_ref: null
+split:
+  strategy: stratified_holdout
+  ratios:
+    train: 0.6
+    dev: 0.2
+    test: 0.2
+  stratify_by: Label
+  seed_ref: seeds:splits
+  label_column: Label
+checksums:
+  raw_sha256: null
+  corrected_sha256: null
+  processed_sha256: null
+kb_ref: kb:cicids2017@1.0.0

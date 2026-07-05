@@ -1,0 +1,23 @@
+id: EXP-S-001
+schema_version: v1
+kind: experiment
+tier: stochasticity
+title: Generation variance protocol
+research_question: >-
+  Quantify generation stochasticity: 100-instance subsample, k=3 generations at
+  operating temperature; variance components feed the mixed-effects model.
+hypothesis_family: []
+design:
+  mode: anchored
+  anchor_ref: ANCHOR
+  one_factor_overrides:
+    generators: [b2_zeroshot, b3_dte_style, b4_vte]
+sampling_refs: [sampling:stochasticity_k3]
+seed_ref: seeds:stochasticity
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+status: registered

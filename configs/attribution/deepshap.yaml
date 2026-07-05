@@ -1,0 +1,19 @@
+id: deepshap
+schema_version: v1
+kind: attribution
+method: deepshap
+exact: false
+background_policy:
+  removal_semantics: interventional
+  background: train_reference_sample
+  notes: >-
+    Approximate DeepSHAP for the FT-Transformer; interventional background
+    sampled from the training split. Approximate => contributes a bounded,
+    disclosed epsilon_att term. Tolerance-bounded on GPU.
+cache:
+  content_addressed: true
+  key_inputs:
+    - model_sha256
+    - data_sha256
+    - background_sha256
+    - attribution_config_sha256

@@ -1,0 +1,31 @@
+id: hypothesis_families
+schema_version: v1
+kind: hypothesis_families
+# PRE-REGISTERED. Frozen at tag prereg-v1; changes only via append-only
+# amendments (configs/statistics/amendments/). Holm-Bonferroni is applied WITHIN
+# each family.
+families:
+  H0:
+    description: "Metric validity (RQ0): metrics detect known corruptions and are weakly correlated with fluency."
+    members: [rq0_sensitivity, rq0_specificity, rq0_fluency_independence]
+    correction: holm_bonferroni
+  H1:
+    description: "The plausibility-faithfulness gap: plausibility does not track Layer-1/Layer-2 faithfulness."
+    members: [h1_gap_layer1, h1_gap_layer2, h1_plausibility_decoupling]
+    correction: holm_bonferroni
+  H2:
+    description: "Faithfulness drops as narration becomes more fluent/free-form."
+    members: [h2_layer1_f1_drop, h2_dsa_drop]
+    correction: holm_bonferroni
+  H3:
+    description: "Verify-then-Explain improves faithfulness (verifier-INDEPENDENT signals only)."
+    members: [h3_layer1_gain, h3_layer2_gain]
+    correction: holm_bonferroni
+  H-T:
+    description: "Transfer degradation under the anchored Tier-B transfer."
+    members: [ht_transfer_deficit]
+    correction: holm_bonferroni
+  H4:
+    description: "Human triage accuracy/speed benefits from faithful (not merely plausible) explanations."
+    members: [h4_triage_accuracy, h4_triage_speed]
+    correction: holm_bonferroni

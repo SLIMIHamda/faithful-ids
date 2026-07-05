@@ -1,0 +1,19 @@
+id: tests
+schema_version: v1
+kind: tests
+# PRE-REGISTERED. Frozen at tag prereg-v1.
+tests:
+  omnibus:
+    name: friedman
+  posthoc:
+    name: nemenyi
+    diagram: critical_difference
+  pairwise:
+    name: wilcoxon_signed_rank
+  bootstrap_ci:
+    n_resamples: 10000
+    ci: 0.95
+    effect_sizes: true
+  mixed_effects:
+    # Variance components as random effects.
+    random_effects: [instance, generation, extraction]

@@ -1,0 +1,26 @@
+id: ANCHOR
+schema_version: v1
+kind: experiment
+tier: anchor
+title: Anchor configuration (corrected CICIDS2017 x XGBoost x Llama-3.1-8B-Instruct)
+research_question: >-
+  Defines the anchor cell once. Tier-B entries reference this by anchor_ref and
+  never restate it (a restated anchor that drifts is a classic irreproducibility
+  bug).
+hypothesis_family: []
+design:
+  mode: single
+  cell:
+    dataset: cicids2017_corrected
+    detector: xgboost
+    llm: llama31_8b_instruct
+    generator: b4_vte
+sampling_refs: [sampling:n400_stratified]
+seed_ref: seeds:tier_a
+metric_refs: [metrics:layer1, metrics:layer2_erasure, metrics:plausibility_judge]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+  headline_eligible: true
+status: registered

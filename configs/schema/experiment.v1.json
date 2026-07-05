@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/experiment.v1.json",
+  "title": "Experiment registry entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "tier", "title", "research_question", "design", "flags", "status"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^(EXP-[A-Z]+-[0-9]{3}[A-Za-z0-9_-]*|ANCHOR)$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "experiment"},
+    "tier": {"enum": ["anchor", "gate", "tier_a", "tier_b", "stochasticity", "human_study", "exploratory", "toy"]},
+    "title": {"type": "string"},
+    "research_question": {"type": "string"},
+    "hypothesis_family": {"type": "array", "items": {"type": "string"}},
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {"enum": ["single", "factorial", "anchored", "toy"]},
+        "axes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["datasets", "detectors", "llms", "generators"],
+          "properties": {
+            "datasets": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+            "detectors": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+            "llms": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+            "generators": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+          }
+        },
+        "anchor_ref": {"type": "string", "pattern": "^ANCHOR$"},
+        "cell": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "dataset": {"type": "string"},
+            "detector": {"type": "string"},
+            "llm": {"type": ["string", "null"]},
+            "generator": {"type": "string"}
+          }
+        },
+        "one_factor_overrides": {"type": "object"}
+      }
+    },
+    "sampling_refs": {"type": "array", "items": {"type": "string", "pattern": "^sampling:[a-z0-9_]+$"}},
+    "seed_ref": {"type": ["string", "null"], "pattern": "^seeds:[a-z0-9_]+$"},
+    "gate_dependencies": {"type": "array", "items": {"type": "string", "pattern": "^EXP-G-[0-9]{3}[A-Za-z0-9_-]*$"}},
+    "metric_refs": {"type": "array", "items": {"type": "string", "pattern": "^metrics:[a-z0-9_]+$"}},
+    "config_refs": {"type": "object"},
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criterion", "threshold_ref"],
+      "properties": {
+        "criterion": {"enum": ["extractor_f1", "per_metric_sensitivity_specificity"]},
+        "threshold_ref": {"type": "string", "pattern": "^statistics:decision_thresholds:[a-z0-9_]+$"},
+        "annotation": {"type": "object"}
+      }
+    },
+    "flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exploratory"],
+      "properties": {
+        "exploratory": {"type": "boolean"},
+        "headline_eligible": {"type": "boolean"}
+      }
+    },
+    "supersedes": {"type": ["string", "null"]},
+    "status": {"enum": ["registered", "running", "complete", "failed", "superseded"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"design": {"properties": {"mode": {"const": "factorial"}}}}},
+      "then": {"properties": {"design": {"required": ["axes"]}}}
+    },
+    {
+      "if": {"properties": {"design": {"properties": {"mode": {"const": "anchored"}}}}},
+      "then": {"properties": {"design": {"required": ["anchor_ref"]}}}
+    },
+    {
+      "if": {"properties": {"tier": {"const": "exploratory"}}},
+      "then": {"properties": {"flags": {"properties": {"exploratory": {"const": true}}}}}
+    },
+    {
+      "if": {"properties": {"tier": {"const": "gate"}}},
+      "then": {"required": ["gate"]}
+    }
+  ]
+}

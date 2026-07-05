@@ -1,0 +1,23 @@
+name: firewall-audit
+# The circularity firewall as a mechanical gate (hostile-audit A4):
+#   - prompt-hash disjointness between generation.b4_vte.verifier and extraction
+#   - model-family disjointness declared in schema-validated configs
+#   - no shared modules / no import edges between the two firewalled packages
+on:
+  push:
+  pull_request:
+
+jobs:
+  firewall:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install light stack
+        run: pip install "pyyaml==6.0.2"
+      - name: Prompt-hash + model-family disjointness + import scan
+        run: python tools/firewall_check.py
+        env:
+          PYTHONPATH: src

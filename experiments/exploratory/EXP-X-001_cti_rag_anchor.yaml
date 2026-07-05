@@ -1,0 +1,26 @@
+id: EXP-X-001
+schema_version: v1
+kind: experiment
+tier: exploratory
+title: CTI-RAG at the anchor (exploratory)
+research_question: >-
+  Exploratory: does retrieval-augmenting B4 with a frozen CTI snapshot change
+  faithfulness at the anchor? Schema-flagged exploratory: true; CI blocks any
+  headline figure/table from citing this run.
+hypothesis_family: []
+design:
+  mode: anchored
+  anchor_ref: ANCHOR
+  one_factor_overrides:
+    generators: [b4_vte]
+    retrieval: cti_rag
+seed_ref: seeds:exploratory
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+config_refs:
+  extraction: extraction:eval_extractor
+  cti_snapshot: kb/cti/SNAPSHOT.md
+flags:
+  exploratory: true
+  headline_eligible: false
+status: registered

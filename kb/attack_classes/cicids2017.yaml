@@ -1,0 +1,25 @@
+kind: kb_attack_classes
+schema_version: v1
+dataset: cicids2017
+version: 1.0.0
+entries:
+  - name: BENIGN
+    description: Normal, non-malicious traffic.
+  - name: DoS Hulk
+    description: HTTP flood denial-of-service generating high-volume, high-rate flows.
+  - name: DDoS
+    description: Distributed denial-of-service; volumetric traffic from many sources.
+  - name: PortScan
+    description: Reconnaissance probing many ports; many short, small, one-sided flows.
+  - name: FTP-Patator
+    description: Brute-force credential guessing against FTP.
+  - name: SSH-Patator
+    description: Brute-force credential guessing against SSH.
+  - name: Web Attack
+    description: Web-layer attacks (SQL injection, XSS, brute force) against HTTP services.
+  - name: Bot
+    description: Botnet command-and-control and related automated traffic.
+  - name: Infiltration
+    description: Post-compromise lateral movement and internal reconnaissance.
+  - name: Heartbleed
+    description: Exploitation of the OpenSSL Heartbleed vulnerability to leak memory.

@@ -1,0 +1,25 @@
+id: EXP-B-001
+schema_version: v1
+kind: experiment
+tier: tier_b
+title: Tier B transfer to CSE-CIC-IDS2018
+research_question: >-
+  Anchored one-factor change: apply the anchor pipeline (trained on corrected
+  CICIDS2017) to CSE-CIC-IDS2018 and measure faithfulness transfer (H-T).
+  B1/B2/B4 only.
+hypothesis_family: [H-T]
+design:
+  mode: anchored
+  anchor_ref: ANCHOR
+  one_factor_overrides:
+    dataset: cse_cic_ids2018
+    trained_on: cicids2017_corrected
+    generators: [b1_template, b2_zeroshot, b4_vte]
+seed_ref: seeds:tier_b
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+status: registered

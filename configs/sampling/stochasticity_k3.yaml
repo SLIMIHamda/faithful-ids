@@ -1,0 +1,9 @@
+id: stochasticity_k3
+schema_version: v1
+kind: sampling
+sampling_type: stochasticity
+seed_ref: seeds:sampling
+subsample_n: 100
+k_generations: 3
+operating_temperature: 0.7
+headline_temperature: 0

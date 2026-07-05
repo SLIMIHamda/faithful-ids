@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/attribution.v1.json",
+  "title": "Attribution config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "method", "exact", "background_policy", "cache"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "attribution"},
+    "method": {"enum": ["treeshap", "deepshap"]},
+    "exact": {"type": "boolean"},
+    "background_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["removal_semantics", "background"],
+      "properties": {
+        "removal_semantics": {"enum": ["interventional", "conditional", "tree_path_dependent"]},
+        "background": {"type": "string"},
+        "notes": {"type": ["string", "null"]}
+      }
+    },
+    "cache": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["content_addressed"],
+      "properties": {
+        "content_addressed": {"const": true},
+        "key_inputs": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

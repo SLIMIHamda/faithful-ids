@@ -1,0 +1,30 @@
+kind: kb_feature_dictionary
+schema_version: v1
+dataset: cicids2017
+version: 1.0.0
+entries:
+  - name: Flow Duration
+    description: Total duration of the network flow; unusually short or long durations can indicate scanning or flooding.
+    units: microseconds
+    range: [0, 120000000]
+  - name: Total Fwd Packets
+    description: Number of packets sent from source to destination; high counts can indicate flooding or bulk transfer.
+    units: packets
+  - name: Total Backward Packets
+    description: Number of packets sent from destination to source; asymmetry with forward packets can indicate one-sided attack traffic.
+    units: packets
+  - name: Flow Bytes/s
+    description: Byte throughput of the flow; very high values are associated with volumetric (D)DoS traffic.
+    units: bytes_per_second
+  - name: Flow Packets/s
+    description: Packet rate of the flow; elevated rates are associated with flooding and scanning.
+    units: packets_per_second
+  - name: Fwd Packet Length Mean
+    description: Mean size of forward packets; small uniform sizes can indicate scanning or control traffic.
+    units: bytes
+  - name: Bwd Packet Length Mean
+    description: Mean size of backward packets; near-zero responses can indicate unanswered scan probes.
+    units: bytes
+  - name: SYN Flag Count
+    description: Count of TCP SYN flags; elevated counts without corresponding ACKs indicate SYN-flood or scanning.
+    units: count

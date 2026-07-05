@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/tests.v1.json",
+  "title": "Pre-registered statistical tests",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "tests"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "tests"},
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["omnibus", "posthoc", "pairwise", "bootstrap_ci", "mixed_effects"],
+      "properties": {
+        "omnibus": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name"],
+          "properties": {"name": {"const": "friedman"}}
+        },
+        "posthoc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "diagram"],
+          "properties": {
+            "name": {"const": "nemenyi"},
+            "diagram": {"const": "critical_difference"}
+          }
+        },
+        "pairwise": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name"],
+          "properties": {"name": {"const": "wilcoxon_signed_rank"}}
+        },
+        "bootstrap_ci": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["n_resamples", "ci", "effect_sizes"],
+          "properties": {
+            "n_resamples": {"type": "integer", "minimum": 1000},
+            "ci": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+            "effect_sizes": {"type": "boolean"}
+          }
+        },
+        "mixed_effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["random_effects"],
+          "properties": {
+            "random_effects": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+          }
+        }
+      }
+    }
+  }
+}

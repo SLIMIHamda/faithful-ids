@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this artifact, please cite both the paper and the archived artifact."
+title: "Beyond Plausibility: Measuring and Enforcing Faithfulness in LLM-Generated Explanations for Intrusion Detection — reproducibility artifact"
+type: software
+authors:
+  - family-names: "Beyond Plausibility authors"
+    name-particle: ""
+version: "1.0.0-dev"
+license: MIT
+repository-code: "https://github.com/SLIMIHamda/faithful-ids"
+keywords:
+  - intrusion detection
+  - explainability
+  - faithfulness
+  - reproducibility
+preferred-citation:
+  type: article
+  title: "Beyond Plausibility: Measuring and Enforcing Faithfulness in LLM-Generated Explanations for Intrusion Detection"
+  journal: "Computers & Security"
+  year: 2026
+  authors:
+    - family-names: "Beyond Plausibility authors"
+identifiers:
+  - type: doi
+    value: "10.0000/zenodo.artifact.placeholder"
+    description: "Zenodo archived artifact (code + run manifests + analysis outputs). Replaced at release."
+  - type: doi
+    value: "10.0000/osf.prereg.placeholder"
+    description: "OSF preregistration (hypotheses, thresholds, human-study plan). Replaced at release."

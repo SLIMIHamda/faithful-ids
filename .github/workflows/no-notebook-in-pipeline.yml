@@ -1,0 +1,36 @@
+name: no-notebook-in-pipeline
+# Quarantine enforcement (immutable constraint #10 / forbidden edge 5):
+#   (a) no pipeline code imports anything under notebooks/
+#   (b) no notebook imports pipeline write-paths or writes to runs/ analysis/ paper/
+# notebooks/ is deliberately NOT an importable package, so this is a belt-and-
+# braces static scan on top of that structural guarantee.
+on:
+  push:
+  pull_request:
+
+jobs:
+  quarantine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Assert no pipeline import of notebooks/
+        run: |
+          if grep -RInE '(^|[^A-Za-z_.])(import|from)\s+notebooks' src analysis paper tools tests 2>/dev/null; then
+            echo "::error::pipeline code may not import from notebooks/ (quarantine)."
+            exit 1
+          fi
+      - name: Assert notebooks/ do not import pipeline write-paths or write artifacts
+        run: |
+          if grep -RInE '(faithfulids\.(orchestration|results|provenance))|(open\(.+runs/)|(runs/.+STATUS)' notebooks 2>/dev/null; then
+            echo "::error::notebooks/ may not write pipeline artifacts (quarantine)."
+            exit 1
+          fi
+      - name: Assert notebooks/ is not a package
+        run: |
+          if find notebooks -name '__init__.py' | grep -q .; then
+            echo "::error::notebooks/ must not be an importable package."
+            exit 1
+          fi

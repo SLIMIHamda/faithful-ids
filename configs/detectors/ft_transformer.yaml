@@ -1,0 +1,21 @@
+id: ft_transformer
+schema_version: v1
+kind: detector
+family: ft_transformer
+role: tier_a
+attribution_ref: attribution:deepshap
+hyperparameters:
+  d_token: 192
+  n_blocks: 3
+  attention_dropout: 0.2
+  ffn_dropout: 0.1
+  residual_dropout: 0.0
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  epochs: 50
+  batch_size: 256
+determinism:
+  device: gpu
+  byte_identical: false
+  torch_deterministic: true
+  notes: "DeepSHAP on GPU is tolerance-bounded; deterministic torch flags recorded in the run manifest."

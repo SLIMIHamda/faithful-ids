@@ -1,0 +1,29 @@
+id: b4_vte
+schema_version: v1
+kind: generator
+code: b4_vte
+llm_dependent: true
+params:
+  top_k: 5
+  temperature: 0
+prompt:
+  name: b4_vte/generator
+  version: 1.0.0
+  sha256: 17d1443863464e2dd3251f560d5cfe5c149f323c6344c19d50f9f808f338c256
+# KB grounding source (feature-semantics), versioned. The per-dataset dictionary
+# is selected at run time from the dataset's kb_ref; this pins the KB version.
+kb_ref: kb:feature_semantics@1.0.0
+verifier:
+  # FIREWALL SIDE A. model_family here must be disjoint from every generator LLM
+  # family AND from the extractor's family (tools/firewall_check.py).
+  model_family: phi
+  prompt:
+    name: b4_vte/verifier
+    version: 1.0.0
+    sha256: cb7f40facd0a874dfa9f567513747204021d2a27564f68411cc4bd87b3f8fc2a
+  threshold_ref: statistics:decision_thresholds:verifier_threshold
+  threshold_scope: dev_split
+abstention:
+  enabled: true
+  fallback_generator: b1_template
+  reporting: coverage_risk

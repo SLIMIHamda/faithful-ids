@@ -1,0 +1,39 @@
+id: rq0_operators
+schema_version: v1
+kind: corruption
+# RQ0 meta-validation: inject KNOWN corruptions into faithful-by-construction B1
+# outputs, with ground-truth labels, so metric sensitivity/specificity can be
+# calibrated. A metric is admissible only after passing this battery.
+base_generator: b1_template
+operators:
+  - name: fabricated_feature
+    ground_truth_label: corrupted
+    injection_count: 1
+    params:
+      inject: one_feature_absent_from_topk
+  - name: sign_flip
+    ground_truth_label: corrupted
+    injection_count: 1
+    params:
+      target: highest_magnitude_claim
+  - name: rank_inversion
+    ground_truth_label: corrupted
+    injection_count: 1
+    params:
+      target: top_two_claims
+  - name: omission
+    ground_truth_label: corrupted
+    injection_count: 1
+    params:
+      target: rank_one_claim
+  - name: magnitude_inflation
+    ground_truth_label: corrupted
+    injection_count: 1
+    params:
+      factor: 3.0
+      target: highest_magnitude_claim
+  - name: vague_substitution
+    ground_truth_label: corrupted
+    injection_count: 1
+    params:
+      replace_with: unnamed_generic_phrase

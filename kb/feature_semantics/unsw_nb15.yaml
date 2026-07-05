@@ -1,0 +1,23 @@
+kind: kb_feature_dictionary
+schema_version: v1
+dataset: unsw_nb15
+version: 1.0.0
+entries:
+  - name: dur
+    description: Total duration of the record; anomalous durations can indicate scanning or exfiltration.
+    units: seconds
+  - name: sbytes
+    description: Source-to-destination bytes; large volumes can indicate exfiltration or flooding.
+    units: bytes
+  - name: dbytes
+    description: Destination-to-source bytes; asymmetry with sbytes can indicate one-sided attack traffic.
+    units: bytes
+  - name: sttl
+    description: Source-to-destination time-to-live value; unusual TTLs can indicate spoofing or crafted packets.
+    units: hops
+  - name: ct_state_ttl
+    description: Connection count for each state according to TTL; elevated values relate to scanning behaviour.
+    units: count
+  - name: service
+    description: Application-layer service (http, ftp, dns, ...); certain services are over-represented in specific attacks.
+    units: null

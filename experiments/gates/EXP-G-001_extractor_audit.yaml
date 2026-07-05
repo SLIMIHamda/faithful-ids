@@ -1,0 +1,28 @@
+id: EXP-G-001
+schema_version: v1
+kind: experiment
+tier: gate
+title: Extractor audit (firewall side B validity)
+research_question: >-
+  Does the evaluation claim extractor reach F1 >= 0.95 against adjudicated gold
+  on a 300-item dual-annotated set? Orchestration refuses Layer-1 metric
+  computation for any run not referencing a PASSED run of this gate.
+hypothesis_family: [H0]
+design:
+  mode: single
+seed_ref: seeds:gates
+metric_refs: [metrics:layer1]
+config_refs:
+  extraction: extraction:eval_extractor
+gate:
+  criterion: extractor_f1
+  threshold_ref: statistics:decision_thresholds:extractor_f1
+  annotation:
+    n_items: 300
+    annotators: 2
+    adjudicated: true
+    report: krippendorff_alpha
+    pool: audit_pool_disjoint_from_plausibility
+flags:
+  exploratory: false
+status: registered

@@ -1,0 +1,26 @@
+id: EXP-G-002
+schema_version: v1
+kind: experiment
+tier: gate
+title: RQ0 metric calibration (meta-validation)
+research_question: >-
+  Do the faithfulness metrics achieve per-metric sensitivity >= 0.9 and
+  specificity >= 0.9 against known corruptions of B1 outputs, while remaining
+  weakly correlated with fluency? A metric is admissible only after passing.
+hypothesis_family: [H0]
+design:
+  mode: single
+seed_ref: seeds:gates
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+config_refs:
+  corruption: corruption:rq0_operators
+  base_generator: generators:b1_template
+gate:
+  criterion: per_metric_sensitivity_specificity
+  threshold_ref: statistics:decision_thresholds:rq0_sensitivity
+  annotation:
+    ground_truth: corruption_labels
+    also_threshold_ref: statistics:decision_thresholds:rq0_specificity
+flags:
+  exploratory: false
+status: registered

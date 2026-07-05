@@ -1,0 +1,27 @@
+# =============================================================================
+# uv.lock — PLACEHOLDER (must be regenerated on a machine with `uv` installed).
+# =============================================================================
+#
+# This artifact requires an EXACT, HASHED dependency lock so that the pinned
+# container (environment/Dockerfile) resolves to byte-identical wheels on every
+# machine. That lock is produced by:
+#
+#     make lock          # == `uv lock`
+#
+# It could not be generated in the environment where this skeleton was authored
+# (`uv` was not available), so this file is intentionally a non-resolvable
+# placeholder rather than a fabricated lock. `uv sync --frozen` will REFUSE to
+# proceed against it — which is the correct fail-loud behaviour: an unpinned or
+# hand-faked dependency set is exactly what immutable-constraint "no dependency
+# without pinning" forbids.
+#
+# The exact-version pins live in pyproject.toml [project.dependencies]; running
+# `uv lock` turns those into a fully hashed, transitive resolution here.
+#
+# CI job `docs-build.yml` / the environment build MUST regenerate and commit the
+# real lock before any experiment (L4) is executed.
+#
+# DO NOT hand-edit a lock file.
+version = 1
+requires-python = ">=3.11,<3.13"
+# (no [[package]] entries — see banner above; regenerate with `uv lock`)

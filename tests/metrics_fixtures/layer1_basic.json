@@ -1,0 +1,32 @@
+{
+  "description": "Hand-computed Layer-1 fixture. Attribution top-3 = {A,B,C} (by |value|). Claims name A(+,1), B(+,2) [WRONG sign: attr B is negative], and E(+,3) [HALLUCINATED: absent from attribution]. All values worked by hand below.",
+  "top_k": 3,
+  "attribution": {
+    "instance_id": "i0",
+    "feature_names": ["A", "B", "C", "D"],
+    "values": [0.9, -0.6, 0.3, 0.1],
+    "base_value": 0.5,
+    "method": "treeshap",
+    "exact": true,
+    "background_policy": "tree_path_dependent"
+  },
+  "claims": {
+    "instance_id": "i0",
+    "claims": [
+      {"feature": "A", "direction": "+", "rank": 1, "magnitude": 0.9},
+      {"feature": "B", "direction": "+", "rank": 2, "magnitude": 0.6},
+      {"feature": "E", "direction": "+", "rank": 3, "magnitude": 0.2}
+    ],
+    "extractor_id": "eval_extractor",
+    "extractor_version": "1.0.0",
+    "prompt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "expected": {
+    "mention_precision": 0.6666666666666666,
+    "mention_recall": 0.6666666666666666,
+    "mention_f1": 0.6666666666666666,
+    "dsa": 0.5,
+    "arc": 1.0,
+    "hfr": 0.3333333333333333
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "configs/schema/corruption.v1.json",
+  "title": "RQ0 corruption operators config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "schema_version", "kind", "base_generator", "operators"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "schema_version": {"const": "v1"},
+    "kind": {"const": "corruption"},
+    "base_generator": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "operators": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "ground_truth_label", "injection_count", "params"],
+        "properties": {
+          "name": {
+            "enum": [
+              "fabricated_feature",
+              "sign_flip",
+              "rank_inversion",
+              "omission",
+              "magnitude_inflation",
+              "vague_substitution"
+            ]
+          },
+          "ground_truth_label": {"const": "corrupted"},
+          "injection_count": {"type": "integer", "minimum": 1},
+          "params": {"type": "object"}
+        }
+      }
+    }
+  }
+}

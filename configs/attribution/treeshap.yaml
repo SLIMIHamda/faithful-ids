@@ -1,0 +1,20 @@
+id: treeshap
+schema_version: v1
+kind: attribution
+method: treeshap
+exact: true
+background_policy:
+  removal_semantics: tree_path_dependent
+  background: tree_path_dependent_none
+  notes: >-
+    Exact TreeSHAP over frozen tree ensembles; removal semantics are
+    tree-path-dependent. This is the GROUND-TRUTH attribution against which
+    Layer-1 claim faithfulness is measured. It is NOT the Layer-2 erasure
+    background (blueprint: erasure background is deliberately not the SHAP
+    baseline distribution).
+cache:
+  content_addressed: true
+  key_inputs:
+    - model_sha256
+    - data_sha256
+    - attribution_config_sha256

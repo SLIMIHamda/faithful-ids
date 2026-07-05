@@ -1,0 +1,10 @@
+id: n400_stratified
+schema_version: v1
+kind: sampling
+sampling_type: explanation_set
+seed_ref: seeds:sampling
+n_per_dataset: 400
+stratify_by: attack_class
+minority_floor: 30
+# Oversample the EXPLANATION set (not training) to reach the minority floor.
+oversample_explanation_set: true

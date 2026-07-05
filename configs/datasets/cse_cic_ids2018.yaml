@@ -1,0 +1,27 @@
+id: cse_cic_ids2018
+schema_version: v1
+kind: dataset
+role: tier_b_transfer
+source:
+  name: CSE-CIC-IDS2018
+  provider: CIC / Communications Security Establishment (AWS Open Data)
+  redistributable: false
+  acquisition_url: https://www.unb.ca/cic/datasets/ids-2018.html
+correction:
+  pipeline_version: 1.0.0
+  applies: false
+  corrections_applied_ref: null
+split:
+  strategy: stratified_holdout
+  ratios:
+    train: 0.6
+    dev: 0.2
+    test: 0.2
+  stratify_by: Label
+  seed_ref: seeds:splits
+  label_column: Label
+checksums:
+  raw_sha256: null
+  corrected_sha256: null
+  processed_sha256: null
+kb_ref: kb:cse_cic_ids2018@1.0.0

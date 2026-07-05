@@ -1,0 +1,43 @@
+id: seed_table
+schema_version: v1
+kind: seed_table
+# The single source of every seed. No seed literal exists anywhere in code;
+# stages reference a section here and the runner snapshots the consumed seeds
+# into each run manifest's `randomness` block.
+sections:
+  splits:
+    cicids2017_corrected: 20250101
+    cicids2017_raw: 20250102
+    unsw_nb15: 20250103
+    cse_cic_ids2018: 20250104
+  sampling:
+    explanation_set: 20250201
+    stochasticity: 20250202
+  detector_training:
+    xgboost: 42
+    ft_transformer: 43
+    random_forest: 44
+  tier_a:
+    attribution: 1001
+    generation: 1002
+    extraction: 1003
+    metrics: 1004
+  tier_b:
+    attribution: 2001
+    generation: 2002
+    extraction: 2003
+    metrics: 2004
+  gates:
+    extractor_audit: 3001
+    rq0_calibration: 3002
+  stochasticity:
+    generation: 4001
+  human_study:
+    materials_build: 5001
+  exploratory:
+    cti_rag: 6001
+  toy:
+    split: 7001
+    generation: 7002
+    extraction: 7003
+    metrics: 7004

@@ -1,0 +1,25 @@
+id: EXP-B-004
+schema_version: v1
+kind: experiment
+tier: tier_b
+title: Tier B sensitivity micro-sweeps
+research_question: >-
+  Anchored micro-sweeps: top-k in {3,5,8}, temperature in {0, 0.7}, and the
+  B4 verifier threshold across 3 dev-split-tuned levels. B4 only.
+hypothesis_family: [H-T]
+design:
+  mode: anchored
+  anchor_ref: ANCHOR
+  one_factor_overrides:
+    generators: [b4_vte]
+    top_k: [3, 5, 8]
+    temperature: [0, 0.7]
+    verifier_threshold_ref: statistics:decision_thresholds:verifier_threshold
+seed_ref: seeds:tier_b
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+status: registered

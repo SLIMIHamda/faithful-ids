@@ -1,0 +1,22 @@
+name: manifest-audit
+# Every runs/ entry: manifest complete, hashes verify, status terminal,
+# immutability preserved (hostile-audit A6). Payloads are DVC-tracked; manifests
+# and output hashes are in git, so integrity is checkable without pulling blobs.
+on:
+  push:
+  pull_request:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install light stack
+        run: pip install "pyyaml==6.0.2" "jsonschema==4.23.0"
+      - name: Audit run manifests (hashes, completeness, immutability)
+        run: python tools/audit_manifests.py
+        env:
+          PYTHONPATH: src

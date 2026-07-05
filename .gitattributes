@@ -1,0 +1,18 @@
+# Enforce LF line endings for ALL text files on every platform.
+#
+# This is load-bearing for reproducibility (hostile-audit A10: a Windows-authored
+# artifact executed on Linux must not drift). Prompt files and configs are
+# hash-addressed; if git rewrote them to CRLF on a Windows checkout, their sha256
+# would no longer match prompts/REGISTRY.json and the firewall / config-validation
+# gates would fail. Forcing eol=lf keeps the working copy byte-identical to the
+# committed blob on all platforms.
+* text=auto eol=lf
+
+# Explicitly binary (never converted, never diffed).
+*.png binary
+*.jpg binary
+*.pdf binary
+*.bin binary
+*.pt binary
+*.onnx binary
+*.parquet binary
