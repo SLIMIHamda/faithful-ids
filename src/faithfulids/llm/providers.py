@@ -103,13 +103,24 @@ class TransformersProvider:
         tok, mdl = self._load(model)
         torch.manual_seed(int(params.get("seed", 0)))
         temperature = float(params.get("temperature", 0.0))
+
+        # apply_chat_template may return a bare tensor OR a BatchEncoding depending
+        # on the transformers version; normalise to a dict of tensors so
+        # generate(**enc) works either way (a BatchEncoding passed positionally
+        # would crash on .shape).
         try:
-            input_ids = tok.apply_chat_template(
+            raw = tok.apply_chat_template(
                 [{"role": "user", "content": prompt}],
                 add_generation_prompt=True, return_tensors="pt",
-            ).to(mdl.device)
+            )
         except Exception:
-            input_ids = tok(prompt, return_tensors="pt").input_ids.to(mdl.device)
+            raw = tok(prompt, return_tensors="pt")
+        if isinstance(raw, torch.Tensor):
+            enc = {"input_ids": raw}
+        else:  # BatchEncoding / dict
+            enc = {k: raw[k] for k in raw.keys()}
+        enc = {k: v.to(mdl.device) for k, v in enc.items()}
+        input_len = enc["input_ids"].shape[1]
 
         gen_kwargs: dict[str, Any] = {
             "max_new_tokens": self.max_new_tokens,
@@ -119,8 +130,8 @@ class TransformersProvider:
         if temperature > 0:
             gen_kwargs["temperature"] = temperature
         with torch.no_grad():
-            out = mdl.generate(input_ids, **gen_kwargs)
-        new_tokens = out[0][input_ids.shape[1]:]
+            out = mdl.generate(**enc, **gen_kwargs)
+        new_tokens = out[0][input_len:]
         text = tok.decode(new_tokens, skip_special_tokens=True).strip()
         return text, {"tokens": int(new_tokens.shape[0])}
 
