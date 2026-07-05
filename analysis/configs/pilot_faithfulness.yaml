@@ -1,0 +1,14 @@
+id: pilot_faithfulness
+hypothesis: null
+description: >-
+  NON-CITABLE pilot analysis. Friedman + Nemenyi across all five generators
+  (B0-B4) on Layer-1 mention F1, computed from the REAL pilot run
+  (CICIDS2017 x XGBoost x TreeSHAP x one LLM). Uses source.select: latest because
+  the pilot is non-citable; confirmatory analyses enumerate run_ids.
+source:
+  experiment: EXP-PILOT-001
+  select: latest
+test: friedman_nemenyi
+metric: mention_f1
+generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte]
+higher_is_better: true

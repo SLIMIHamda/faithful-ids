@@ -1,0 +1,11 @@
+id: pilot_n150
+schema_version: v1
+kind: sampling
+sampling_type: explanation_set
+seed_ref: seeds:pilot
+# Pilot vertical slice: 150 flows in the range the pilot guide specifies
+# (100-200). Kept separate from the confirmatory n400_stratified protocol.
+n_per_dataset: 150
+stratify_by: attack_class
+minority_floor: 30
+oversample_explanation_set: true

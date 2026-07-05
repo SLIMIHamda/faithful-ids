@@ -39,18 +39,75 @@ class DeterministicStubProvider:
 
 
 class TransformersProvider:
-    """Open-weights provider via HuggingFace ``transformers`` (hard dependency)."""
+    """Open-weights provider via HuggingFace ``transformers`` (hard dependency).
+
+    Loads the model named in ``model['weights']`` at its pinned revision, honours
+    ``model['quantisation']`` (``none`` -> fp16, ``4bit`` -> nf4), caches loaded
+    models across calls, and generates deterministically at the given seed.
+    ``transformers``/``torch`` are imported lazily so importing this module (and
+    the orchestration layer) never pulls them in.
+    """
+
+    def __init__(self, *, max_new_tokens: int = 220) -> None:
+        self.max_new_tokens = max_new_tokens
+        self._cache: dict[tuple, tuple] = {}
+
+    def _load(self, model: Mapping[str, Any]):
+        weights = model.get("weights") or {}
+        repo = weights.get("hf_repo")
+        revision = weights.get("revision")
+        quant = model.get("quantisation", "none")
+        key = (repo, revision, quant)
+        if key in self._cache:
+            return self._cache[key]
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        tok = AutoTokenizer.from_pretrained(repo, revision=revision)
+        kwargs: dict[str, Any] = {"device_map": "auto"}
+        if quant == "4bit":
+            from transformers import BitsAndBytesConfig
+
+            kwargs["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_quant_type="nf4",
+            )
+        else:
+            kwargs["torch_dtype"] = torch.float16
+        mdl = AutoModelForCausalLM.from_pretrained(repo, revision=revision, **kwargs)
+        mdl.eval()
+        self._cache[key] = (tok, mdl)
+        return tok, mdl
 
     def complete(
         self, prompt: str, params: Mapping[str, Any], *, model: Mapping[str, Any]
     ) -> tuple[str, dict[str, Any]]:
-        import transformers  # noqa: F401  hard dep; imported here to keep client light
+        import torch
 
-        raise NotImplementedError(
-            "TODO: load the pinned open-weights model (model['weights']) at the "
-            "recorded revision, run generation at params temperature/top_k/seed, and "
-            "return (text, meta). Fails loudly rather than emitting fabricated text."
-        )
+        tok, mdl = self._load(model)
+        torch.manual_seed(int(params.get("seed", 0)))
+        temperature = float(params.get("temperature", 0.0))
+        try:
+            input_ids = tok.apply_chat_template(
+                [{"role": "user", "content": prompt}],
+                add_generation_prompt=True, return_tensors="pt",
+            ).to(mdl.device)
+        except Exception:
+            input_ids = tok(prompt, return_tensors="pt").input_ids.to(mdl.device)
+
+        gen_kwargs: dict[str, Any] = {
+            "max_new_tokens": self.max_new_tokens,
+            "do_sample": temperature > 0,
+            "pad_token_id": tok.eos_token_id,
+        }
+        if temperature > 0:
+            gen_kwargs["temperature"] = temperature
+        with torch.no_grad():
+            out = mdl.generate(input_ids, **gen_kwargs)
+        new_tokens = out[0][input_ids.shape[1]:]
+        text = tok.decode(new_tokens, skip_special_tokens=True).strip()
+        return text, {"tokens": int(new_tokens.shape[0])}
 
 
 class FrontierAPIProvider:

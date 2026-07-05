@@ -1,0 +1,37 @@
+id: EXP-PILOT-001
+schema_version: v1
+kind: experiment
+tier: pilot
+title: Pilot vertical slice (CICIDS2017 x XGBoost x TreeSHAP x one LLM x B0-B4)
+research_question: >-
+  NOT a hypothesis test. A single end-to-end vertical slice to validate the
+  repository, the reproducibility pipeline, and the experimental workflow — and
+  to estimate effect sizes, variance, required sample sizes, LLM-call budget, and
+  execution cost. Pilot outputs are kept SEPARATE from Tier-A confirmatory runs
+  (dedicated seeds section `pilot`, dedicated tier) and must be EXCLUDED from
+  confirmatory analysis.
+hypothesis_family: []
+design:
+  mode: factorial
+  axes:
+    datasets: [cicids2017_corrected]
+    detectors: [xgboost]
+    # one mid-sized model, 4-bit for Kaggle GPUs (precision is declared in the
+    # llm config's `quantisation`, never inferred). Swap to mistral_7b_instruct
+    # for full precision on larger hardware.
+    llms: [mistral_7b_instruct_4bit]
+    generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte]
+sampling_refs: [sampling:pilot_n150, sampling:stochasticity_k3]
+seed_ref: seeds:pilot
+# Pilot is exempt from the confirmatory gate ordering: EXP-G-001 needs 300 human
+# annotations and EXP-G-002 is a calibration study; the pilot instead EXERCISES
+# the RQ0 instrumentation / extractor / erasure to estimate their behaviour.
+gate_dependencies: []
+metric_refs: [metrics:layer1, metrics:layer2_erasure, metrics:plausibility_judge, metrics:cost]
+config_refs:
+  extraction: extraction:eval_extractor
+  attribution: attribution:treeshap
+flags:
+  exploratory: false
+  headline_eligible: false
+status: registered

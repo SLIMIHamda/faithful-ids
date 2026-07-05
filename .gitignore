@@ -57,6 +57,15 @@ paper/tables/generated/*.pdf
 analysis/outputs/toy_demo/MANIFEST.json
 analysis/outputs/toy_coverage/MANIFEST.json
 
+# Pilot outputs are per-run, NON-CITABLE real results produced on Kaggle — never
+# committed (reproduce them by running the pilot). Includes the run cache dirs.
+analysis/outputs/pilot_faithfulness/
+analysis/outputs/pilot_coverage/
+paper/figures/generated/fig_pilot_*
+paper/tables/generated/tab_pilot_*
+runs/EXP-PILOT-001/
+runs/_pilot_*/
+
 # Environment fingerprints scratch
 *.env-fingerprint.json
 

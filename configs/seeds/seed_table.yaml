@@ -41,3 +41,11 @@ sections:
     generation: 7002
     extraction: 7003
     metrics: 7004
+  pilot:
+    split: 8001
+    sampling: 8002
+    detector_training: 8003
+    attribution: 8004
+    generation: 8005
+    extraction: 8006
+    metrics: 8007

@@ -6,6 +6,7 @@ from ``faithfulids.extraction`` (firewall side B).
 
 from __future__ import annotations
 
+from faithfulids.generation.b4_vte.verifier.rule_verifier import RuleVerifier
 from faithfulids.generation.b4_vte.verifier.verifier import Verifier
 
-__all__ = ["Verifier"]
+__all__ = ["Verifier", "RuleVerifier"]

@@ -51,15 +51,20 @@ class RuleAssistedExtractor(ClaimExtractor):
         self._vocab = list(feature_vocabulary)
 
     def extract(self, explanation: ExplanationRecord) -> ClaimSet:
-        prompt = self._template.replace(
-            "{{explanation_text}}", explanation.text
-        ).replace("{{feature_vocabulary}}", ", ".join(self._vocab))
-        resp = self._client.complete(
-            model_config=self._model, prompt=prompt, params={"temperature": 0, "seed": 0}
-        )
-        claims = self._parse_json(resp.text)
-        if claims is None:
+        if self._client is None:
+            # rule-only mode (pilot / no extractor model loaded): deterministic
+            # regex parse over the canonical feature vocabulary.
             claims = self._rule_assisted(explanation.text)
+        else:
+            prompt = self._template.replace(
+                "{{explanation_text}}", explanation.text
+            ).replace("{{feature_vocabulary}}", ", ".join(self._vocab))
+            resp = self._client.complete(
+                model_config=self._model, prompt=prompt, params={"temperature": 0, "seed": 0}
+            )
+            claims = self._parse_json(resp.text)
+            if claims is None:
+                claims = self._rule_assisted(explanation.text)
         return ClaimSet(
             instance_id=explanation.instance_id,
             claims=tuple(claims),

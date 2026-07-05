@@ -97,14 +97,18 @@ def build(
     *,
     llm_client,
     model_config: dict,
+    verifier=None,
     verifier_model_config: dict | None = None,
     kb_feature_semantics: Mapping[str, str] | None = None,
     **_: object,
 ) -> B4VtE:
-    vcfg = config["verifier"]
-    verifier = Verifier(
-        vcfg, llm_client, verifier_model_config or _default_verifier_model(vcfg)
-    )
+    # A verifier may be INJECTED (e.g. the pilot's RuleVerifier, to avoid loading
+    # a second model); otherwise construct the confirmatory LLM Verifier.
+    if verifier is None:
+        vcfg = config["verifier"]
+        verifier = Verifier(
+            vcfg, llm_client, verifier_model_config or _default_verifier_model(vcfg)
+        )
     kb = KBRetriever(kb_feature_semantics or {})
     fallback = B1Template(config["params"]["top_k"])
     return B4VtE(config, llm_client, model_config, verifier, kb, fallback)

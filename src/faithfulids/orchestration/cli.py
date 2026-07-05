@@ -7,6 +7,7 @@ experiment id. Everything else is resolved from the registry + snapshot.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 
 from faithfulids.orchestration.gates import enforce_gates
@@ -25,9 +26,33 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(f"toy run complete (NON-CITABLE): {run_dir}")
         return 0
 
-    # Real experiments: enforce gates, then execute. Full execution requires
-    # acquired datasets + frozen models + a live/replay LLM — this artifact ships
-    # the machine, not the runs. Fail loudly rather than fabricate outputs.
+    if exp["tier"] == "pilot":
+        # Real vertical slice on real data (CICIDS2017 CSVs mounted at
+        # $FAITHFULIDS_DATA_DIR). Pilot has no gate dependencies.
+        from faithfulids.orchestration.execute import run_pilot
+
+        data_dir = os.environ.get("FAITHFULIDS_DATA_DIR")
+        if not data_dir:
+            print(
+                "ERROR: set FAITHFULIDS_DATA_DIR to the CICIDS2017 CSV directory "
+                "(e.g. a mounted Kaggle dataset). See kaggle/README.md.",
+                file=sys.stderr,
+            )
+            return 2
+        enforce_gates(exp, runs_root)
+        n = os.environ.get("FAITHFULIDS_PILOT_N")
+        max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
+        run_dir = run_pilot(
+            exp["id"], data_dir=data_dir, runs_root=runs_root,
+            n_explain=int(n) if n else None,
+            max_rows=int(max_rows) if max_rows else None,
+        )
+        print(f"pilot run complete: {run_dir}")
+        return 0
+
+    # Other real experiments (Tier A/B/…): enforce gates, then execute. Full
+    # execution requires acquired datasets + frozen models + a live/replay LLM —
+    # not yet wired. Fail loudly rather than fabricate outputs.
     enforce_gates(exp, runs_root)
     print(
         f"ERROR: full execution of {args.experiment!r} requires acquired datasets, "

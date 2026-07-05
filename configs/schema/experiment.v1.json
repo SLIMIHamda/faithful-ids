@@ -9,7 +9,7 @@
     "id": {"type": "string", "pattern": "^(EXP-[A-Z]+-[0-9]{3}[A-Za-z0-9_-]*|ANCHOR)$"},
     "schema_version": {"const": "v1"},
     "kind": {"const": "experiment"},
-    "tier": {"enum": ["anchor", "gate", "tier_a", "tier_b", "stochasticity", "human_study", "exploratory", "toy"]},
+    "tier": {"enum": ["anchor", "gate", "tier_a", "tier_b", "stochasticity", "human_study", "exploratory", "toy", "pilot"]},
     "title": {"type": "string"},
     "research_question": {"type": "string"},
     "hypothesis_family": {"type": "array", "items": {"type": "string"}},

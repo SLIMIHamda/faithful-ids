@@ -1,0 +1,12 @@
+id: pilot_coverage
+hypothesis: null
+description: >-
+  NON-CITABLE pilot analysis. Coverage-risk curve + AURC for B4 (Verify-then-
+  Explain) from the REAL pilot run. Risk = 1 - Layer-1 mention F1; confidence
+  proxy = the faithfulness score.
+source:
+  experiment: EXP-PILOT-001
+  select: latest
+test: coverage_risk
+metric: mention_f1
+generator: b4_vte

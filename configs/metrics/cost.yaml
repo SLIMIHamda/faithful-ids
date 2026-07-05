@@ -1,0 +1,18 @@
+id: cost
+schema_version: v1
+kind: metric
+family: cost
+formula_version: 1.0.0
+metrics:
+  - name: latency_ms
+    formula_version: 1.0.0
+  - name: tokens_per_explanation
+    formula_version: 1.0.0
+  - name: dollars_per_explanation
+    formula_version: 1.0.0
+  - name: coverage
+    formula_version: 1.0.0
+  - name: abstention_rate
+    formula_version: 1.0.0
+accounting:
+  fields: [latency_ms, total_tokens, coverage, abstention_rate, dollars]
