@@ -22,7 +22,8 @@ per-generator faithfulness table.
 1. New Kaggle notebook → **Add Input** → search **CICIDS2017** (the raw CIC
    `MachineLearningCVE` CSVs or an upstream-corrected variant both work).
 2. Enable **GPU** (T4 is enough for a 7B model in 4-bit).
-3. (Optional) add an `HF_TOKEN` Kaggle Secret if the model is gated.
+3. No HF token needed for the default (ungated) Qwen model. Only add an
+   `HF_TOKEN` Kaggle Secret if you switch to a gated model (e.g. Mistral/Llama).
 4. Paste/upload this notebook and **Run All**. It auto-detects the CSV directory,
    runs the pilot, and displays the results inline; artifacts are zipped to
    `/kaggle/working/pilot_artifacts.zip`.
@@ -37,10 +38,11 @@ per-generator faithfulness table.
 | `HF_TOKEN` | HuggingFace token (Kaggle Secret) | — |
 
 - **Model / precision** are declared in the repo config
-  `configs/llms/mistral_7b_instruct_4bit.yaml` (`quantisation: 4bit`), referenced
-  by `experiments/pilot/EXP-PILOT-001_vertical_slice.yaml`. Switch to
-  `mistral_7b_instruct` for full precision on larger hardware, or point the
-  pilot's `llms:` axis at a smaller model config for speed.
+  `configs/llms/qwen2_5_3b_instruct.yaml` (Qwen2.5-3B-Instruct, ungated,
+  `quantisation: none`/fp16), referenced by
+  `experiments/pilot/EXP-PILOT-001_vertical_slice.yaml`. It needs **no HF token**.
+  Point the pilot's `llms:` axis at `mistral_7b_instruct_4bit` (gated, needs a
+  token) or any other config to change model/precision.
 
 ## Pilot simplifications (documented, NON-CITABLE)
 

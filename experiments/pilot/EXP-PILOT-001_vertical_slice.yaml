@@ -16,10 +16,10 @@ design:
   axes:
     datasets: [cicids2017_corrected]
     detectors: [xgboost]
-    # one mid-sized model, 4-bit for Kaggle GPUs (precision is declared in the
-    # llm config's `quantisation`, never inferred). Swap to mistral_7b_instruct
-    # for full precision on larger hardware.
-    llms: [mistral_7b_instruct_4bit]
+    # one small UNGATED model (Qwen2.5-3B-Instruct, Apache-2.0) so no HF token is
+    # needed. Precision is declared in the llm config's `quantisation`, never
+    # inferred. Swap to mistral_7b_instruct_4bit / a larger model on bigger GPUs.
+    llms: [qwen2_5_3b_instruct]
     generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte]
 sampling_refs: [sampling:pilot_n150, sampling:stochasticity_k3]
 seed_ref: seeds:pilot

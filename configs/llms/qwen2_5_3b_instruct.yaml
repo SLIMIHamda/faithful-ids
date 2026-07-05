@@ -1,0 +1,14 @@
+id: qwen2_5_3b_instruct
+schema_version: v1
+kind: llm
+# Ungated (Apache-2.0), small, fast — no HF token required. Good pilot generator.
+model_family: qwen
+provider: local_open_weights
+# fp16 (no bitsandbytes needed); a 3B model fits a Kaggle T4 comfortably. Set to
+# 4bit for tighter memory. Precision is declared here, never inferred.
+quantisation: none
+role: generator_llm
+weights:
+  hf_repo: Qwen/Qwen2.5-3B-Instruct
+  revision: pin-pending
+  sha256: null
