@@ -1,0 +1,10 @@
+id: fig_coverage_risk
+kind: figure
+description: >-
+  Coverage-risk curve + AURC (the B4 abstention pattern). NON-CITABLE toy fixture
+  driven by the deterministic toy run.
+inputs:
+  - analysis/outputs/toy_coverage/results.json
+script: paper/figures/src/fig_coverage_risk.py
+generated: paper/figures/generated/fig_coverage_risk.data.json
+expected_sha256: cc0fed5b49dae300e1be6de5a8798ace0f94b61c10975c8ffd12e9b312a77d6e

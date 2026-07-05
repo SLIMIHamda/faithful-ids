@@ -1,0 +1,24 @@
+{
+  "analysis": "toy_coverage",
+  "hypothesis": null,
+  "result": {
+    "aurc": 0.1142857143,
+    "coverage": [
+      0.2,
+      0.4,
+      0.6,
+      0.8,
+      1.0
+    ],
+    "generator": "b1_template",
+    "metric": "mention_f1",
+    "n": 5,
+    "selective_risk": [
+      0.1428571429,
+      0.1428571429,
+      0.1428571429,
+      0.1428571429,
+      0.1428571429
+    ]
+  }
+}

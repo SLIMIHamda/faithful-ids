@@ -1,0 +1,15 @@
+{
+  "avg_ranks": [
+    1.0,
+    2.4,
+    2.6
+  ],
+  "critical_difference": 1.481843,
+  "kind": "critical_difference",
+  "methods": [
+    "b1_template",
+    "b2_zeroshot",
+    "b3_dte_style"
+  ],
+  "metric": "mention_f1"
+}

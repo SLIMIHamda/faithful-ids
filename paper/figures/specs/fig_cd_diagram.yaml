@@ -1,0 +1,10 @@
+id: fig_cd_diagram
+kind: figure
+description: >-
+  Critical-difference diagram over generators on Layer-1 mention F1 (the H1
+  headline pattern). NON-CITABLE toy fixture driven by the deterministic toy run.
+inputs:
+  - analysis/outputs/toy_demo/results.json
+script: paper/figures/src/fig_cd_diagram.py
+generated: paper/figures/generated/fig_cd_diagram.data.json
+expected_sha256: dcd9ac906bf13067183abe1d17fe68886f033b9467f21ce2bf4fe72ad3c43102

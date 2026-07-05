@@ -114,7 +114,8 @@ def run_toy(
 
     b1 = get_generator(load_config("generator", "b1_template"))
     b2 = get_generator(load_config("generator", "b2_zeroshot"), llm_client=client, model_config=toy_llm)
-    generators = [("b1_template", b1), ("b2_zeroshot", b2)]
+    b3 = get_generator(load_config("generator", "b3_dte_style"), llm_client=client, model_config=toy_llm)
+    generators = [("b1_template", b1), ("b2_zeroshot", b2), ("b3_dte_style", b3)]
 
     extcfg = load_config("extraction", "eval_extractor")
     extractor = build_extractor(
@@ -140,7 +141,7 @@ def run_toy(
     environment = {"environment_hash": sha256_json({"toy": True, "python": "cpython"})}
     resolved_config = {
         "experiment": "EXP-TOY-001", "dataset": "toy_smoke", "detector": "toy_linear",
-        "attribution": "toy_linear", "generators": ["b1_template", "b2_zeroshot"],
+        "attribution": "toy_linear", "generators": ["b1_template", "b2_zeroshot", "b3_dte_style"],
         "layer1_top_k": 3, "layer2_k_values": [1, 3], "seed": gen_seed,
     }
     run_id = mint_run_id("EXP-TOY-001", code_version)

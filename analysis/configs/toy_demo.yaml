@@ -1,0 +1,14 @@
+id: toy_demo
+hypothesis: null
+description: >-
+  NON-CITABLE rendering fixture. Drives the critical-difference-diagram figure
+  and Layer-1 summary table from the deterministic toy run (EXP-TOY-001). Uses
+  `source.select: latest` (relaxed selection is admissible ONLY because the toy
+  is non-citable; real analysis configs enumerate run_ids).
+source:
+  experiment: EXP-TOY-001
+  select: latest
+test: friedman_nemenyi
+metric: mention_f1
+generators: [b1_template, b2_zeroshot, b3_dte_style]
+higher_is_better: true

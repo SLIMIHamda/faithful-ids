@@ -1,0 +1,13 @@
+{
+  "mean": [
+    0.857143,
+    0.1,
+    0.0
+  ],
+  "methods": [
+    "b1_template",
+    "b2_zeroshot",
+    "b3_dte_style"
+  ],
+  "metric": "mention_f1"
+}

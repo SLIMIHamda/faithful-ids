@@ -1,0 +1,44 @@
+version: 1
+description: >-
+  MASTER TRACEABILITY MATRIX. Every figure/table/claim maps to analysis outputs
+  -> run ids -> experiment ids -> gates -> commit. Real headline assets are added
+  AFTER EXP-A-001 executes (see `pending_headline`). The `assets` below are
+  NON-CITABLE toy fixtures that exercise the spec->script->generated->diff
+  pattern; they enumerate no runs and are headline-ineligible.
+
+assets:
+  - id: fig_cd_diagram
+    kind: figure
+    analysis: toy_demo
+    runs: []
+    gates: []
+    exploratory: false
+    headline: false
+    note: NON-CITABLE toy fixture (deterministic toy run).
+  - id: fig_coverage_risk
+    kind: figure
+    analysis: toy_coverage
+    runs: []
+    gates: []
+    exploratory: false
+    headline: false
+    note: NON-CITABLE toy fixture.
+  - id: tab_layer1_summary
+    kind: table
+    analysis: toy_demo
+    runs: []
+    gates: []
+    exploratory: false
+    headline: false
+    note: NON-CITABLE toy fixture.
+
+# Headline assets pending experiment execution. Each will enumerate the EXACT
+# EXP-A-001 run ids (no globs) and its gate dependencies before it can appear in
+# `assets` and be verified by mapping-completeness.
+pending_headline:
+  - id: fig_h1_cd_diagram
+    kind: figure
+    analysis: h1_gap
+    runs: []          # enumerate EXP-A-001 run ids after execution
+    gates: [EXP-G-001, EXP-G-002]
+    hypothesis: H1

@@ -18,6 +18,7 @@ registry so nothing can be silently omitted (hostile-audit A7).
 | EXP-S-001 | stochasticity | generation variance (k=3) | G-001, G-002 | no | registered | — |
 | EXP-H-001 | human_study | H4 — SOC triage study | — | no | registered | — |
 | EXP-X-001 | exploratory | CTI-RAG at the anchor | G-001, G-002 | **yes** | registered | — |
+| EXP-TOY-001 | toy | CI determinism fixture (NON-CITABLE) | — | no | registered | — |
 
 See `docs/registering-experiments.md` for the propose → validate → register →
 tag → run workflow.

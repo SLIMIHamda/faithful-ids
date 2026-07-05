@@ -1,0 +1,45 @@
+{
+  "analysis": "toy_demo",
+  "hypothesis": null,
+  "result": {
+    "avg_ranks": [
+      1.0,
+      2.4,
+      2.6
+    ],
+    "critical_difference": 1.4818433116,
+    "methods": [
+      "b1_template",
+      "b2_zeroshot",
+      "b3_dte_style"
+    ],
+    "metric": "mention_f1",
+    "n_blocks": 5,
+    "n_methods": 3,
+    "pvalue": 0.0086516952,
+    "scores": [
+      [
+        0.8571428571,
+        0.8571428571,
+        0.8571428571,
+        0.8571428571,
+        0.8571428571
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.5
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "statistic": 9.5
+  }
+}

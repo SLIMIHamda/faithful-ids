@@ -1,0 +1,10 @@
+id: tab_layer1_summary
+kind: table
+description: >-
+  Layer-1 mean faithfulness per generator (LaTeX, emitted not typed). NON-CITABLE
+  toy fixture driven by the deterministic toy run.
+inputs:
+  - analysis/outputs/toy_demo/results.json
+script: paper/tables/src/tab_layer1_summary.py
+generated: paper/tables/generated/tab_layer1_summary.tex
+expected_sha256: 204ce7c06d5b4ebfd4393e64c5def9d73084e2971a293c1ded053778eb0374ab

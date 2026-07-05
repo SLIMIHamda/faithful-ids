@@ -1,0 +1,13 @@
+id: toy_coverage
+hypothesis: null
+description: >-
+  NON-CITABLE rendering fixture. Drives the coverage-risk-curve figure from the
+  deterministic toy run. Risk = 1 - Layer-1 mention F1; confidence proxy = the
+  faithfulness score. (In a real B4 cell, risk/confidence come from abstention;
+  this exercises the same coverage-risk pipeline on toy faithfulness numbers.)
+source:
+  experiment: EXP-TOY-001
+  select: latest
+test: coverage_risk
+metric: mention_f1
+generator: b1_template
