@@ -60,8 +60,10 @@ contract "Edge 1: metrics are generator-blind" remains KEPT.
   conditional-expectation imputation choosing correlated proxies). Layer-2 metrics
   therefore gained an optional `delta_space` ∈ {`prob` (default), `margin`}; a
   margin accessor (`DetectorArtifact.predict_margin`, XGBoost `output_margin=True`,
-  logit fallback) was added. **The emitted run stays `prob` until the saturation
-  diagnostic is reviewed** — no semantic flip precedes evidence.
+  logit fallback) was added. Pilot runs now emit Layer-2 in **both** spaces
+  (`delta_spaces: [prob, margin]`), so a single pilot-v2 run answers the saturation
+  question directly. The `prob` metric is unchanged — no flip; both are reported and
+  the canonical space is chosen from v2 evidence.
 - An **erasure-efficacy CI smoke test** now guards the whole layer: erase-all must
   move the score materially, erase-none by 0. This would have caught v1's no-op
   before any LLM tokens were spent.

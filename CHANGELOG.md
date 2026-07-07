@@ -61,8 +61,9 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   claim *content*, never generator *identity* (import Edge 1 still KEPT).
 - **Saturation-safe deltas.** Layer-2 metrics gained `delta_space` ∈
   {`prob` (default), `margin`}; `DetectorArtifact.predict_margin` added (XGBoost
-  `output_margin=True`, logit fallback). Emitted runs remain `prob` pending the
-  saturation diagnostic.
+  `output_margin=True`, logit fallback). Pilot runs emit Layer-2 in **both** spaces
+  (config `delta_spaces: [prob, margin]`), so a single run answers the saturation
+  question; the toy pipeline stays prob-only (determinism unaffected).
 - **Erasure-efficacy CI smoke test** added (erase-all ⇒ material Δ; erase-none ⇒ 0).
 - **Imbalance-aware detector competence gate.** A run is refused before any tokens
   unless the detector clears macro-F1 AND a per-attack-family detection-recall

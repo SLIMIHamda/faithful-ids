@@ -95,6 +95,10 @@ def test_pilot_execute_end_to_end(tmp_path):
     eps_model = [r for r in rows if r["layer"] == "layer2" and r.get("component") == "eps_model"]
     assert eps_model and all("generator_id" in r["grouping"] for r in eps_model)
 
+    # both prob and margin deltas are emitted (folds the saturation diagnostic in)
+    spaces = {r.get("delta_space") for r in rows if r["layer"] == "layer2"}
+    assert spaces == {"prob", "margin"}
+
     # detector competence gate ran on the held-out explanation set and passed
     resolved = yaml.safe_load((run_dir / "config.resolved.yaml").read_text(encoding="utf-8"))
     comp = resolved["detector_competence"]

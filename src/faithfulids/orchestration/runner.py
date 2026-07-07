@@ -72,6 +72,7 @@ class Components:
     dataset_id: str
     layer1_top_k: int
     layer2_k_values: Sequence[int]
+    layer2_delta_spaces: Sequence[str] = ("prob",)  # emit Layer-2 per delta space
 
 
 @dataclass
@@ -101,15 +102,16 @@ def run_cells(
     # Layer-2 ε_att (attribution-driven, claim-free): generator-blind, once per
     # instance — probes whether φ picks the features the model uses (φ ↔ f).
     for case in cases:
-        for k in components.layer2_k_values:
-            l2 = layer2_all(case.attribution, components.detector, case.feature_values,
-                            components.erasure, k=k)
-            for name, value in l2.items():
-                art.metric_rows.append({
-                    "instance_id": case.instance_id, "layer": "layer2", "metric": name,
-                    "k": k, "value": value, "component": "eps_att",
-                    "grouping": {"instance_id": case.instance_id},  # NO generator identity
-                })
+        for space in components.layer2_delta_spaces:
+            for k in components.layer2_k_values:
+                l2 = layer2_all(case.attribution, components.detector, case.feature_values,
+                                components.erasure, k=k, delta_space=space)
+                for name, value in l2.items():
+                    art.metric_rows.append({
+                        "instance_id": case.instance_id, "layer": "layer2", "metric": name,
+                        "k": k, "value": value, "component": "eps_att", "delta_space": space,
+                        "grouping": {"instance_id": case.instance_id},  # NO generator identity
+                    })
 
     # Generation → extraction → Layer-1 per (instance, generator).
     total = len(generators) * len(cases)
@@ -141,15 +143,16 @@ def run_cells(
             # *content* is a legal metric input; generator *identity* is never
             # passed to the metric — it is attached below only as an opaque
             # grouping key, exactly as for Layer-1 (ADR-0001).
-            for k in components.layer2_k_values:
-                em = layer2_eps_model(claimset, components.detector, case.feature_values,
-                                      components.erasure, k=k)
-                for name, value in em.items():
-                    art.metric_rows.append({
-                        "instance_id": case.instance_id, "layer": "layer2", "metric": name,
-                        "k": k, "value": value, "component": "eps_model",
-                        "grouping": {"instance_id": case.instance_id, "generator_id": gen_id},
-                    })
+            for space in components.layer2_delta_spaces:
+                for k in components.layer2_k_values:
+                    em = layer2_eps_model(claimset, components.detector, case.feature_values,
+                                          components.erasure, k=k, delta_space=space)
+                    for name, value in em.items():
+                        art.metric_rows.append({
+                            "instance_id": case.instance_id, "layer": "layer2", "metric": name,
+                            "k": k, "value": value, "component": "eps_model", "delta_space": space,
+                            "grouping": {"instance_id": case.instance_id, "generator_id": gen_id},
+                        })
             done += 1
             if done == 1 or done % 5 == 0 or done == total:
                 print(f"[run] generation {done}/{total} (current: {gen_id})", flush=True)

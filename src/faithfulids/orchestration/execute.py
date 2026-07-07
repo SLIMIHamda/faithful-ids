@@ -194,9 +194,11 @@ def run_pilot(
     erasure = ConditionalExpectationImputer(k=5).fit(train_df[feature_names].to_numpy(), feature_names)
 
     top_k = int(load_config("generator", "b1_template")["params"]["top_k"])
+    delta_spaces = load_config("metric", "layer2_erasure").get("delta_spaces", ["prob"])
     components = Components(
         detector=detector, extractor=extractor, erasure=erasure,
         dataset_id=dataset_id, layer1_top_k=top_k, layer2_k_values=_LAYER2_K,
+        layer2_delta_spaces=tuple(delta_spaces),
     )
     artifacts = run_cells(cases, generators, components, seed=gen_seed)
 

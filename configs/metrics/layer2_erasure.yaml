@@ -6,10 +6,10 @@ formula_version: 1.1.0  # 1.1.0: add claim-driven eps_model family (additive; ep
 # Two families, both measured on the frozen detector under the erasure operator:
 #   eps_att   (attribution-driven, claim-free)  -> phi <-> f, generator-blind, per instance
 #   eps_model (claim-driven; erases cited S)     -> claims <-> f, per explanation (ADR-0001)
-# delta_space: score delta in 'prob' (default) or 'margin' (log-odds; avoids
-# saturation when the detector is near-certain). The emitted run uses 'prob'
-# until the saturation diagnostic is reviewed; margin requires predict_margin.
-delta_space: prob
+# delta_spaces: score deltas emitted per space — 'prob' and/or 'margin' (log-odds;
+# avoids saturation when the detector is near-certain). Emitting both lets a single
+# run answer the saturation question directly (margin requires predict_margin).
+delta_spaces: [prob, margin]
 metrics:
   - name: comprehensiveness
     component: eps_att
