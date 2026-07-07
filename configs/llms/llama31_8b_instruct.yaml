@@ -7,5 +7,6 @@ quantisation: none
 role: generator_llm
 weights:
   hf_repo: meta-llama/Llama-3.1-8B-Instruct
-  revision: pin-pending
+  # meta-llama/Llama-3.1-8B-Instruct @ HF main 2024-09-25 (Tier-A pin; ADR-0001)
+  revision: 0e9e39f249a16976918f6564b8830bc894c89659
   sha256: null

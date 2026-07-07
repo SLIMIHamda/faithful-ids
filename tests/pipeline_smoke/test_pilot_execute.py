@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import yaml
 
 from faithfulids.framework import AttributionArtifact
 from faithfulids.llm.providers import DeterministicStubProvider
@@ -36,12 +37,15 @@ class StubAttributor:
         return out
 
 
-def _synthetic_cicids(path, n=300, seed=0):
+def _synthetic_cicids(path, n=400, seed=0):
     rng = np.random.RandomState(seed)
+    attack = rng.rand(n) < 0.4
     feats = {f"f{j}": rng.rand(n) for j in range(6)}
+    # f0, f2 cleanly separate the classes (margin around the 1.0 boundary) so the
+    # detector is genuinely competent and the competence gate passes deterministically.
+    feats["f0"] = np.where(attack, rng.uniform(0.7, 1.0, n), rng.uniform(0.0, 0.3, n))
+    feats["f2"] = np.where(attack, rng.uniform(0.7, 1.0, n), rng.uniform(0.0, 0.3, n))
     df = pd.DataFrame(feats)
-    # separable-ish: high f0+f2 => attack
-    attack = (df["f0"] + df["f2"] > 1.0).to_numpy()
     df["Label"] = np.where(attack, "DoS Hulk", "BENIGN")
     df.to_csv(path, index=False)
 
@@ -56,7 +60,7 @@ def test_pilot_execute_end_to_end(tmp_path):
         data_dir=data_dir,
         runs_root=tmp_path / "runs",
         seed=8005,
-        n_explain=12,
+        n_explain=40,
         code_version=CV,
         detector_family="random_forest",
         detector_hyperparameters={"n_estimators": 15, "max_depth": 4, "n_jobs": 1},
@@ -86,3 +90,14 @@ def test_pilot_execute_end_to_end(tmp_path):
                 and r["grouping"].get("generator_id") == g]
         return sum(vals) / len(vals) if vals else 0.0
     assert mean_f1("b1_template") >= mean_f1("b2_zeroshot")
+
+    # ε_model (claim-driven) Layer-2 rows are emitted per generator (ADR-0001)
+    eps_model = [r for r in rows if r["layer"] == "layer2" and r.get("component") == "eps_model"]
+    assert eps_model and all("generator_id" in r["grouping"] for r in eps_model)
+
+    # detector competence gate ran on the held-out explanation set and passed
+    resolved = yaml.safe_load((run_dir / "config.resolved.yaml").read_text(encoding="utf-8"))
+    comp = resolved["detector_competence"]
+    assert comp["gate_passed"] is True
+    assert comp["macro_f1"] >= comp["macro_f1_min"]
+    assert set(comp["per_family_recall"]) >= {"BENIGN", "DoS Hulk"}

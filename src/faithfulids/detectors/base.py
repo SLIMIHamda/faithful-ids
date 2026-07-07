@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import math
 import pickle
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
@@ -44,9 +45,13 @@ class FrozenDetector:
         feature_names: Sequence[str],
         proba: Callable[[Sequence[Sequence[float]]], Sequence[float]],
         native_model: Any | None = None,
+        margin: Callable[[Sequence[Sequence[float]]], Sequence[float]] | None = None,
     ) -> None:
         self._feature_names = tuple(feature_names)
         self._proba = proba
+        #: raw log-odds / margin callable, if the family exposes one natively
+        #: (e.g. XGBoost ``output_margin=True``). ``None`` -> logit fallback.
+        self._margin = margin
         #: the underlying estimator (booster / sklearn model), exposed for
         #: model-specific attributors (e.g. exact TreeSHAP). ``None`` for models
         #: whose attributor does not need direct access.
@@ -56,9 +61,28 @@ class FrozenDetector:
     def feature_names(self) -> tuple[str, ...]:
         return self._feature_names
 
+    def _matrix(self, rows: Sequence[Mapping[str, float]]) -> list[list[float]]:
+        return [[float(r[f]) for f in self._feature_names] for r in rows]
+
     def predict_proba(self, rows: Sequence[Mapping[str, float]]) -> list[float]:
-        matrix = [[float(r[f]) for f in self._feature_names] for r in rows]
-        return [float(p) for p in self._proba(matrix)]
+        return [float(p) for p in self._proba(self._matrix(rows))]
+
+    def predict_margin(self, rows: Sequence[Mapping[str, float]]) -> list[float]:
+        """Attack-class margin (raw log-odds). Consumed by margin-space Layer-2
+        deltas, which avoid probability saturation when the model is near-certain.
+
+        Uses the native margin when the family provides one; otherwise falls back
+        to ``logit(clip(p))`` — exact for a binary-logistic head where
+        ``p = sigmoid(margin)``, monotone otherwise.
+        """
+        if self._margin is not None:
+            return [float(m) for m in self._margin(self._matrix(rows))]
+        eps = 1e-6
+        out: list[float] = []
+        for p in self.predict_proba(rows):
+            p = min(1.0 - eps, max(eps, float(p)))
+            out.append(math.log(p / (1.0 - p)))
+        return out
 
 
 def get_trainer(family: str):

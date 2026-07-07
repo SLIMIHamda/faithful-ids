@@ -48,7 +48,44 @@ No experiment has been run, no dataset downloaded, no LLM called.
   `paper/mapping.yaml`, and the four self-audit tools (`audit_manifests`,
   `lineage_graph`, `prereg_diff`, `release_closure`).
 
-All 92 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
+### Pilot-v1 post-mortem — Pass A (instrument repair, pre-freeze)
+
+The first real pilot (`EXP-PILOT-001__371f2d8`) completed but exposed a Layer-2
+instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
+
+- **Layer-2 now measures ε_model (claim-driven).** Added `comprehensiveness_cited`
+  / `sufficiency_cited`, which erase the top-k **cited** features (S from the
+  `ClaimSet`) per (instance, generator). The prior attribution-driven metrics are
+  kept and relabeled **ε_att** (claim-free, generator-blind). Metric rows carry a
+  `component` field. The generator-blindness firewall is preserved: metrics receive
+  claim *content*, never generator *identity* (import Edge 1 still KEPT).
+- **Saturation-safe deltas.** Layer-2 metrics gained `delta_space` ∈
+  {`prob` (default), `margin`}; `DetectorArtifact.predict_margin` added (XGBoost
+  `output_margin=True`, logit fallback). Emitted runs remain `prob` pending the
+  saturation diagnostic.
+- **Erasure-efficacy CI smoke test** added (erase-all ⇒ material Δ; erase-none ⇒ 0).
+- **Imbalance-aware detector competence gate.** A run is refused before any tokens
+  unless the detector clears macro-F1 AND a per-attack-family detection-recall
+  floor on the held-out explanation set; the full per-family table → `competence.json`
+  + the run manifest, with a logged exemption list in the detector config.
+- **Generation revisions pinned.** All open-weights LLM configs pinned to explicit
+  HF commit hashes; `configs/schema/llm.v1.json` rejects any `weights.revision` that
+  is not a 40-char commit, making an unpinned generation revision structurally
+  impossible. Pilot-v1's own revision is unrecoverable (it ran unpinned).
+- **Saturation diagnostic** (`tools/layer2_saturation_diagnostic.py` + the tested
+  `metrics.layer2.saturation` core) recomputes both Layer-2 families in prob and
+  margin space over a run's re-derived inputs — read-only, no new tokens.
+
+### Metric formula versions / schema
+
+- `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
+  family; ε_att metrics unchanged).
+- Schema (backward-compatible): `metric.v1.json` gains optional `component` /
+  `delta_space`; `detector.v1.json` gains optional `competence_gate`;
+  `llm.v1.json` requires `weights.revision` to be a 40-char commit hash (enforced
+  going forward; satisfied by the now-pinned configs).
+
+All 105 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
 firewall-audit, validate-configs, data-integrity, manifest-audit,
 mapping-completeness, release-closure, prereg-freeze, and doc-links are green.
 

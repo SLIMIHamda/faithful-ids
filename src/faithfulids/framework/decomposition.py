@@ -16,15 +16,21 @@ where, for a single explanation of a single detector decision:
   the attribution they purport to describe. This is what Layer-1 measures
   (feature-mention P/R/F1, DSA, ARC, HFR over extracted claim tuples). A
   faithful-by-construction generator (B1) has ε_nar ≈ 0 by design.
-* **ε_model (model-explanation gap)** — the gap between the explanation's claims
-  and the detector's *true* behaviour. This is what Layer-2 (erasure) probes
-  directly, without routing through the attribution.
+* **ε_model (model-explanation gap)** — the gap between the *explanation's claims*
+  and the detector's *true* behaviour. This is what Layer-2's **claim-driven**
+  erasure probes directly (``comprehensiveness_cited`` / ``sufficiency_cited``):
+  it erases the features an explanation actually *cites* (S), without routing
+  through the attribution. A companion **attribution-driven** erasure
+  (``comprehensiveness`` / ``sufficiency``) erases the attribution's top-k
+  instead and is claim-free; comparing the two empirically probes ε_att beyond
+  the a-priori ``exact`` flag (see ADR-0001).
 
 The triangle-style relation ``ε_model ≲ ε_nar + ε_att`` says: an explanation can
 only be as faithful to the model as the sum of how faithful the *narration* is
 to the attribution and how faithful the *attribution* is to the model. It is why
-the paper measures both layers — Layer-1 bounds ε_nar, Layer-2 bounds ε_model,
-and their comparison isolates ε_att.
+the paper measures both layers — Layer-1 bounds ε_nar, Layer-2's claim-driven
+erasure bounds ε_model, and its comparison with the attribution-driven erasure
+isolates ε_att.
 
 This module provides the *definitions and the bound predicate only*. It computes
 nothing from data, holds no thresholds (the slack policy lives in

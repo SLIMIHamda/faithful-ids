@@ -10,5 +10,9 @@ quantisation: none
 role: generator_llm
 weights:
   hf_repo: Qwen/Qwen2.5-3B-Instruct
-  revision: pin-pending
+  # Pinned to HF main @ 2024-09-25 for pilot-v2 (ADR-0001). Pilot-v1's actual
+  # generation revision is UNRECOVERABLE: it ran while this was an unpinned
+  # placeholder, resolving to whatever main was on 2026-07-05. v1 is NON-CITABLE;
+  # this pin makes v2 reproducible, and the schema now forbids unpinned revisions.
+  revision: aa8e72537993ba99e69dfaafa59ed015b17504d1
   sha256: null

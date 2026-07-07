@@ -15,6 +15,7 @@ documented, firewall-preserving pilot simplification.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Callable
 
@@ -69,6 +70,7 @@ def run_pilot(
     attributor: Any | None = None,
     llm_provider: Any | None = None,
     data_loader: Callable[..., Any] | None = None,
+    enforce_competence: bool = True,
 ) -> Path:
     """Execute the pilot vertical slice on real data and return the run dir."""
     from faithfulids.detectors import get_trainer, load_frozen  # lazy (no torch/xgb import)
@@ -131,6 +133,40 @@ def run_pilot(
         for i in range(len(instances))
     ]
 
+    # -- detector competence gate (imbalance-aware; before any tokens) ------ #
+    # Evaluated on the held-out explanation set (unseen by the detector) — the
+    # very instances whose explanations we score. Gated on macro-F1 AND a
+    # per-attack-family detection-recall floor: faithfulness on instances the
+    # model gets right by luck is noise. Exemptions are logged in the detector
+    # config; the full per-family table -> competence.json + the run manifest.
+    from faithfulids.detectors.competence import (
+        DetectorNotCompetent, classification_table, evaluate_competence,
+    )
+
+    comp_table = classification_table(
+        [int(v) for v in explain_df["label"].tolist()],
+        [1 if p >= 0.5 else 0 for p in preds],
+        [str(v) for v in explain_df["attack_class"].tolist()],
+        y_score=preds,
+    )
+    (model_dir / "competence.json").write_text(
+        json.dumps(comp_table, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    macro_f1_min = float(resolve_reference("statistics:decision_thresholds:detector_macro_f1_min")["value"])
+    recall_floor = float(resolve_reference("statistics:decision_thresholds:detector_recall_floor")["value"])
+    exemptions = (detcfg.get("competence_gate") or {}).get("recall_floor_exemptions", [])
+    comp = evaluate_competence(
+        comp_table, macro_f1_min=macro_f1_min, recall_floor=recall_floor, exemptions=exemptions,
+    )
+    if enforce_competence and not comp.passed:
+        raise DetectorNotCompetent(
+            f"detector fails competence gate: macro_f1={comp.macro_f1:.3f} "
+            f"(min {macro_f1_min}); AUC={comp_table['auc']}; attack families below "
+            f"recall floor {recall_floor}: {[f for f, _ in comp.failures]}; "
+            f"exemptions={list(comp.exemptions)}. Faithfulness on an incompetent "
+            f"detector is meaningless — fix the detector or log an exemption."
+        )
+
     # -- LLM client (ONE model) + generators -------------------------------- #
     from faithfulids.llm.providers import TransformersProvider
 
@@ -183,6 +219,13 @@ def run_pilot(
         "n_explain": len(instances), "n_train": int(len(train_df)),
         "layer1_top_k": top_k, "layer2_k_values": _LAYER2_K, "seed": gen_seed,
         "extractor": "rule_assisted", "verifier": "rule_verifier",
+        "detector_competence": {
+            "macro_f1": comp_table["macro_f1"], "auc": comp_table["auc"],
+            "macro_f1_min": macro_f1_min, "recall_floor": recall_floor,
+            "gate_passed": comp.passed,
+            "per_family_recall": {f: r["detection_recall"] for f, r in comp_table["per_family"].items()},
+            "exemptions": list(comp.exemptions),
+        },
         "pilot_note": "pilot-grade cleaning + rule-assisted extractor/verifier; NON-CITABLE",
     }
     run_id = mint_run_id(experiment_id, code_version)

@@ -27,6 +27,14 @@ thresholds:
     value: 0.95
     unit: f1
     description: "Extractor-audit gate: F1 >= 0.95 vs adjudicated gold."
+  detector_macro_f1_min:
+    value: 0.9
+    unit: f1
+    description: "Detector-competence gate: macro-F1 (benign vs attack) on the explained instances >= 0.90."
+  detector_recall_floor:
+    value: 0.8
+    unit: proportion
+    description: "Detector-competence gate: per-attack-family detection recall >= 0.80 (except logged exemptions in the detector config)."
   plausibility_judge_rho:
     value: 0.6
     unit: spearman_rho

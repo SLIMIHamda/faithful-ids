@@ -20,7 +20,11 @@
       "required": ["hf_repo", "revision", "sha256"],
       "properties": {
         "hf_repo": {"type": "string"},
-        "revision": {"type": "string"},
+        "revision": {
+          "type": "string",
+          "description": "Full 40-char git commit hash. Placeholders ('pin-pending') and mutable branch names are rejected so an unpinned generation revision is structurally impossible (ADR-0001).",
+          "pattern": "^[0-9a-f]{40}$"
+        },
         "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
       }
     },

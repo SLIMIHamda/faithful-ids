@@ -31,9 +31,15 @@ def test_toy_run_is_complete_and_verifiable(tmp_path):
 def test_metric_rows_encode_generator_blindness(tmp_path):
     run_dir = run_toy(tmp_path, code_version=CV, seed=7002)
     rows = load_metrics(run_dir.name, runs_root=tmp_path)
-    # Layer-2 (model-level) rows carry NO generator identity; Layer-1 do (attached
-    # downstream, post-computation).
-    assert all("generator_id" not in r["grouping"] for r in rows if r["layer"] == "layer2")
+    l2 = [r for r in rows if r["layer"] == "layer2"]
+    eps_att = [r for r in l2 if r.get("component") == "eps_att"]
+    eps_model = [r for r in l2 if r.get("component") == "eps_model"]
+    assert eps_att and eps_model  # both Layer-2 families are emitted (ADR-0001)
+    # ε_att (attribution-driven, claim-free) carries NO generator identity; ε_model
+    # (claim-driven) and Layer-1 do — attached downstream, never passed to the
+    # metric callable. Claim *content* is legal; generator *identity* is not.
+    assert all("generator_id" not in r["grouping"] for r in eps_att)
+    assert all("generator_id" in r["grouping"] for r in eps_model)
     assert all("generator_id" in r["grouping"] for r in rows if r["layer"] == "layer1")
 
 

@@ -31,6 +31,7 @@ from faithfulids.framework import (
 )
 from faithfulids.metrics.layer1 import compute_all as layer1_all
 from faithfulids.metrics.layer2 import compute_all as layer2_all
+from faithfulids.metrics.layer2 import compute_eps_model as layer2_eps_model
 from faithfulids.metrics.layer2 import SimpleBackgroundErasure
 from faithfulids.provenance import (
     ArtifactRef,
@@ -89,14 +90,16 @@ def run_cells(
 ) -> CellArtifacts:
     """Run generation → extraction → metrics for every (instance, generator).
 
-    Layer-2 metrics are model-level (generator-independent) and are emitted once
-    per instance. Layer-1 metrics are per (instance, generator). In every case
-    the metric functions are called WITHOUT generator identity; the grouping key
-    is attached to the row afterwards.
+    Layer-2 ε_att (attribution-driven) is model-level and emitted once per
+    instance; Layer-2 ε_model (claim-driven) and Layer-1 are per (instance,
+    generator). In every case the metric functions are called WITHOUT generator
+    identity — ε_model receives the claim set, not the generator id; the grouping
+    key is attached to the row afterwards (ADR-0001).
     """
     art = CellArtifacts()
 
-    # Layer-2 (generator-blind, model-level): emit once per instance.
+    # Layer-2 ε_att (attribution-driven, claim-free): generator-blind, once per
+    # instance — probes whether φ picks the features the model uses (φ ↔ f).
     for case in cases:
         for k in components.layer2_k_values:
             l2 = layer2_all(case.attribution, components.detector, case.feature_values,
@@ -104,7 +107,7 @@ def run_cells(
             for name, value in l2.items():
                 art.metric_rows.append({
                     "instance_id": case.instance_id, "layer": "layer2", "metric": name,
-                    "k": k, "value": value,
+                    "k": k, "value": value, "component": "eps_att",
                     "grouping": {"instance_id": case.instance_id},  # NO generator identity
                 })
 
@@ -134,6 +137,19 @@ def run_cells(
                     # grouping (generator identity) attached HERE, post-computation
                     "grouping": {"instance_id": case.instance_id, "generator_id": gen_id},
                 })
+            # Layer-2 ε_model (claim-driven): erase the CITED features S. Claim
+            # *content* is a legal metric input; generator *identity* is never
+            # passed to the metric — it is attached below only as an opaque
+            # grouping key, exactly as for Layer-1 (ADR-0001).
+            for k in components.layer2_k_values:
+                em = layer2_eps_model(claimset, components.detector, case.feature_values,
+                                      components.erasure, k=k)
+                for name, value in em.items():
+                    art.metric_rows.append({
+                        "instance_id": case.instance_id, "layer": "layer2", "metric": name,
+                        "k": k, "value": value, "component": "eps_model",
+                        "grouping": {"instance_id": case.instance_id, "generator_id": gen_id},
+                    })
             done += 1
             if done == 1 or done % 5 == 0 or done == total:
                 print(f"[run] generation {done}/{total} (current: {gen_id})", flush=True)

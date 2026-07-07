@@ -7,5 +7,6 @@ quantisation: none
 role: generator_llm
 weights:
   hf_repo: mistralai/Mistral-7B-Instruct-v0.3
-  revision: pin-pending
+  # mistralai/Mistral-7B-Instruct-v0.3 @ HF main 2025-12-03 (Tier-A pin; ADR-0001)
+  revision: c170c708c41dac9275d15a8fff4eca08d52bab71
   sha256: null

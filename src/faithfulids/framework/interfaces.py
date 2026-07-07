@@ -9,11 +9,13 @@ The most important design decision in this module is a *type-level* one:
 
     A metric callable's signature **cannot** receive generator identity.
 
-``Layer1Metric`` and ``Layer2Metric`` accept claims / attributions / detector
-outputs only. "Which generator wrote this explanation" exists solely as an
-opaque grouping key attached *downstream* by orchestration. This converts
-"metrics never depend on a specific generation method" from a review-time hope
-into a compile-time property (import-linter edge 1 forbids the import; these
+``Layer1Metric``, ``Layer2Metric`` and ``Layer2ModelMetric`` accept claims /
+attributions / detector outputs only. Note the distinction the design turns on: a
+metric MAY receive claim *content* (ε_nar and ε_model both need it), but NONE may
+receive generator *identity*. "Which generator wrote this explanation" exists
+solely as an opaque grouping key attached *downstream* by orchestration. This
+converts "metrics never depend on a specific generation method" from a review-time
+hope into a compile-time property (import-linter edge 1 forbids the import; these
 signatures forbid the data path).
 
 Pure L0: ``typing`` / ``abc`` only, no third-party or internal imports.
@@ -41,7 +43,10 @@ class DetectorArtifact(Protocol):
 
     Inference code obtains one of these from ``models/`` and can never trigger
     training (import-linter edge 6). ``predict_proba`` returns the attack-class
-    probability per row.
+    probability per row. A detector MAY additionally expose an optional
+    ``predict_margin(rows)`` returning the raw log-odds / margin, consumed by
+    margin-space Layer-2 deltas (which avoid probability saturation); it is not
+    part of this required contract.
     """
 
     @property
@@ -196,11 +201,14 @@ class ErasureOperator(Protocol):
 
 @runtime_checkable
 class Layer2Metric(Protocol):
-    """Erasure-based metric: comprehensiveness / sufficiency at k ∈ {1,3,5}.
+    """ε_att erasure metric: comprehensiveness / sufficiency of the ATTRIBUTION's
+    top-k features, at k ∈ {1,3,5}.
 
     Receives the attribution, the frozen detector, the instance, an erasure
-    operator, and k. **No generator identity, and no claims** — Layer-2 measures
-    the model's behaviour under erasure, independent of any narration.
+    operator, and k — **no generator identity and no claims**. Being claim-free
+    makes it generator-independent: it probes whether the attribution φ picks the
+    features the model actually uses (φ ↔ f), i.e. the ε_att term. ``delta_space``
+    selects probability (default) or margin/log-odds deltas.
     """
 
     spec: MetricSpec
@@ -213,4 +221,34 @@ class Layer2Metric(Protocol):
         erasure: ErasureOperator,
         *,
         k: int,
+        delta_space: str = "prob",
+    ) -> float: ...
+
+
+@runtime_checkable
+class Layer2ModelMetric(Protocol):
+    """ε_model erasure metric: comprehensiveness / sufficiency of the CITED
+    features (S from the claim set), at k ∈ {1,3,5}.
+
+    Receives the extracted ``ClaimSet`` — a legal metric input — the detector, the
+    instance, an erasure operator, and k. It is claim-*aware* but still **never
+    receives generator identity**: which generator authored the claims is attached
+    downstream as an opaque grouping key, exactly as for Layer-1. It measures the
+    gap between an explanation's claims and the model's true behaviour (claims ↔ f,
+    the ε_model term of :mod:`faithfulids.framework.decomposition`), directly and
+    without routing through the attribution. ``delta_space`` selects probability
+    (default) or margin/log-odds deltas.
+    """
+
+    spec: MetricSpec
+
+    def __call__(
+        self,
+        claims: ClaimSet,
+        detector: DetectorArtifact,
+        instance: Mapping[str, float],
+        erasure: ErasureOperator,
+        *,
+        k: int,
+        delta_space: str = "prob",
     ) -> float: ...

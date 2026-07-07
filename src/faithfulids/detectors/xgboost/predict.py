@@ -20,4 +20,8 @@ def load(model_dir: str | Path) -> FrozenDetector:
         dm = xgb.DMatrix(matrix, feature_names=feature_names)
         return booster.predict(dm)
 
-    return FrozenDetector(feature_names, proba, native_model=booster)
+    def margin(matrix):
+        dm = xgb.DMatrix(matrix, feature_names=feature_names)
+        return booster.predict(dm, output_margin=True)
+
+    return FrozenDetector(feature_names, proba, native_model=booster, margin=margin)

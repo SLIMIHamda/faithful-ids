@@ -18,3 +18,8 @@ determinism:
   byte_identical: true
   torch_deterministic: null
   notes: "Exact TreeSHAP over a frozen booster on CPU is byte-identical (see docs/reproducibility-guide.md)."
+competence_gate:
+  # Attack families exempted from the per-family recall floor (see
+  # configs/statistics/decision_thresholds.yaml: detector_recall_floor). Empty at
+  # pilot scale — add a family here only with a logged rationale (ADR-0001).
+  recall_floor_exemptions: []
