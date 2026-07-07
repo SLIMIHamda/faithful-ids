@@ -66,6 +66,7 @@ def test_pilot_execute_end_to_end(tmp_path):
         detector_hyperparameters={"n_estimators": 15, "max_depth": 4, "n_jobs": 1},
         attributor=StubAttributor(),
         llm_provider=DeterministicStubProvider(),
+        llm_id_override="mistral_7b_instruct",  # scale-test path: per-run LLM selection
     )
 
     assert read_status(run_dir) is Status.COMPLETE
@@ -101,6 +102,7 @@ def test_pilot_execute_end_to_end(tmp_path):
 
     # detector competence gate ran on the held-out explanation set and passed
     resolved = yaml.safe_load((run_dir / "config.resolved.yaml").read_text(encoding="utf-8"))
+    assert resolved["llm"] == "mistral_7b_instruct"  # llm_id_override honored
     comp = resolved["detector_competence"]
     assert comp["gate_passed"] is True
     assert comp["macro_f1"] >= comp["macro_f1_min"]

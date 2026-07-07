@@ -71,6 +71,7 @@ def run_pilot(
     llm_provider: Any | None = None,
     data_loader: Callable[..., Any] | None = None,
     enforce_competence: bool = True,
+    llm_id_override: str | None = None,
 ) -> Path:
     """Execute the pilot vertical slice on real data and return the run dir."""
     from faithfulids.detectors import get_trainer, load_frozen  # lazy (no torch/xgb import)
@@ -79,7 +80,9 @@ def run_pilot(
     axes = exp["design"]["axes"]
     dataset_id = axes["datasets"][0]
     detector_id = axes["detectors"][0]
-    llm_id = axes["llms"][0]
+    # One LLM per run (Kaggle memory). llm_id_override selects it per run so the
+    # scale-test cell can run the pilot once per model and compare (e.g. 3B vs 7B).
+    llm_id = llm_id_override or axes["llms"][0]
     generator_ids = axes["generators"]
 
     dcfg = load_config("dataset", dataset_id)

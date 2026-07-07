@@ -76,6 +76,12 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
 - **Saturation diagnostic** (`tools/layer2_saturation_diagnostic.py` + the tested
   `metrics.layer2.saturation` core) recomputes both Layer-2 families in prob and
   margin space over a run's re-derived inputs — read-only, no new tokens.
+- **Pilot-v2 launcher.** Generator LLM is selectable per run
+  (`FAITHFULIDS_PILOT_LLM`) so the scale test runs the pilot once per model (3B,
+  then 7B) and compares b2 — respecting the one-LLM-per-run memory constraint.
+  Competence enforcement is togglable (`FAITHFULIDS_ENFORCE_COMPETENCE`;
+  report-not-halt for the exploratory pilot). `kaggle/kaggle_pilot_launcher.ipynb`
+  repointed to tag `pilot-v2`, N=150, with an appended 7B scale cell.
 
 ### Metric formula versions / schema
 
