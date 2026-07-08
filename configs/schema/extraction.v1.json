@@ -5,11 +5,16 @@
   "description": "The extractor declares its own fixed model inline. model.model_family must be disjoint from every generator LLM family AND the VtE verifier family — checked by tools/firewall_check.py.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "schema_version", "kind", "model", "rule_assisted", "prompt", "temperature", "audit_gate_ref"],
+  "required": ["id", "schema_version", "kind", "version", "model", "rule_assisted", "prompt", "temperature", "audit_gate_ref"],
   "properties": {
     "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
     "schema_version": {"const": "v1"},
     "kind": {"const": "extraction"},
+    "version": {
+      "type": "string",
+      "description": "Instrument semver, stamped onto every ClaimSet as extractor_version. Bumps on ANY behaviour change (prompt OR rule-engine); distinct from prompt.version (the prompt-asset version).",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
     "model": {
       "type": "object",
       "additionalProperties": false,

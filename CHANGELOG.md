@@ -91,6 +91,19 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   and truncate the explanation into garbage Layer-1 claims. Caveat: 8B-Qwen3 vs
   3B-Qwen2.5 mixes a generation jump with a size jump — "newer+bigger", not pure
   scale. Launcher params repointed to `ref=main` (NON-CITABLE) + `qwen3_8b_4bit`.
+- **Pass B — extractor audit (rule-engine).** `RuleAssistedExtractor` gained
+  (1) **signed-number direction parsing**: a raw-SHAP dump (`Feature=-7.98`, no
+  direction word) now takes its sign from the number instead of defaulting to
+  POSITIVE — fixes B0 DSA (0.636 -> 1.0, verified against all 150 cached B0
+  explanations); word-driven signs (B1/B3) take precedence and are unchanged;
+  (2) **longest-match residual-span guard**: features are matched longest-first
+  with consumed spans masked, so a short name no longer double-matches inside a
+  longer one (`Packet Length Mean` inside `Fwd Packet Length Mean`). Instrument
+  version bumped **1.0.0 -> 1.1.0** via a new required `version` field on the
+  extraction config (stamped as `extractor_version`; prompt asset unchanged at
+  `prompt.version 1.0.0`). Runs scored by 1.0.0 must be **re-scored** (token-free)
+  before their Layer-1 DSA/ARC are trusted; formal EXP-G-001 (300-item human
+  audit) must re-pass against 1.1.0 before Tier-A citability.
 
 ### Metric formula versions / schema
 
