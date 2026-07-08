@@ -1,0 +1,23 @@
+id: qwen3_8b_4bit
+schema_version: v1
+kind: llm
+# Ungated (Apache-2.0), newer-generation Qwen3 8B generator for the pilot scale
+# check. model_family 'qwen' is already firewall-disjoint from the verifier
+# (phi) and extractor (gemma), so this adds NO new generator family and needs no
+# firewall change. NOTE: vs Qwen2.5-3B this mixes a generation jump (2.5->3)
+# with a size jump — "newer+bigger", not pure scale; read the b2/b3 delta with
+# that caveat. Qwen3 emits <think>…</think> reasoning by default; the provider
+# disables it (enable_thinking=False) for this family so it doesn't blow past
+# max_new_tokens and truncate the explanation (see llm/providers.py).
+model_family: qwen
+provider: local_open_weights
+# 4-bit (nf4) via bitsandbytes so the 8B weights fit a single Kaggle T4 (~6 GB).
+# Precision is declared here, never inferred; uses the existing provider path.
+quantisation: 4bit
+role: tier_b
+weights:
+  hf_repo: Qwen/Qwen3-8B
+  # Pinned to a real HF commit (main @ 2025-07-26); the schema forbids branch
+  # names and 'pin-pending' so an unpinned generation revision is impossible.
+  revision: b968826d9c46dd6066d109eabc6255188de91218
+  sha256: null

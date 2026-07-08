@@ -82,6 +82,15 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   Competence enforcement is togglable (`FAITHFULIDS_ENFORCE_COMPETENCE`;
   report-not-halt for the exploratory pilot). `kaggle/kaggle_pilot_launcher.ipynb`
   repointed to tag `pilot-v2`, N=150, with an appended 7B scale cell.
+- **Qwen3-8B scale generator.** Added `configs/llms/qwen3_8b_4bit.yaml`
+  (`Qwen/Qwen3-8B`, 4-bit nf4, pinned commit `b968826`, `model_family: qwen` —
+  already firewall-disjoint, no firewall change). `TransformersProvider` now
+  passes `enable_thinking=False` to `apply_chat_template` **for Qwen3 only**
+  (guarded on family + repo name; escape hatch `FAITHFULIDS_QWEN3_THINKING=1`),
+  so Qwen3's default `<think>…</think>` reasoning can't consume `max_new_tokens`
+  and truncate the explanation into garbage Layer-1 claims. Caveat: 8B-Qwen3 vs
+  3B-Qwen2.5 mixes a generation jump with a size jump — "newer+bigger", not pure
+  scale. Launcher params repointed to `ref=main` (NON-CITABLE) + `qwen3_8b_4bit`.
 
 ### Metric formula versions / schema
 

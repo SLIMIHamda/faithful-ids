@@ -112,6 +112,25 @@ class TransformersProvider:
         torch.manual_seed(int(params.get("seed", 0)))
         temperature = float(params.get("temperature", 0.0))
 
+        # Qwen3 defaults to emitting a long <think>…</think> chain-of-thought
+        # before its answer. At max_new_tokens=160 that reasoning is truncated
+        # before the real explanation ever appears, so Layer-1 sees garbage
+        # claims and collapses. Turn thinking OFF for Qwen3 only — guarded by
+        # (model_family == "qwen" AND repo name starts with "Qwen3") so no other
+        # model's chat template is touched. `enable_thinking` is a Qwen3
+        # chat-template variable; escape hatch for debugging: set
+        # $FAITHFULIDS_QWEN3_THINKING=1 to leave reasoning on.
+        import os as _os
+
+        template_kwargs: dict[str, Any] = {}
+        hf_repo = (model.get("weights") or {}).get("hf_repo") or ""
+        is_qwen3 = (
+            model.get("model_family") == "qwen"
+            and hf_repo.rsplit("/", 1)[-1].lower().startswith("qwen3")
+        )
+        if is_qwen3 and _os.environ.get("FAITHFULIDS_QWEN3_THINKING", "0") != "1":
+            template_kwargs["enable_thinking"] = False
+
         # apply_chat_template may return a bare tensor OR a BatchEncoding depending
         # on the transformers version; normalise to a dict of tensors so
         # generate(**enc) works either way (a BatchEncoding passed positionally
@@ -120,6 +139,7 @@ class TransformersProvider:
             raw = tok.apply_chat_template(
                 [{"role": "user", "content": prompt}],
                 add_generation_prompt=True, return_tensors="pt",
+                **template_kwargs,
             )
         except Exception:
             raw = tok(prompt, return_tensors="pt")
