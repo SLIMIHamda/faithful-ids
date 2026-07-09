@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""Token-free re-score of a completed pilot run (L5 / L3).
+
+Re-runs the pilot vertical slice in **replay** mode: the detector is retrained
+(deterministic) and TreeSHAP recomputed, but every LLM generation is served from
+the original run's ledger instead of the model — so no GPU is used and no tokens
+are spent. The point is to recompute Layer-1/Layer-2 with the CURRENT extractor /
+metric code (e.g. after the Pass B extractor bump to 1.1.0) and get a fresh,
+comparable run whose numbers finally match the fixed instruments.
+
+A replay cache miss is a hard error, so the environment MUST reproduce the
+original run's instances byte-for-byte:
+
+    FAITHFULIDS_DATA_DIR    the same CICIDS2017 CSV directory
+    FAITHFULIDS_PILOT_N     the same N as the original run (e.g. 150)
+    FAITHFULIDS_MAX_ROWS    the same row cap
+    FAITHFULIDS_PILOT_LLM   the same generator LLM id (e.g. qwen3_8b_4bit)
+    FAITHFULIDS_LLM_CACHE_DIR  the ledger dir from the original run's artifacts
+                               (…/runs/_pilot_llm_cache); defaults to runs/_pilot_llm_cache
+
+Usage:  PYTHONPATH=src python tools/rescore_run.py [--experiment EXP-PILOT-001]
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+from pathlib import Path
+
+from faithfulids.orchestration.execute import run_pilot
+from faithfulids.provenance import repo_root
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="rescore_run")
+    parser.add_argument("--experiment", default="EXP-PILOT-001")
+    args = parser.parse_args(argv)
+
+    data_dir = os.environ.get("FAITHFULIDS_DATA_DIR")
+    if not data_dir:
+        print("ERROR: set FAITHFULIDS_DATA_DIR to the CICIDS2017 CSV directory.", file=sys.stderr)
+        return 2
+
+    runs_root = repo_root() / "runs"
+    cache_dir = os.environ.get("FAITHFULIDS_LLM_CACHE_DIR") or (runs_root / "_pilot_llm_cache")
+    if not (Path(cache_dir) / "ledger.jsonl").is_file():
+        print(
+            f"ERROR: no ledger at {cache_dir}/ledger.jsonl — replay needs the original run's "
+            "cached generations. Point FAITHFULIDS_LLM_CACHE_DIR at the downloaded "
+            "runs/_pilot_llm_cache from the run you are re-scoring.",
+            file=sys.stderr,
+        )
+        return 2
+
+    n = os.environ.get("FAITHFULIDS_PILOT_N")
+    max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
+    llm_override = os.environ.get("FAITHFULIDS_PILOT_LLM") or None
+
+    run_dir = run_pilot(
+        args.experiment,
+        data_dir=data_dir,
+        runs_root=runs_root,
+        n_explain=int(n) if n else None,
+        max_rows=int(max_rows) if max_rows else None,
+        llm_id_override=llm_override,
+        enforce_competence=False,  # re-score is a measurement pass, not a gate
+        llm_mode="replay",
+        llm_cache_dir=cache_dir,
+    )
+    print(f"re-scored run (replay, extractor re-applied): {run_dir}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

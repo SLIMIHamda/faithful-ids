@@ -104,6 +104,14 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `prompt.version 1.0.0`). Runs scored by 1.0.0 must be **re-scored** (token-free)
   before their Layer-1 DSA/ARC are trusted; formal EXP-G-001 (300-item human
   audit) must re-pass against 1.1.0 before Tier-A citability.
+- **Token-free re-score harness.** `run_pilot` gained a `llm_mode="replay"` +
+  `llm_cache_dir` path that serves every generation from a completed run's
+  ledger (no provider, no GPU, no tokens) while retraining the detector and
+  recomputing TreeSHAP + extraction + metrics under the *current* instruments.
+  `tools/rescore_run.py` wraps it: point `FAITHFULIDS_LLM_CACHE_DIR` at a run's
+  `_pilot_llm_cache` (matching N/max_rows/llm/seed) to mint a fresh run scored by
+  extractor 1.1.0. Smoke-tested live→replay: replay reproduces the live Layer-1
+  numbers byte-for-byte with no provider.
 
 ### Metric formula versions / schema
 

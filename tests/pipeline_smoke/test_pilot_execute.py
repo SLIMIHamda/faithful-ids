@@ -107,3 +107,44 @@ def test_pilot_execute_end_to_end(tmp_path):
     assert comp["gate_passed"] is True
     assert comp["macro_f1"] >= comp["macro_f1_min"]
     assert set(comp["per_family_recall"]) >= {"BENIGN", "DoS Hulk"}
+
+
+def test_pilot_replay_rescore_reproduces_metrics_without_provider(tmp_path):
+    """A replay re-score serves every generation from the original run's ledger —
+    no provider, no tokens — and reproduces the live Layer-1 numbers byte-for-byte
+    (this is the mechanism tools/rescore_run.py uses to re-score after Pass B)."""
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    _synthetic_cicids(data_dir / "day1.csv", n=400)
+
+    common = dict(
+        data_dir=data_dir, seed=8005, n_explain=40, code_version=CV,
+        detector_family="random_forest",
+        detector_hyperparameters={"n_estimators": 15, "max_depth": 4, "n_jobs": 1},
+        attributor=StubAttributor(), llm_id_override="mistral_7b_instruct",
+    )
+
+    live_runs = tmp_path / "runs_live"
+    live_dir = run_pilot("EXP-PILOT-001", runs_root=live_runs,
+                         llm_provider=DeterministicStubProvider(), **common)
+
+    # Replay against the live run's ledger — no provider passed at all.
+    replay_runs = tmp_path / "runs_replay"
+    replay_dir = run_pilot("EXP-PILOT-001", runs_root=replay_runs,
+                           llm_mode="replay", llm_cache_dir=live_runs / "_pilot_llm_cache",
+                           **common)
+
+    assert read_status(replay_dir) is Status.COMPLETE
+    resolved = yaml.safe_load((replay_dir / "config.resolved.yaml").read_text(encoding="utf-8"))
+    assert resolved["llm_mode"] == "replay"
+
+    def l1(run_id, runs_root):
+        return {
+            (r["grouping"].get("generator_id"), r["instance_id"], r["metric"]): r["value"]
+            for r in load_metrics(run_id, runs_root=runs_root)
+            if r["layer"] == "layer1"
+        }
+
+    live = l1(live_dir.name, live_runs)
+    replay = l1(replay_dir.name, replay_runs)
+    assert live and replay == live  # identical Layer-1, produced with no LLM provider

@@ -72,6 +72,8 @@ def run_pilot(
     data_loader: Callable[..., Any] | None = None,
     enforce_competence: bool = True,
     llm_id_override: str | None = None,
+    llm_mode: str = "live",
+    llm_cache_dir: str | Path | None = None,
 ) -> Path:
     """Execute the pilot vertical slice on real data and return the run dir."""
     from faithfulids.detectors import get_trainer, load_frozen  # lazy (no torch/xgb import)
@@ -171,11 +173,21 @@ def run_pilot(
         )
 
     # -- LLM client (ONE model) + generators -------------------------------- #
-    from faithfulids.llm.providers import TransformersProvider
+    # Live: run the model. Replay: serve every generation from a pre-populated
+    # ledger (no provider, no GPU, no tokens) — used to RE-SCORE a completed run
+    # after an extractor/metric fix without regenerating. A replay cache miss is
+    # a hard error (the ledger must already hold every call for these instances),
+    # so N / max_rows / llm / seed must match the original run byte-for-byte.
+    if llm_mode not in ("live", "replay"):
+        raise ValueError("llm_mode must be 'live' or 'replay'")
+    ledger = CallLedger(Path(llm_cache_dir) if llm_cache_dir else Path(runs_root) / "_pilot_llm_cache")
+    if llm_mode == "replay":
+        client = LLMClient(None, ledger, mode="replay")
+    else:
+        from faithfulids.llm.providers import TransformersProvider
 
-    provider = llm_provider or TransformersProvider()
-    ledger = CallLedger(Path(runs_root) / "_pilot_llm_cache")
-    client = LLMClient(provider, ledger, mode="live")
+        provider = llm_provider or TransformersProvider()
+        client = LLMClient(provider, ledger, mode="live")
     kb = load_feature_semantics(dataset_id)
 
     generators = []
@@ -223,7 +235,7 @@ def run_pilot(
         "attribution": attrcfg["method"], "llm": llm_id, "generators": generator_ids,
         "n_explain": len(instances), "n_train": int(len(train_df)),
         "layer1_top_k": top_k, "layer2_k_values": _LAYER2_K, "seed": gen_seed,
-        "extractor": "rule_assisted", "verifier": "rule_verifier",
+        "extractor": "rule_assisted", "verifier": "rule_verifier", "llm_mode": llm_mode,
         "detector_competence": {
             "macro_f1": comp_table["macro_f1"], "auc": comp_table["auc"],
             "macro_f1_min": macro_f1_min, "recall_floor": recall_floor,
