@@ -2,7 +2,7 @@ id: layer2_erasure
 schema_version: v1
 kind: metric
 family: layer2
-formula_version: 1.1.0  # 1.1.0: add claim-driven eps_model family (additive; eps_att unchanged)
+formula_version: 1.2.0  # 1.1.0: claim-driven eps_model family; 1.2.0: |S|-normalised *_per_feature (both additive; eps_att unchanged)
 # Two families, both measured on the frozen detector under the erasure operator:
 #   eps_att   (attribution-driven, claim-free)  -> phi <-> f, generator-blind, per instance
 #   eps_model (claim-driven; erases cited S)     -> claims <-> f, per explanation (ADR-0001)
@@ -27,6 +27,17 @@ metrics:
     component: eps_model
     formula_version: 1.0.0
     notes: Retained attack score when only the top-k CITED features are kept.
+  - name: comprehensiveness_cited_per_feature
+    component: eps_model
+    formula_version: 1.0.0
+    notes: >-
+      comprehensiveness_cited divided by |S| (cited-set size). Removes the
+      set-size confound so a verifier-pruned generator (small |S|) is comparable
+      to one citing the full top-k — decision mass removed PER cited feature.
+  - name: sufficiency_cited_per_feature
+    component: eps_model
+    formula_version: 1.0.0
+    notes: sufficiency_cited divided by |S| (see comprehensiveness_cited_per_feature).
 # Erasure-efficacy invariant (CI: tests/unit/test_metrics_layer2.py): erasing ALL
 # features must move the score materially; erasing NONE must move it by 0. This
 # smoke test catches a no-op erasure wiring before any LLM tokens are spent.

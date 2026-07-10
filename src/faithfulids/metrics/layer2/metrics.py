@@ -35,7 +35,7 @@ from faithfulids.framework import (
     MetricSpec,
 )
 
-FORMULA_VERSION = "1.1.0"  # 1.1.0: add claim-driven ε_model family (additive; ε_att unchanged)
+FORMULA_VERSION = "1.1.0"  # ε_att + ε_model *_cited. 1.2.0 (file): add |S|-normalised *_per_feature (additive)
 
 
 def _detector_score(
@@ -169,7 +169,61 @@ EPS_ATT_METRICS = {
     "sufficiency": (sufficiency, MetricSpec("sufficiency", "layer2", FORMULA_VERSION)),
 }
 
-#: ε_model family (claim-driven).
+def comprehensiveness_cited_per_feature(
+    claims: ClaimSet,
+    detector: DetectorArtifact,
+    instance: Mapping[str, float],
+    erasure: ErasureOperator,
+    *,
+    k: int,
+    delta_space: str = "prob",
+) -> float:
+    """ε_model comprehensiveness **normalised by the cited-set size |S|**.
+
+    Raw ``comprehensiveness_cited@k`` erases ``min(k, |S ∩ known|)`` features, but
+    generators cite different numbers of features (a verifier-pruned B4 cites
+    fewer than B0's fixed top-k), so the raw ``@k`` value conflates set size with
+    per-feature potency — which is why an aggressively-pruned generator can post a
+    larger raw drop than the SHAP baseline. Dividing by |S| gives **decision mass
+    removed per cited feature**, comparable across generators regardless of how
+    many each names. ``|S| = 0`` (cites nothing erasable) → ``0.0``.
+    """
+    s = _cited_topk(claims, detector, k)
+    if not s:
+        return 0.0
+    s_full, s_erased = _detector_score(
+        detector, [dict(instance), erasure.erase(instance, s)], delta_space
+    )
+    return (s_full - s_erased) / len(s)
+
+
+def sufficiency_cited_per_feature(
+    claims: ClaimSet,
+    detector: DetectorArtifact,
+    instance: Mapping[str, float],
+    erasure: ErasureOperator,
+    *,
+    k: int,
+    delta_space: str = "prob",
+) -> float:
+    """ε_model sufficiency normalised by |S| (see :func:`comprehensiveness_cited_per_feature`)."""
+    s = _cited_topk(claims, detector, k)
+    if not s:
+        return 0.0
+    keep = set(s)
+    to_remove = [f for f in detector.feature_names if f not in keep]
+    s_full, s_kept = _detector_score(
+        detector, [dict(instance), erasure.erase(instance, to_remove)], delta_space
+    )
+    return (s_full - s_kept) / len(s)
+
+
+# ``_per_feature`` variants are new metrics (own version), so the historical
+# ``*_cited`` stamps are unchanged; the family/file version bumps to 1.2.0.
+_PER_FEATURE_VERSION = "1.0.0"
+
+#: ε_model family (claim-driven). ``*_per_feature`` normalise by |S| (cited-set
+#: size), removing the set-size confound in cross-generator comparison.
 EPS_MODEL_METRICS = {
     "comprehensiveness_cited": (
         comprehensiveness_cited,
@@ -178,6 +232,14 @@ EPS_MODEL_METRICS = {
     "sufficiency_cited": (
         sufficiency_cited,
         MetricSpec("sufficiency_cited", "layer2", FORMULA_VERSION),
+    ),
+    "comprehensiveness_cited_per_feature": (
+        comprehensiveness_cited_per_feature,
+        MetricSpec("comprehensiveness_cited_per_feature", "layer2", _PER_FEATURE_VERSION),
+    ),
+    "sufficiency_cited_per_feature": (
+        sufficiency_cited_per_feature,
+        MetricSpec("sufficiency_cited_per_feature", "layer2", _PER_FEATURE_VERSION),
     ),
 }
 

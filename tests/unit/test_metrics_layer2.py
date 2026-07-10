@@ -14,8 +14,10 @@ from faithfulids.metrics.layer2 import (
     SimpleBackgroundErasure,
     comprehensiveness,
     comprehensiveness_cited,
+    comprehensiveness_cited_per_feature,
     sufficiency,
     sufficiency_cited,
+    sufficiency_cited_per_feature,
 )
 
 FIXTURE = Path(__file__).resolve().parents[1] / "metrics_fixtures" / "layer2_linear.json"
@@ -93,6 +95,27 @@ def test_eps_model_cited_erasure_hand_computed():
     assert sufficiency_cited(claims, det, _INSTANCE, _BG, k=1) == pytest.approx(0.25)
     # k=2 -> S={B,A}: erase both -> 0.3+0.05=0.35 ; comp = 0.30
     assert comprehensiveness_cited(claims, det, _INSTANCE, _BG, k=2) == pytest.approx(0.30)
+
+
+def test_eps_model_per_feature_normalises_by_cited_set_size():
+    det = ToyLinearDetector(**_DET)
+    claims = _claimset(
+        ClaimTuple("B", Direction.POSITIVE, rank=1),
+        ClaimTuple("A", Direction.POSITIVE, rank=2),
+    )
+    # k=2 -> S={B,A}: raw comp = 0.30 over |S|=2 -> per-feature = 0.15
+    assert comprehensiveness_cited_per_feature(claims, det, _INSTANCE, _BG, k=2) == pytest.approx(0.15)
+    # k=1 -> S={B}: raw comp = 0.10 over |S|=1 -> per-feature = 0.10 (unchanged)
+    assert comprehensiveness_cited_per_feature(claims, det, _INSTANCE, _BG, k=1) == pytest.approx(0.10)
+    # k=1 -> keep only B: raw suff = 0.25 over |S|=1 -> 0.25
+    assert sufficiency_cited_per_feature(claims, det, _INSTANCE, _BG, k=1) == pytest.approx(0.25)
+
+
+def test_eps_model_per_feature_zero_when_nothing_cited():
+    det = ToyLinearDetector(**_DET)
+    claims = _claimset(ClaimTuple("ZZZ", Direction.POSITIVE, rank=1))  # |S| = 0
+    assert comprehensiveness_cited_per_feature(claims, det, _INSTANCE, _BG, k=3) == pytest.approx(0.0)
+    assert sufficiency_cited_per_feature(claims, det, _INSTANCE, _BG, k=3) == pytest.approx(0.0)
 
 
 def test_eps_model_ignores_hallucinated_cited_feature():

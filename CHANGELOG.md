@@ -114,6 +114,17 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   numbers byte-for-byte with no provider. A self-documenting
   `kaggle/kaggle_rescore_launcher.ipynb` drives it per-model (one cell each,
   no parameter editing) with the DSA litmus and an in-notebook 3-run comparison.
+- **ε_model per-feature normalisation (set-size confound fixed).** Added
+  `comprehensiveness_cited_per_feature` / `sufficiency_cited_per_feature`
+  (layer2 file version → 1.2.0, additive; `*_cited` and ε_att unchanged): the raw
+  claim-driven ε_model divided by |S| (cited-set size), emitted per k/δ-space
+  next to the raw metric. Resolves the **b4 > SHAP-baseline** anomaly — B4 posts a
+  larger *raw* `comprehensiveness_cited` than B0 only because it cites fewer,
+  verifier-pruned features (|S| ≈ 2.5–3.6 vs 5); **per cited feature** b3 ≈ b4
+  (~1.6× B0) and b2 ≈ 0, robust across 3B/7B/8B. Also reframes the **Mistral b4
+  "dip"** as a Layer-1 mention-overlap effect (few features cited → lower recall),
+  not a causal-faithfulness deficit — its per-feature ε_model is the highest of
+  all (0.068). Runs and replay re-scores emit the new metrics automatically.
 
 ### Metric formula versions / schema
 

@@ -13,10 +13,12 @@ from faithfulids.metrics.layer2.metrics import (
     LAYER2_METRICS,
     comprehensiveness,
     comprehensiveness_cited,
+    comprehensiveness_cited_per_feature,
     compute_all,
     compute_eps_model,
     sufficiency,
     sufficiency_cited,
+    sufficiency_cited_per_feature,
 )
 
 __all__ = [
@@ -28,6 +30,8 @@ __all__ = [
     "sufficiency",
     "comprehensiveness_cited",
     "sufficiency_cited",
+    "comprehensiveness_cited_per_feature",
+    "sufficiency_cited_per_feature",
     "compute_all",
     "compute_eps_model",
     "SimpleBackgroundErasure",
