@@ -111,7 +111,9 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `tools/rescore_run.py` wraps it: point `FAITHFULIDS_LLM_CACHE_DIR` at a run's
   `_pilot_llm_cache` (matching N/max_rows/llm/seed) to mint a fresh run scored by
   extractor 1.1.0. Smoke-tested live→replay: replay reproduces the live Layer-1
-  numbers byte-for-byte with no provider.
+  numbers byte-for-byte with no provider. A self-documenting
+  `kaggle/kaggle_rescore_launcher.ipynb` drives it per-model (one cell each,
+  no parameter editing) with the DSA litmus and an in-notebook 3-run comparison.
 
 ### Metric formula versions / schema
 
