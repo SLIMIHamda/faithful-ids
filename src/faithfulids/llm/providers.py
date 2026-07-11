@@ -85,7 +85,23 @@ class TransformersProvider:
             import os as _os
 
             dm = _os.environ.get("FAITHFULIDS_DEVICE_MAP", "single")
-            kwargs["device_map"] = "auto" if dm == "auto" else {"": 0}
+            if dm == "auto":
+                kwargs["device_map"] = "auto"
+                # 'auto' fills GPUs sequentially with NO headroom, and bnb
+                # quantizes module-by-module ON the target device — each module
+                # transiently needs its fp16 size there (a 5120x25600 MLP shard
+                # = 250 MiB), so a GPU packed to capacity with 4-bit weights
+                # OOMs during load (seen with Qwen3-32B on 2x T4). Reserve
+                # per-GPU headroom, which generation also needs for KV cache
+                # and activations. Override: $FAITHFULIDS_GPU_HEADROOM_GIB.
+                headroom_gib = float(_os.environ.get("FAITHFULIDS_GPU_HEADROOM_GIB", "2.0"))
+                kwargs["max_memory"] = {
+                    i: int(torch.cuda.get_device_properties(i).total_memory
+                           - headroom_gib * 1024**3)
+                    for i in range(torch.cuda.device_count())
+                }
+            else:
+                kwargs["device_map"] = {"": 0}
         if quant == "4bit":
             from transformers import BitsAndBytesConfig
 
@@ -100,6 +116,19 @@ class TransformersProvider:
             repo, revision=revision, token=token, **kwargs
         )
         mdl.eval()
+        if torch.cuda.is_available():
+            # Loud placement report: a 1-GPU session (wrong Kaggle accelerator)
+            # or a lopsided map should be visible here, not as an OOM later.
+            n = torch.cuda.device_count()
+            alloc = {i: f"{torch.cuda.memory_allocated(i) / 2**30:.1f}GiB" for i in range(n)}
+            devmap = getattr(mdl, "hf_device_map", None)
+            spread: dict[str, int] = {}
+            for v in (devmap or {}).values():
+                spread[str(v)] = spread.get(str(v), 0) + 1
+            print(
+                f"[TransformersProvider] {repo}: loaded | visible_gpus={n} | "
+                f"allocated={alloc} | modules_per_device={spread or kwargs.get('device_map')}"
+            )
         self._cache[key] = (tok, mdl)
         return tok, mdl
 
