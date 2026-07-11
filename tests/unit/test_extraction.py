@@ -160,6 +160,25 @@ def test_rule_assisted_nearest_direction_cue_wins():
     assert d["SYN Flag Count"] is Direction.POSITIVE
 
 
+def test_rule_assisted_stamps_direction_evidence():
+    """Each rule-path claim records HOW its direction was obtained: 'word'
+    (explicit cue), 'number' (signed value), or 'default' (fallback guess) —
+    the field dsa_asserted / direction_assertion_rate are built on."""
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["Flow Duration", "SYN Flag Count", "Flow Bytes/s"],
+    )
+    text = (
+        "Flow Duration increased the attack score. "
+        "SYN Flag Count=-1.25. "
+        "Flow Bytes/s was typical of this service."
+    )
+    ev = {c.feature: c.direction_evidence
+          for c in ext.extract(ExplanationRecord("i0", "b3_dte_style", text)).claims}
+    assert ev == {"Flow Duration": "word", "SYN Flag Count": "number",
+                  "Flow Bytes/s": "default"}
+
+
 def test_rule_assisted_masks_substring_feature_collisions():
     """A shorter feature name that occurs *inside* a longer one must not also be
     claimed (residual-span guard) — CICIDS has 'Packet Length Mean' ⊂ 'Fwd

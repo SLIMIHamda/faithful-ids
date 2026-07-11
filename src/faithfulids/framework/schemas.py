@@ -67,12 +67,25 @@ class ClaimTuple:
     attribution magnitude or ``None`` if unquantified. Only ``feature`` and
     ``direction`` are mandatory — a bare "feature X increased the risk" claim is
     representable.
+
+    ``direction_evidence`` records HOW the extractor obtained ``direction``
+    (additive, 2026-07-11 audit follow-up): ``"word"`` (explicit direction cue),
+    ``"number"`` (signed attribution value), ``"llm"`` (extractor model's JSON),
+    or ``"default"`` (no textual evidence — the extractor's fallback sign).
+    ``None`` means unrecorded (legacy claims, corruption-built claims) and is
+    treated as asserted by the metrics: only an explicit ``"default"`` marks a
+    guess. This keeps ``direction`` always populated (schema unchanged for
+    consumers) while letting Layer-1 separate reading fidelity (``dsa_asserted``)
+    from assertion style (``direction_assertion_rate``).
     """
+
+    _EVIDENCE_VALUES = (None, "word", "number", "llm", "default")
 
     feature: str
     direction: Direction
     rank: int | None = None
     magnitude: float | None = None
+    direction_evidence: str | None = None
 
     def __post_init__(self) -> None:
         if not self.feature:
@@ -83,6 +96,10 @@ class ClaimTuple:
             math.isnan(self.magnitude) or math.isinf(self.magnitude)
         ):
             raise ValueError("ClaimTuple.magnitude must be finite")
+        if self.direction_evidence not in self._EVIDENCE_VALUES:
+            raise ValueError(
+                f"ClaimTuple.direction_evidence must be one of {self._EVIDENCE_VALUES}"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -90,6 +107,7 @@ class ClaimTuple:
             "direction": self.direction.value,
             "rank": self.rank,
             "magnitude": self.magnitude,
+            "direction_evidence": self.direction_evidence,
         }
 
     @classmethod
@@ -99,6 +117,7 @@ class ClaimTuple:
             direction=Direction.from_str(d["direction"]),
             rank=d.get("rank"),
             magnitude=d.get("magnitude"),
+            direction_evidence=d.get("direction_evidence"),
         )
 
 
@@ -267,6 +286,9 @@ CLAIM_TUPLE_SCHEMA: dict[str, Any] = {
         "direction": {"enum": ["+", "-"]},
         "rank": {"type": ["integer", "null"], "minimum": 1},
         "magnitude": {"type": ["number", "null"]},
+        # additive (2026-07-11): how the extractor obtained `direction`;
+        # null = unrecorded (legacy / corruption-built claims).
+        "direction_evidence": {"enum": [None, "word", "number", "llm", "default"]},
     },
 }
 

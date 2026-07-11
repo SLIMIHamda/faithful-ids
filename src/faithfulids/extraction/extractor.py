@@ -112,6 +112,7 @@ class RuleAssistedExtractor(ClaimExtractor):
                         direction=Direction.from_str(d["direction"]),
                         rank=d.get("rank"),
                         magnitude=d.get("magnitude"),
+                        direction_evidence="llm",
                     )
                 )
             except (KeyError, ValueError):
@@ -160,14 +161,17 @@ class RuleAssistedExtractor(ClaimExtractor):
             limit = min(nxt, end + 300)
             m = _SENT_END.search(lowered, end, limit)
             window = lowered[end : (m.start() if m else limit)]
-            direction, magnitude = self._direction_of(window)
+            direction, magnitude, evidence = self._direction_of(window)
             claims.append(
-                ClaimTuple(feature=feat, direction=direction, rank=rank, magnitude=magnitude)
+                ClaimTuple(
+                    feature=feat, direction=direction, rank=rank,
+                    magnitude=magnitude, direction_evidence=evidence,
+                )
             )
         return claims
 
     @staticmethod
-    def _direction_of(window: str) -> tuple[Direction, float | None]:
+    def _direction_of(window: str) -> tuple[Direction, float | None, str]:
         """Claimed sign for a feature, from its sentence-bounded claim window.
 
         Precedence: the NEAREST explicit direction *word* wins (1.3.0 — with
@@ -177,6 +181,12 @@ class RuleAssistedExtractor(ClaimExtractor):
         to it); else a *signed number* attached to the feature (B0 raw-SHAP
         dump); else default POSITIVE. Word-first keeps B1/B3 unchanged — the
         numeric branch only ever fires on sign-only dumps.
+
+        Returns ``(direction, magnitude, evidence)``; ``evidence`` records the
+        branch taken ("word" / "number" / "default") so metrics can separate
+        text-asserted directions from the fallback guess (2026-07-11 audit:
+        Mistral-B4 value-description prose asserts NO direction for ~28% of
+        top-5 claims — grading the default against SHAP is noise, not DSA).
         """
         best: tuple[int, Direction] | None = None
         for words, direction in ((_NEG_WORDS, Direction.NEGATIVE),
@@ -186,12 +196,12 @@ class RuleAssistedExtractor(ClaimExtractor):
                 if p != -1 and (best is None or p < best[0]):
                     best = (p, direction)
         if best is not None:
-            return best[1], None
+            return best[1], None, "word"
         m = _NUM_AFTER_EQ.search(window) or _NUM_SIGNED.search(window)
         if m:
             value = float(m.group(1))
-            return Direction.from_value(value), abs(value)
-        return Direction.POSITIVE, None
+            return Direction.from_value(value), abs(value), "number"
+        return Direction.POSITIVE, None, "default"
 
 
 def build(

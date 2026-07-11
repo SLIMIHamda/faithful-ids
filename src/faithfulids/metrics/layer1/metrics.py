@@ -17,6 +17,10 @@ from __future__ import annotations
 from faithfulids.framework import AttributionArtifact, ClaimSet, Direction, MetricSpec
 
 FORMULA_VERSION = "1.0.0"
+# 1.1.0 (file): add dsa_asserted + direction_assertion_rate (additive; existing
+# metrics unchanged). Splits reading fidelity from assertion style using the
+# claim-level direction_evidence stamp (2026-07-11 audit follow-up).
+_ASSERTED_VERSION = "1.1.0"
 
 
 def _reference_topk(attribution: AttributionArtifact, top_k: int | None) -> list[str]:
@@ -53,12 +57,52 @@ def mention_f1(claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int
 
 def dsa(claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int | None = None) -> float:
     """Fraction of claimed features (present in the attribution) whose claimed
-    direction matches the attribution's sign."""
+    direction matches the attribution's sign.
+
+    Includes extractor-DEFAULTED directions (no textual evidence), so for
+    generators that often assert no direction this blends reading fidelity with
+    the default-vs-base-rate coin flip. Kept for continuity/descriptive use;
+    ``dsa_asserted`` is the confirmatory directional metric (2026-07-11 audit).
+    """
     present = [c for c in claims.claims if c.feature in attribution.feature_names]
     if not present:
         return 0.0
     agree = sum(1 for c in present if c.direction is attribution.sign_of(c.feature))
     return agree / len(present)
+
+
+def _asserted(claims: ClaimSet, attribution: AttributionArtifact) -> tuple[list, list]:
+    """(present, present-and-asserted) claims. A claim is *asserted* unless its
+    ``direction_evidence`` is explicitly ``"default"`` — ``None`` (legacy or
+    corruption-built claims) counts as asserted so RQ0's sign-flip corruptions
+    stay inside the ``dsa_asserted`` denominator and must be caught."""
+    present = [c for c in claims.claims if c.feature in attribution.feature_names]
+    return present, [c for c in present if c.direction_evidence != "default"]
+
+
+def dsa_asserted(claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int | None = None) -> float:
+    """DSA over claims whose direction the text actually asserts (evidence =
+    word / number / llm / unrecorded) — pure reading fidelity, no graded
+    guesses. 0.0 when nothing is asserted; read it WITH
+    ``direction_assertion_rate``, never alone."""
+    _, asserted = _asserted(claims, attribution)
+    if not asserted:
+        return 0.0
+    agree = sum(1 for c in asserted if c.direction is attribution.sign_of(c.feature))
+    return agree / len(asserted)
+
+
+def direction_assertion_rate(
+    claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int | None = None
+) -> float:
+    """Fraction of present claims whose direction is text-asserted rather than
+    extractor-defaulted. A generator property (explanations that never commit
+    to a direction are less useful to an analyst), and the coverage companion
+    to ``dsa_asserted``: dsa ≈ dsa_asserted*rate + default_hits*(1-rate)."""
+    present, asserted = _asserted(claims, attribution)
+    if not present:
+        return 0.0
+    return len(asserted) / len(present)
 
 
 def hfr(claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int | None = None) -> float:
@@ -115,6 +159,11 @@ LAYER1_METRICS = {
     "mention_recall": (mention_recall, MetricSpec("mention_recall", "layer1", FORMULA_VERSION)),
     "mention_f1": (mention_f1, MetricSpec("mention_f1", "layer1", FORMULA_VERSION)),
     "dsa": (dsa, MetricSpec("dsa", "layer1", FORMULA_VERSION)),
+    "dsa_asserted": (dsa_asserted, MetricSpec("dsa_asserted", "layer1", _ASSERTED_VERSION)),
+    "direction_assertion_rate": (
+        direction_assertion_rate,
+        MetricSpec("direction_assertion_rate", "layer1", _ASSERTED_VERSION),
+    ),
     "arc": (arc, MetricSpec("arc", "layer1", FORMULA_VERSION)),
     "hfr": (hfr, MetricSpec("hfr", "layer1", FORMULA_VERSION)),
 }

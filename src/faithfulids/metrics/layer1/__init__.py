@@ -7,7 +7,9 @@ from faithfulids.metrics.layer1.metrics import (
     LAYER1_METRICS,
     arc,
     compute_all,
+    direction_assertion_rate,
     dsa,
+    dsa_asserted,
     hfr,
     mention_f1,
     mention_precision,
@@ -22,6 +24,8 @@ __all__ = [
     "mention_recall",
     "mention_f1",
     "dsa",
+    "dsa_asserted",
+    "direction_assertion_rate",
     "arc",
     "hfr",
 ]

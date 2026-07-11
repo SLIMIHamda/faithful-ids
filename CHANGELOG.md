@@ -150,9 +150,25 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   agreement 0.524 -> 0.722 (the predicted +73), Mistral-B3 0.971 -> 0.994,
   Qwen3-8B unchanged. The residual Mistral-B4 gap is claims whose sentences
   assert NO direction (extractor defaults POSITIVE) — a metric-design question
-  (direction=None / assertion-rate reporting), tracked separately, not a window
-  issue. Instrument version **1.2.0 -> 1.3.0**; runs must be re-scored
+  (direction=None / assertion-rate reporting) -> resolved in the same 1.3.0
+  instrument version by the evidence field below. Runs must be re-scored
   (token-free replay) before cross-run DSA use.
+- **Claim-level `direction_evidence` + DSA decomposition (assertion vs
+  reading).** `ClaimTuple` gains an additive optional field recording HOW the
+  extractor obtained the direction: `word` / `number` / `llm` / `default`
+  (fallback guess); `direction` itself stays mandatory, so no consumer breaks.
+  Two additive Layer-1 metrics (file formula_version -> 1.1.0):
+  **`dsa_asserted`** — DSA over text-asserted directions only, the pure
+  reading-fidelity number and the intended confirmatory directional metric —
+  and **`direction_assertion_rate`** — the fraction of present claims whose
+  direction the text actually asserts (a generator property; coverage companion,
+  always co-reported). Legacy `dsa` is kept as descriptive/continuity (it grades
+  the extractor's default guesses against the sign base rate, which is exactly
+  how Mistral-B4's "0.55 DSA" arose). Unrecorded evidence (`null`: legacy and
+  RQ0 corruption-built claims) counts as ASSERTED so sign-flip corruptions
+  cannot escape `dsa_asserted`; fixture and RQ0-guarantee tests added. The
+  preregistration must designate `dsa_asserted` (+ rate) as primary before the
+  freeze.
 - **ε_model per-feature normalisation (set-size confound fixed).** Added
   `comprehensiveness_cited_per_feature` / `sufficiency_cited_per_feature`
   (layer2 file version → 1.2.0, additive; `*_cited` and ε_att unchanged): the raw
