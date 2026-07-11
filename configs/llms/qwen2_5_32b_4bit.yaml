@@ -1,0 +1,23 @@
+id: qwen2_5_32b_4bit
+schema_version: v1
+kind: llm
+# Ungated (Apache-2.0) Qwen2.5-32B generator for the 30B-class scale cell.
+# WITHIN-FAMILY, SAME-GENERATION scale bracket vs qwen2_5_3b_instruct (3B -> 32B,
+# ~10.7x, dense — no MoE active-parameter ambiguity), fixing the "newer+bigger"
+# confound logged on qwen3_8b_4bit. model_family 'qwen' is already
+# firewall-disjoint from the verifier (phi) and extractor (gemma). Qwen2.5 has
+# no <think> mode, so the provider's Qwen3-only enable_thinking guard does not
+# (and must not) apply. Kaggle fit: ~18 GB in 4-bit — requires BOTH T4s
+# (FAITHFULIDS_DEVICE_MAP=auto) and runs slow; first run as a SMOKE cell
+# (FAITHFULIDS_PILOT_N=40-60) to estimate wall-clock before any full-N attempt.
+model_family: qwen
+provider: local_open_weights
+# 4-bit (nf4) via bitsandbytes; precision is declared here, never inferred.
+quantisation: 4bit
+role: tier_b
+weights:
+  hf_repo: Qwen/Qwen2.5-32B-Instruct
+  # Pinned to a real HF commit (main @ 2024-09-25); the schema forbids branch
+  # names and 'pin-pending' so an unpinned generation revision is impossible.
+  revision: 5ede1c97bbab6ce5cda5812749b4c0bdf79b18dd
+  sha256: null
