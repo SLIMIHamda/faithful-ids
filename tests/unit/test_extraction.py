@@ -113,7 +113,51 @@ def test_extractor_version_is_stamped_current():
         feature_vocabulary=["Flow Duration"],
     )
     claims = ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased."))
-    assert claims.extractor_version == "1.2.0"
+    assert claims.extractor_version == "1.3.0"
+
+
+def test_rule_assisted_reads_tail_position_direction_words():
+    """Extractor 1.3.0 regression: Mistral-B4 writes 'Feature: <long value
+    clause>, which decreases the attack score' — under the fixed 60-char window
+    the tail cue was never read (73/176 mismatches in the 2026-07-11 audit
+    follow-up). The window is now sentence-bounded."""
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["Total Length of Fwd Packets", "Bwd Packets/s"],
+    )
+    text = (
+        "Total Length of Fwd Packets: The total length of forward packets is "
+        "significantly shorter than usual, which decreases the attack score.\n"
+        "Bwd Packets/s: The rate of backward packets is far above the typical "
+        "range for this service, a pattern that raises the attack score."
+    )
+    d = {c.feature: c.direction
+         for c in ext.extract(ExplanationRecord("i0", "b4_vte", text)).claims}
+    assert d["Total Length of Fwd Packets"] is Direction.NEGATIVE
+    assert d["Bwd Packets/s"] is Direction.POSITIVE
+
+
+def test_rule_assisted_nearest_direction_cue_wins():
+    """With sentence-length windows one span can contain both stems; the cue
+    nearest the feature is the claimed direction, and the window must not leak
+    into the NEXT sentence's cues."""
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["Flow Duration", "SYN Flag Count"],
+    )
+    text = (
+        "Flow Duration increases the attack score, unlike most benign flows "
+        "where it shows decreasing values. Overall the remaining indicators "
+        "lower the score.\n"
+        "SYN Flag Count stayed in range. It increases in floods, but not here."
+    )
+    d = {c.feature: c.direction
+         for c in ext.extract(ExplanationRecord("i0", "b3_dte_style", text)).claims}
+    assert d["Flow Duration"] is Direction.POSITIVE     # nearest cue: "increases"
+    # window ends at "stayed in range." — the next sentence's "increases" must
+    # not be attributed to it; no cue + no number => default POSITIVE, which is
+    # exactly the case option 1b would turn into direction=None.
+    assert d["SYN Flag Count"] is Direction.POSITIVE
 
 
 def test_rule_assisted_masks_substring_feature_collisions():

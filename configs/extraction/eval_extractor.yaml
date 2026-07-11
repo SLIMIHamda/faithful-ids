@@ -6,8 +6,11 @@ kind: extraction
 # match residual-span guard. 1.2.0 = stem-matched direction words: participle
 # phrasings ("has a decreasing effect") no longer fall through to the default-
 # POSITIVE branch (blind audit 2026-07-11: mis-signed 63/150 B4@8B instances,
-# the entire "b4 DSA regression"). Prompt asset unchanged (prompt.version 1.0.0).
-version: 1.2.0
+# the entire "b4 DSA regression"). 1.3.0 = sentence-bounded claim window (was
+# fixed 60 chars; recovers tail-position cues — "Feature: <long value clause>,
+# which decreases the attack score", 73/176 Mistral-B4 mismatches) + nearest
+# direction cue wins within the window. Prompt asset unchanged (1.0.0).
+version: 1.3.0
 # FIREWALL SIDE B. model.model_family must be disjoint from every generator LLM
 # family {mistral, llama3, frontier} AND the VtE verifier family {phi}.
 model:

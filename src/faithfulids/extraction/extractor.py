@@ -45,6 +45,11 @@ _NEG_WORDS = ("decreas", "lower", "reduc")
 _NUM_AFTER_EQ = re.compile(r"=\s*([+-]?\d+(?:\.\d+)?)")
 _NUM_SIGNED = re.compile(r"(?<![\w.])([+-]\d+(?:\.\d+)?)")
 
+# Sentence terminator for the claim window (extractor 1.3.0). Lookahead keeps
+# decimal points out: '.' inside "=-7.9774" is followed by a digit, not
+# whitespace/end, so a B0 dump's numbers never truncate their own window.
+_SENT_END = re.compile(r"[.!?;](?=\s|$)|\n")
+
 
 class RuleAssistedExtractor(ClaimExtractor):
     def __init__(
@@ -125,6 +130,8 @@ class RuleAssistedExtractor(ClaimExtractor):
         every claim to POSITIVE. Extractor 1.2.0: direction words are stem-
         matched so participle phrasings ("a decreasing effect") carry their sign
         instead of falling through to the default (see _NEG_WORDS note).
+        Extractor 1.3.0: the claim window is sentence-bounded (was a fixed 60
+        chars) so tail-position cues are read, and the nearest cue wins.
         """
         lowered = text.lower()
         consumed = [False] * len(lowered)
@@ -144,7 +151,15 @@ class RuleAssistedExtractor(ClaimExtractor):
         for rank, (pos, feat) in enumerate(found, start=1):
             end = pos + len(feat)
             nxt = found[rank][0] if rank < len(found) else len(lowered)
-            window = lowered[end : min(nxt, end + 60)]
+            # Claim window (1.3.0): up to the next found feature OR the end of
+            # the feature's own sentence, whichever first (300-char safety cap).
+            # The old fixed 60-char cap cut off tail-position direction words —
+            # "Feature: <long value clause>, which decreases the attack score"
+            # lost its "decreases" (73/176 Mistral-B4 mismatches in the 2026-07-11
+            # audit follow-up were exactly this).
+            limit = min(nxt, end + 300)
+            m = _SENT_END.search(lowered, end, limit)
+            window = lowered[end : (m.start() if m else limit)]
             direction, magnitude = self._direction_of(window)
             claims.append(
                 ClaimTuple(feature=feat, direction=direction, rank=rank, magnitude=magnitude)
@@ -153,17 +168,25 @@ class RuleAssistedExtractor(ClaimExtractor):
 
     @staticmethod
     def _direction_of(window: str) -> tuple[Direction, float | None]:
-        """Claimed sign for a feature, from the text span up to the next feature.
+        """Claimed sign for a feature, from its sentence-bounded claim window.
 
-        Precedence: an explicit direction *word* (B1/B3 wording) wins; else a
-        *signed number* attached to the feature (B0 raw-SHAP dump); else default
-        POSITIVE. Word-first keeps B1/B3 unchanged — the numeric branch only ever
-        fires on sign-only dumps, which is exactly where DSA was collapsing.
+        Precedence: the NEAREST explicit direction *word* wins (1.3.0 — with
+        sentence-length windows a single span can realistically contain both
+        stems, e.g. "increases the score even though benign flows show
+        decreasing values"; the cue closest to the feature is the one attached
+        to it); else a *signed number* attached to the feature (B0 raw-SHAP
+        dump); else default POSITIVE. Word-first keeps B1/B3 unchanged — the
+        numeric branch only ever fires on sign-only dumps.
         """
-        if any(w in window for w in _NEG_WORDS):
-            return Direction.NEGATIVE, None
-        if any(w in window for w in _POS_WORDS):
-            return Direction.POSITIVE, None
+        best: tuple[int, Direction] | None = None
+        for words, direction in ((_NEG_WORDS, Direction.NEGATIVE),
+                                 (_POS_WORDS, Direction.POSITIVE)):
+            for w in words:
+                p = window.find(w)
+                if p != -1 and (best is None or p < best[0]):
+                    best = (p, direction)
+        if best is not None:
+            return best[1], None
         m = _NUM_AFTER_EQ.search(window) or _NUM_SIGNED.search(window)
         if m:
             value = float(m.group(1))

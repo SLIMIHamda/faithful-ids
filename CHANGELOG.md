@@ -138,6 +138,21 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `scored_human.jsonl`; a second LLM annotator, Meta MUSE, was excluded for
   chance-level agreement κ = 0.02 with 74% spurious "absent" — the exclusion
   itself is audit provenance).
+- **Extractor 1.3.0 — sentence-bounded claim window, nearest cue wins.**
+  Follow-up to the 1.2.0 audit: 73/176 Mistral-B4 sign mismatches were direction
+  words sitting past the fixed 60-char claim window ("Feature: <long value
+  clause>, which decreases the attack score"). The window now extends to the
+  next found feature OR the feature's sentence end (terminator lookahead skips
+  decimal points; 300-char safety cap), and with sentence-length spans the
+  NEAREST direction cue wins instead of NEG-anywhere precedence. Validated on
+  cached corpora: blind-audit agreement unchanged at 99.5% (same 3 known
+  residuals), B0/B1 exactly 1.000 in all three runs, Mistral-B4 top-5 direction
+  agreement 0.524 -> 0.722 (the predicted +73), Mistral-B3 0.971 -> 0.994,
+  Qwen3-8B unchanged. The residual Mistral-B4 gap is claims whose sentences
+  assert NO direction (extractor defaults POSITIVE) — a metric-design question
+  (direction=None / assertion-rate reporting), tracked separately, not a window
+  issue. Instrument version **1.2.0 -> 1.3.0**; runs must be re-scored
+  (token-free replay) before cross-run DSA use.
 - **ε_model per-feature normalisation (set-size confound fixed).** Added
   `comprehensiveness_cited_per_feature` / `sufficiency_cited_per_feature`
   (layer2 file version → 1.2.0, additive; `*_cited` and ε_att unchanged): the raw
