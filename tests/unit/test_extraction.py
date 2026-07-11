@@ -79,6 +79,43 @@ def test_rule_assisted_reads_numeric_sign_from_raw_shap_dump():
     assert d["Flow Duration"] is Direction.POSITIVE  # +0.55, sign-only, no word
 
 
+def test_rule_assisted_reads_participle_direction_words():
+    """Extractor 1.2.0 regression (blind audit 2026-07-11): Qwen3-8B's B4 writes
+    'has a decreasing effect on the attack score' — the participle matched no
+    1.1.0 direction word and fell to the default-POSITIVE branch, mis-signing
+    63/150 instances (the entire apparent b4@8B DSA regression, Branch 2)."""
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=[
+            "Init_Win_bytes_forward", "Bwd Packets/s", "Total Length of Fwd Packets",
+            "Bwd Header Length",
+        ],
+    )
+    text = (
+        "- **Init_Win_bytes_forward** has a decreasing effect on the attack score.\n"
+        "- **Bwd Packets/s** has an increasing effect on the attack score.\n"
+        "- **Total Length of Fwd Packets** is lowering the attack score.\n"
+        "- **Bwd Header Length** is reducing the score, consistent with benign traffic.\n"
+    )
+    d = {c.feature: c.direction
+         for c in ext.extract(ExplanationRecord("i0", "b4_vte", text)).claims}
+    assert d["Init_Win_bytes_forward"] is Direction.NEGATIVE
+    assert d["Bwd Packets/s"] is Direction.POSITIVE
+    assert d["Total Length of Fwd Packets"] is Direction.NEGATIVE
+    assert d["Bwd Header Length"] is Direction.NEGATIVE
+
+
+def test_extractor_version_is_stamped_current():
+    """Claims must carry the instrument version the config declares — analyses
+    assert extractor-version consistency before tabulating across runs."""
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["Flow Duration"],
+    )
+    claims = ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased."))
+    assert claims.extractor_version == "1.2.0"
+
+
 def test_rule_assisted_masks_substring_feature_collisions():
     """A shorter feature name that occurs *inside* a longer one must not also be
     claimed (residual-span guard) — CICIDS has 'Packet Length Mean' ⊂ 'Fwd

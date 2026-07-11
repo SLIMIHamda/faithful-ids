@@ -114,6 +114,30 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   numbers byte-for-byte with no provider. A self-documenting
   `kaggle/kaggle_rescore_launcher.ipynb` drives it per-model (one cell each,
   no parameter editing) with the DSA litmus and an in-notebook 3-run comparison.
+- **Extractor 1.2.0 — participle direction words (blind-audit fix).** The
+  63-instance B4@8B "DSA regression" (3B→8B paired sign test p = 1.2e-16) was
+  resolved by a 150-item blind-shuffled human audit (`extractor_audit_batch_v1`,
+  576/577 claims annotated blind to group) as **Branch 2: instrument artifact**.
+  Extractor-error rate 43.3% on the degraded set vs 5.0% control (Fisher
+  p = 1.9e-23) while the generated text's directional claims are correct
+  essentially everywhere (100% on degraded top-5 claims); every disagreement was
+  the extractor emitting "+". Root cause: direction lists held inflected forms
+  only, so Qwen3-8B's dominant phrasing "has a **decreasing** effect on the
+  attack score" matched no cue and fell to the default-POSITIVE branch
+  ("increasing" fell through identically but was accidentally correct). 63/63
+  degraded items contain "decreasing" vs 6/63 control — the selection loop that
+  *created* the "degraded" label. Fix: direction cues are now stems
+  ("increas"/"decreas"/"reduc"/"lower"/"rais"/…); regression test pins the exact
+  audit phrase. Instrument version **1.1.0 → 1.2.0** (prompt asset unchanged).
+  **Retired claims:** "B4's directional faithfulness degrades with capability"
+  and "Layer-1 DSA caught the sign-blind verifier" — both measured the
+  extractor. Branches 1/3 falsified: no verifier-trace logging or B4
+  regeneration needed. All three pilot runs must be re-scored (token-free
+  replay) before any cross-run DSA statement; scoring tooling and the audit
+  record live in `extractor_audit_batch_v1\` (`score_audit.py`,
+  `scored_human.jsonl`; a second LLM annotator, Meta MUSE, was excluded for
+  chance-level agreement κ = 0.02 with 74% spurious "absent" — the exclusion
+  itself is audit provenance).
 - **ε_model per-feature normalisation (set-size confound fixed).** Added
   `comprehensiveness_cited_per_feature` / `sufficiency_cited_per_feature`
   (layer2 file version → 1.2.0, additive; `*_cited` and ε_att unchanged): the raw

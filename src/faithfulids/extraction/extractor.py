@@ -27,8 +27,15 @@ from faithfulids.framework import (
 )
 from faithfulids.llm import load_prompt
 
-_POS_WORDS = ("increase", "increased", "raise", "raised", "higher", "elevat", "push")
-_NEG_WORDS = ("decrease", "decreased", "lower", "lowered", "reduce", "reduced")
+# Direction cues are matched as substrings, so entries are STEMS: "increas"
+# covers increase/increases/increased/increasing. Extractor 1.2.0: the previous
+# inflected-form lists missed participles — "has a decreasing effect on the
+# attack score" (Qwen3-8B's dominant B4 phrasing) matched nothing and fell to
+# the default-POSITIVE branch, mis-signing 63/150 instances (blind audit
+# 2026-07-11, extractor_audit_batch_v1). "increasing" fell through identically
+# but the POSITIVE default made it accidentally correct, hiding the bug.
+_POS_WORDS = ("increas", "rais", "higher", "elevat", "push")
+_NEG_WORDS = ("decreas", "lower", "reduc")
 
 # A signed attribution value attached to a feature. B0 dumps raw SHAP as
 # "Feature=-7.9774" (sign-only, NO direction word), which the word-based parser
@@ -115,7 +122,9 @@ class RuleAssistedExtractor(ClaimExtractor):
         Packet Length Mean") — residual-span guard; (2) recover the claimed sign
         from an attached signed number when no direction word is present, so a
         raw-SHAP dump (B0) is parsed with the correct sign instead of defaulting
-        every claim to POSITIVE.
+        every claim to POSITIVE. Extractor 1.2.0: direction words are stem-
+        matched so participle phrasings ("a decreasing effect") carry their sign
+        instead of falling through to the default (see _NEG_WORDS note).
         """
         lowered = text.lower()
         consumed = [False] * len(lowered)

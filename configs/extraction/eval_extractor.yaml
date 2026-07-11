@@ -3,8 +3,11 @@ schema_version: v1
 kind: extraction
 # Instrument version (stamped as extractor_version). 1.1.0 = Pass B rule-engine
 # audit: signed-number direction parsing (fixes B0 DSA 0.636->~1.0) + longest-
-# match residual-span guard. Prompt asset unchanged (prompt.version still 1.0.0).
-version: 1.1.0
+# match residual-span guard. 1.2.0 = stem-matched direction words: participle
+# phrasings ("has a decreasing effect") no longer fall through to the default-
+# POSITIVE branch (blind audit 2026-07-11: mis-signed 63/150 B4@8B instances,
+# the entire "b4 DSA regression"). Prompt asset unchanged (prompt.version 1.0.0).
+version: 1.2.0
 # FIREWALL SIDE B. model.model_family must be disjoint from every generator LLM
 # family {mistral, llama3, frontier} AND the VtE verifier family {phi}.
 model:
