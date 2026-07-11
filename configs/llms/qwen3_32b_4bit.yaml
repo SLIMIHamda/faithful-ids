@@ -1,0 +1,23 @@
+id: qwen3_32b_4bit
+schema_version: v1
+kind: llm
+# Ungated (Apache-2.0) Qwen3-32B (DENSE — the MoE sibling is 30B-A3B, not this)
+# for the 30B-class scale cell. Within-family, same-generation bracket vs
+# qwen3_8b_4bit (8B -> 32B); model_family 'qwen' is already firewall-disjoint
+# from the verifier (phi) and extractor (gemma). Qwen3 emits <think> reasoning
+# by default; the provider's Qwen3 guard (family 'qwen' + repo basename
+# starting 'qwen3') applies here and disables it, same as the 8B run.
+# Kaggle fit: ~18-19 GB in 4-bit — requires BOTH T4s
+# (FAITHFULIDS_DEVICE_MAP=auto) and runs slow; first run as a SMOKE cell
+# (FAITHFULIDS_PILOT_N=40-60) to estimate wall-clock before any full-N attempt.
+model_family: qwen
+provider: local_open_weights
+# 4-bit (nf4) via bitsandbytes; precision is declared here, never inferred.
+quantisation: 4bit
+role: tier_b
+weights:
+  hf_repo: Qwen/Qwen3-32B
+  # Pinned to a real HF commit (main @ 2025-07-26); the schema forbids branch
+  # names and 'pin-pending' so an unpinned generation revision is impossible.
+  revision: 9216db5781bf21249d130ec9da846c4624c16137
+  sha256: null
