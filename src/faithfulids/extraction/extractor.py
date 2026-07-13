@@ -26,6 +26,14 @@ from faithfulids.framework import (
     ExplanationRecord,
 )
 from faithfulids.llm import load_prompt
+from faithfulids.provenance import repo_root, sha256_file
+
+
+def _norm(s: str) -> str:
+    """Length-preserving match normalisation: case, and _/- as spaces — so
+    'Init Win bytes forward' matches 'Init_Win_bytes_forward' with span offsets
+    still valid against the original text."""
+    return s.lower().replace("_", " ").replace("-", " ")
 
 # Direction cues are matched as substrings, so entries are STEMS: "increas"
 # covers increase/increases/increased/increasing. Extractor 1.2.0: the previous
@@ -71,6 +79,29 @@ class RuleAssistedExtractor(ClaimExtractor):
         self._client = llm_client
         self._model = model_config
         self._vocab = list(feature_vocabulary)
+        # Match variants: every canonical name, plus hash-pinned paraphrase
+        # aliases (extractor 1.4.0) for canonicals present in this vocabulary.
+        # Aliases are an instrument asset — edits bump the extractor version.
+        variants: list[tuple[str, str]] = [(_norm(f), f) for f in self._vocab]
+        alias_ref = config.get("aliases")
+        if alias_ref:
+            import yaml
+
+            path = repo_root() / alias_ref["path"]
+            actual = sha256_file(path)
+            if actual != alias_ref["sha256"]:
+                raise ValueError(
+                    f"alias table hash mismatch: file {actual[:12]}…, "
+                    f"config {alias_ref['sha256'][:12]}…"
+                )
+            table = yaml.safe_load(path.read_text(encoding="utf-8"))["aliases"]
+            in_vocab = set(self._vocab)
+            for canon, alist in table.items():
+                if canon not in in_vocab:
+                    continue
+                variants.extend((_norm(a), canon) for a in alist)
+        # longest-first so a shorter variant can never match inside a longer one
+        self._variants = sorted(variants, key=lambda v: len(v[0]), reverse=True)
 
     def extract(self, explanation: ExplanationRecord) -> ClaimSet:
         if self._client is None:
@@ -134,23 +165,30 @@ class RuleAssistedExtractor(ClaimExtractor):
         Extractor 1.3.0: the claim window is sentence-bounded (was a fixed 60
         chars) so tail-position cues are read, and the nearest cue wins.
         """
+        # Two length-preserving views with shared offsets: variants are located
+        # in the _/- normalised view, but claim windows slice the lowercase-only
+        # view — normalising '-' to ' ' in windows would erase numeric minus
+        # signs and flip B0's parsed directions.
         lowered = text.lower()
-        consumed = [False] * len(lowered)
-        found: list[tuple[int, str]] = []
-        for feat in sorted(self._vocab, key=len, reverse=True):
-            fl = feat.lower()
-            start = lowered.find(fl)
+        matchable = _norm(text)
+        consumed = [False] * len(matchable)
+        # canonical -> (pos, end): earliest match over all its variants
+        # (canonical name + aliases), scanned longest-variant-first with span
+        # masking (extractor 1.4.0 — paraphrase recovery; see feature_aliases.yaml)
+        matches: dict[str, tuple[int, int]] = {}
+        for variant, canon in self._variants:
+            start = matchable.find(variant)
             while start != -1:
-                if not any(consumed[start : start + len(fl)]):
-                    for i in range(start, start + len(fl)):
+                if not any(consumed[start : start + len(variant)]):
+                    for i in range(start, start + len(variant)):
                         consumed[i] = True
-                    found.append((start, feat))
+                    if canon not in matches or start < matches[canon][0]:
+                        matches[canon] = (start, start + len(variant))
                     break
-                start = lowered.find(fl, start + 1)
-        found.sort()
+                start = matchable.find(variant, start + 1)
+        found = sorted((pos, feat, end) for feat, (pos, end) in matches.items())
         claims: list[ClaimTuple] = []
-        for rank, (pos, feat) in enumerate(found, start=1):
-            end = pos + len(feat)
+        for rank, (pos, feat, end) in enumerate(found, start=1):
             nxt = found[rank][0] if rank < len(found) else len(lowered)
             # Claim window (1.3.0): up to the next found feature OR the end of
             # the feature's own sentence, whichever first (300-char safety cap).

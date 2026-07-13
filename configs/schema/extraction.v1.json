@@ -36,6 +36,16 @@
       }
     },
     "rule_assisted": {"type": "boolean"},
+    "aliases": {
+      "type": "object",
+      "description": "Optional hash-pinned paraphrase->canonical alias table (instrument asset; edits require an instrument version bump).",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
     "prompt": {
       "type": "object",
       "additionalProperties": false,

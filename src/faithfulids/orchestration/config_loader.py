@@ -31,6 +31,7 @@ _FAMILY_BY_DIR = {
     "llms": "llm",
     "generators": "generator",
     "extraction": "extraction",
+    "extraction_aliases": "extraction_aliases",
     "corruption": "corruption",
     "metrics": "metric",
     "sampling": "sampling",

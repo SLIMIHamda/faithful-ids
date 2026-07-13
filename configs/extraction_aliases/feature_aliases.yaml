@@ -1,0 +1,212 @@
+# Extractor-owned paraphrase->canonical alias table (instrument asset, NOT part
+# of the generation-side KB). Referenced from eval_extractor.yaml with a pinned
+# sha256, so any edit here must bump the extractor instrument version.
+#
+# Motivation (2026-07-13, Qwen3-32B smoke): capable models paraphrase canonical
+# feature names into natural language ("the maximum forward packet length" for
+# "Fwd Packet Length Max"); exact vocabulary matching then finds NOTHING and
+# 38/60 B3 instances scored structural zeros. Aliases are matched with the same
+# longest-first masked scan as canonical names and map to the canonical name.
+#
+# Rules for adding aliases:
+#  - multi-word, high-precision phrasings only (an unqualified "packet length"
+#    or "packet size" would collide across features);
+#  - matching is case-insensitive with _ and - normalised to spaces, so
+#    "Init Win bytes forward" already matches the canonical name without an
+#    alias entry;
+#  - an alias only activates when its canonical feature is in the run's
+#    feature vocabulary.
+id: feature_aliases
+schema_version: v1
+kind: extraction_aliases
+version: 1.0.0
+aliases:
+  Fwd Packet Length Max:
+    - maximum forward packet length
+    - max forward packet length
+    - maximum length of the forward packets
+    - maximum length of forward packets
+    - largest forward packet
+  Fwd Packet Length Mean:
+    - average forward packet length
+    - mean forward packet length
+    - average length of the forward packets
+    - average length of forward packets
+  Fwd Packet Length Std:
+    - standard deviation of forward packet length
+    - forward packet length standard deviation
+  Fwd Packet Length Min:
+    - minimum forward packet length
+    - smallest forward packet
+  Bwd Packet Length Mean:
+    - average backward packet length
+    - mean backward packet length
+    - average length of the backward packets
+    - average length of backward packets
+  Bwd Packet Length Std:
+    - standard deviation of backward packet length
+    - backward packet length standard deviation
+    - variability of backward packet lengths
+  Bwd Packet Length Max:
+    - maximum backward packet length
+    - maximum length of backward packets
+  Init_Win_bytes_forward:
+    - initial window bytes in the forward direction
+    - initial forward window bytes
+    - forward initial window bytes
+    - initial window size for forward packets
+    - initial number of bytes sent forward
+    - initial number of bytes forwarded
+  Init_Win_bytes_backward:
+    - initial window bytes in the backward direction
+    - initial backward window bytes
+    - backward initial window bytes
+    - initial window size for backward packets
+  Total Length of Fwd Packets:
+    - total length of forward packets
+    - total forward packet length
+    - total size of forward packets
+    - total size of the forward packets
+  Total Length of Bwd Packets:
+    - total length of backward packets
+    - total backward packet length
+    - total size of backward packets
+  Total Fwd Packets:
+    - total number of forward packets
+    - number of forward packets
+    - count of forward packets
+  Total Backward Packets:
+    - total number of backward packets
+    - number of backward packets
+    - count of backward packets
+  Bwd Header Length:
+    - backward header length
+    - header length in the backward direction
+    - backward direction header length
+  Fwd Header Length:
+    - forward header length
+    - header length in the forward direction
+  Flow Packets/s:
+    - flow packets per second
+    - packet rate of the flow
+    - packets per second in the flow
+  Flow Bytes/s:
+    - flow bytes per second
+    - byte rate of the flow
+    - bytes per second in the flow
+    - byte throughput of the flow
+  Fwd Packets/s:
+    - forward packets per second
+    - rate of forward packets
+  Bwd Packets/s:
+    - backward packets per second
+    - rate of backward packets
+    - rate of reverse traffic
+  Flow Duration:
+    - duration of the flow
+    - total duration of the flow
+    - connection duration
+  Idle Min:
+    - minimum idle time
+    - shortest idle period
+  Idle Mean:
+    - average idle time
+    - mean idle time
+  Idle Max:
+    - maximum idle time
+    - longest idle period
+  Idle Std:
+    - standard deviation of idle time
+    - idle time standard deviation
+  Active Min:
+    - minimum active time
+    - shortest active period
+  Active Mean:
+    - average active time
+    - mean active time
+  Active Max:
+    - maximum active time
+    - longest active period
+  Active Std:
+    - standard deviation of active time
+    - active time standard deviation
+  SYN Flag Count:
+    - number of syn flags
+    - count of syn flags
+  ACK Flag Count:
+    - number of ack flags
+    - count of ack flags
+    - number of acknowledgment flags
+  URG Flag Count:
+    - number of urg flags
+    - count of urg flags
+    - number of urgent flags
+    - count of urgent flags
+  PSH Flag Count:
+    - number of psh flags
+    - count of psh flags
+    - number of push flags
+  RST Flag Count:
+    - number of rst flags
+    - count of rst flags
+    - number of reset flags
+  FIN Flag Count:
+    - number of fin flags
+    - count of fin flags
+  Bwd IAT Total:
+    - total inter-arrival time for backward packets
+    - total backward inter-arrival time
+    - total iat for backward packets
+  Bwd IAT Mean:
+    - average inter-arrival time of backward packets
+    - average backward inter-arrival time
+    - mean backward inter-arrival time
+    - mean inter-arrival time of backward packets
+  Bwd IAT Std:
+    - standard deviation of backward inter-arrival times
+    - backward inter-arrival time standard deviation
+  Bwd IAT Max:
+    - maximum backward inter-arrival time
+    - maximum inter-arrival time of backward packets
+  Fwd IAT Total:
+    - total inter-arrival time for forward packets
+    - total forward inter-arrival time
+  Fwd IAT Mean:
+    - average inter-arrival time of forward packets
+    - average forward inter-arrival time
+    - mean forward inter-arrival time
+  Fwd IAT Std:
+    - standard deviation of forward inter-arrival times
+    - forward inter-arrival time standard deviation
+  Flow IAT Mean:
+    - average inter-arrival time of the flow
+    - mean flow inter-arrival time
+  Flow IAT Std:
+    - standard deviation of flow inter-arrival times
+    - flow inter-arrival time standard deviation
+  Max Packet Length:
+    - maximum packet length
+  Min Packet Length:
+    - minimum packet length
+  Packet Length Mean:
+    - average packet length
+    - mean packet length
+  Packet Length Std:
+    - packet length standard deviation
+    - standard deviation of packet length
+  Subflow Fwd Bytes:
+    - subflow forward bytes
+    - forward subflow bytes
+    - bytes in the forward subflow
+  Subflow Bwd Bytes:
+    - subflow backward bytes
+    - backward subflow bytes
+  Avg Fwd Segment Size:
+    - average forward segment size
+    - mean forward segment size
+  Avg Bwd Segment Size:
+    - average backward segment size
+    - mean backward segment size
+  Down/Up Ratio:
+    - download to upload ratio
+    - down to up ratio

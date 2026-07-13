@@ -138,6 +138,27 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `scored_human.jsonl`; a second LLM annotator, Meta MUSE, was excluded for
   chance-level agreement κ = 0.02 with 74% spurious "absent" — the exclusion
   itself is audit provenance).
+- **Extractor 1.4.0 — paraphrase alias recovery + Gemma 4 extraction model.**
+  Qwen3-32B smoke (N=60): 38/60 B3 instances scored structural ZEROS because the
+  32B model paraphrases canonical feature names ("the maximum forward packet
+  length" for "Fwd Packet Length Max") and exact vocabulary matching finds
+  nothing — a mention-DETECTION gap, not unfaithfulness. Fix: (1) hash-pinned
+  paraphrase alias table (`configs/extraction_aliases/feature_aliases.yaml`,
+  new config family + schema; ~50 features, multi-word high-precision aliases
+  only; an alias activates only when its canonical is in the run vocabulary);
+  (2) length-preserving match normalisation (case, _/- as spaces) — claim
+  windows still slice the lowercase-only view so numeric minus signs survive
+  (B0 regression test). Validated on cached corpora: 32B B3 zero-claim
+  instances 38 -> 0 (direction agreement on recovered claims 0.944), blind-audit
+  agreement vs human unchanged at 99.5%, B0/B1 self-consistency perfect in all
+  three N=150 runs. Also repinned the LLM-assisted extraction model
+  (rule-assisted fallback unchanged): google/gemma-4-26B-A4B-it @ `5305c1e7`
+  (latest Gemma generation, MoE 25.2B/3.8B-active, Apache-2.0, 4-bit, family
+  'gemma' still firewall-disjoint) replacing the never-pinned gemma-2-9b-it;
+  NOTE it requires a recent transformers v5 (the v5.0 bnb-4bit load regression
+  #43032 that hit the 32B pilot is fixed upstream) — smoke-test on Kaggle
+  before first LLM-assisted extraction. Instrument version **1.3.0 -> 1.4.0**;
+  all runs must be re-scored (token-free replay) before cross-run Layer-1 use.
 - **Extractor 1.3.0 — sentence-bounded claim window, nearest cue wins.**
   Follow-up to the 1.2.0 audit: 73/176 Mistral-B4 sign mismatches were direction
   words sitting past the fixed 60-char claim window ("Feature: <long value

@@ -113,7 +113,47 @@ def test_extractor_version_is_stamped_current():
         feature_vocabulary=["Flow Duration"],
     )
     claims = ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased."))
-    assert claims.extractor_version == "1.3.0"
+    assert claims.extractor_version == "1.4.0"
+
+
+def test_rule_assisted_recovers_paraphrased_feature_names():
+    """Extractor 1.4.0 regression (Qwen3-32B smoke, 2026-07-13): capable models
+    paraphrase canonical names ('the maximum forward packet length' for 'Fwd
+    Packet Length Max'); exact matching scored 38/60 B3 instances as structural
+    zeros. The hash-pinned alias table maps paraphrases to canonical names."""
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["Fwd Packet Length Max", "Init_Win_bytes_forward",
+                            "Fwd Packet Length Mean"],
+    )
+    text = (
+        "1. The **maximum forward packet length** was significantly low, which "
+        "strongly decreased the likelihood of an attack.\n"
+        "2. The **initial window bytes in the forward direction** were also low, "
+        "further reducing the attack score.\n"
+        "3. The **average forward packet length** was below expected thresholds "
+        "for attacks, contributing to a reduced risk assessment."
+    )
+    d = {c.feature: c.direction
+         for c in ext.extract(ExplanationRecord("i0", "b3_dte_style", text)).claims}
+    assert d == {"Fwd Packet Length Max": Direction.NEGATIVE,
+                 "Init_Win_bytes_forward": Direction.NEGATIVE,
+                 "Fwd Packet Length Mean": Direction.NEGATIVE}
+
+
+def test_rule_assisted_alias_requires_canonical_in_vocabulary():
+    """An alias never activates for a feature outside the run's vocabulary, and
+    underscore/case normalisation matches canonical names without aliases."""
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["Init_Win_bytes_forward"],
+    )
+    text = ("The maximum forward packet length was high. "
+            "Init Win bytes forward increased the attack score.")
+    claims = ext.extract(ExplanationRecord("i0", "b3_dte_style", text)).claims
+    feats = [c.feature for c in claims]
+    assert feats == ["Init_Win_bytes_forward"]  # normalised match, no out-of-vocab alias
+    assert claims[0].direction is Direction.POSITIVE
 
 
 def test_rule_assisted_reads_tail_position_direction_words():
