@@ -56,6 +56,29 @@ def test_coverage_risk_curve_is_monotone_in_coverage():
     assert res["aurc"] >= 0.0
 
 
+def _row(inst, metric, value, gen="b4_vte"):
+    return {"instance_id": inst, "layer": "layer1", "metric": metric,
+            "value": value, "grouping": {"generator_id": gen}}
+
+
+def test_gated_instance_values_excludes_undefined_but_keeps_failures():
+    """NaN-exclusion aggregation: dsa_asserted gated on direction_assertion_rate
+    drops no-assertion instances (structural 0.0) but KEEPS a genuinely-wrong
+    asserted instance (rate>0, value 0.0) — real failures must not be hidden."""
+    from analysis.run import _instance_values
+
+    rows = [
+        _row("i0", "dsa_asserted", 1.0), _row("i0", "direction_assertion_rate", 1.0),  # asserted, correct
+        _row("i1", "dsa_asserted", 0.0), _row("i1", "direction_assertion_rate", 1.0),  # asserted, WRONG -> keep
+        _row("i2", "dsa_asserted", 0.0), _row("i2", "direction_assertion_rate", 0.0),  # silent -> drop
+    ]
+    gated = _instance_values(rows, "dsa_asserted", "b4_vte", gate_metric="direction_assertion_rate")
+    ungated = _instance_values(rows, "dsa_asserted", "b4_vte")
+    assert gated == [1.0, 0.0]  # i2 dropped, i1 (real failure) kept
+    assert sum(gated) / len(gated) == pytest.approx(0.5)
+    assert ungated == [1.0, 0.0, 0.0]  # naive mean would be 0.333 — the structural-zero trap
+
+
 def test_variance_shares_bounded():
     sh = variance_shares([1, 2, 3, 4, 5, 6], {"g": ["a", "a", "a", "b", "b", "b"]})
     assert 0.0 <= sh["g"] <= 1.0

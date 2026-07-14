@@ -42,6 +42,38 @@ def test_unrecorded_evidence_counts_as_asserted():
     assert dsa_asserted(flipped, attribution) == 0.0  # the flip IS caught
 
 
+def test_directional_metrics_restrict_to_top_k():
+    """1.2.0: dsa / dsa_asserted grade only claims about top-k features. A claim
+    about an attributed-but-out-of-top-k feature (near-zero SHAP = noise sign) is
+    excluded, so a wrong direction there does not count against reading fidelity."""
+    from faithfulids.framework import ClaimTuple, Direction
+    from faithfulids.metrics.layer1 import dsa_asserted, direction_assertion_rate
+
+    fx = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    attribution = AttributionArtifact.from_dict(fx["attribution"])  # top-3 = {A,B,C}, D outside
+    claims = ClaimSet(
+        instance_id="i0",
+        claims=(
+            ClaimTuple(feature="A", direction=Direction.POSITIVE, direction_evidence="word"),  # attr A +, right
+            ClaimTuple(feature="D", direction=Direction.NEGATIVE, direction_evidence="word"),  # attr D +, WRONG but out of top-3
+        ),
+        extractor_id="eval_extractor",
+        extractor_version="1.0.0",
+        prompt_sha256="a" * 64,
+    )
+    # top_k=3 drops D → only A scored → perfect; top_k=None would score both → 0.5
+    assert dsa_asserted(claims, attribution, top_k=3) == 1.0
+    assert direction_assertion_rate(claims, attribution, top_k=3) == 1.0
+    assert dsa_asserted(claims, attribution, top_k=None) == pytest.approx(0.5)
+
+
+def test_directional_metric_versions_are_1_2_0():
+    from faithfulids.metrics.layer1 import LAYER1_METRICS
+
+    for name in ("dsa", "dsa_asserted", "direction_assertion_rate"):
+        assert LAYER1_METRICS[name][1].formula_version == "1.2.0"
+
+
 def test_layer1_signature_has_no_generator_identity():
     """Generator-blindness by type: the metric callables accept only claims,
     attribution, and top_k — never a generator id."""

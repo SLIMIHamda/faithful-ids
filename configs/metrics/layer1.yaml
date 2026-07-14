@@ -2,7 +2,7 @@ id: layer1
 schema_version: v1
 kind: metric
 family: layer1
-formula_version: 1.1.0
+formula_version: 1.2.0
 metrics:
   - name: mention_precision
     formula_version: 1.0.0
@@ -14,18 +14,22 @@ metrics:
     formula_version: 1.0.0
     notes: Harmonic mean of mention precision and recall.
   - name: dsa
-    formula_version: 1.0.0
-    notes: Directional Sign Agreement between claimed direction and attribution sign.
+    formula_version: 1.2.0
+    notes: Directional Sign Agreement between claimed direction and attribution sign,
+      over the attribution's top-k features only (out-of-top-k signs are noise).
       Includes extractor-defaulted directions; descriptive/continuity metric —
       dsa_asserted is the confirmatory directional metric.
   - name: dsa_asserted
-    formula_version: 1.1.0
-    notes: DSA over text-asserted directions only (direction_evidence != default).
-      Pure reading fidelity; always report WITH direction_assertion_rate.
+    formula_version: 1.2.0
+    notes: DSA over top-k text-asserted directions only (direction_evidence != default).
+      Pure reading fidelity; always report WITH direction_assertion_rate. Run-level
+      mean EXCLUDES no-assertion instances (rate==0) — the per-instance 0.0 there is
+      a structural undefined, not a failure (see analysis.run gated mean).
   - name: direction_assertion_rate
-    formula_version: 1.1.0
-    notes: Fraction of present claims whose direction the text asserts rather than
-      the extractor defaulting. Coverage companion to dsa_asserted.
+    formula_version: 1.2.0
+    notes: Fraction of present top-k claims whose direction the text asserts rather than
+      the extractor defaulting. Coverage companion to dsa_asserted and its aggregation
+      gate (rate>0 iff dsa_asserted is defined for the instance).
   - name: arc
     formula_version: 1.0.0
     notes: Attribution Rank Correlation (Spearman) between claimed and true ranks.

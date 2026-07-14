@@ -1,0 +1,20 @@
+id: pilot_dsa_asserted
+hypothesis: null
+description: >-
+  NON-CITABLE pilot analysis. Bootstrap mean + 95% CI of Layer-1 dsa_asserted
+  (confirmatory directional reading fidelity) per generator, from the REAL pilot
+  run. Gated on direction_assertion_rate: instances that assert no direction
+  return a structural dsa_asserted=0.0 (undefined, not a failure) and are
+  EXCLUDED from the mean (NaN-exclusion aggregation, 2026-07-14) — otherwise the
+  fraction of silent instances, not reading fidelity, dominates the number
+  (e.g. Mistral-b4 read 0.404 naively vs 0.993 over asserted claims). Report the
+  kept-instance count (n_instances) alongside every mean. Uses source.select:
+  latest because the pilot is non-citable; confirmatory analyses enumerate run_ids.
+source:
+  experiment: EXP-PILOT-001
+  select: latest
+test: mean_ci
+metric: dsa_asserted
+gate_metric: direction_assertion_rate
+generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte]
+seed: 0
