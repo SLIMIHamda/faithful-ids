@@ -201,17 +201,62 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   "dip"** as a Layer-1 mention-overlap effect (few features cited → lower recall),
   not a causal-faithfulness deficit — its per-feature ε_model is the highest of
   all (0.068). Runs and replay re-scores emit the new metrics automatically.
+- **Layer-1 1.2.0 — `dsa_asserted` aggregation fix + top-k directional scope
+  (NEXT-QUEUE item 1).** The run-level mean of `dsa_asserted` averaged in a
+  structural `0.0` for every instance that asserts no direction, so a generator
+  that rarely *commits* to a direction read as directionally unfaithful:
+  Mistral-B4 official **0.404** vs claim-level truth **149/150 = 0.993**. Fix
+  (**NaN-exclusion at the instance level**): the confirmatory mean now drops
+  no-assertion instances — gated on `direction_assertion_rate > 0`, exactly where
+  the metric is undefined — while KEEPING genuinely-wrong asserted instances
+  (rate > 0, value 0.0) so real sign failures are not hidden. Implemented in
+  `analysis.run._instance_values` (a `gate_metric` argument) driving the `mean_ci`
+  test, which now also emits `n_instances`; per-instance metric functions still
+  return `0.0` (JSON-safe — no `NaN` in artifacts). **Companion scope decision:**
+  `dsa` / `dsa_asserted` / `direction_assertion_rate` now grade only claims about
+  the attribution's **top-k** features (a full-vocabulary claim was otherwise
+  checked against a near-zero SHAP value whose sign is numerical noise), matching
+  the mention metrics; `top_k=None` still means all features (back-compat). Chosen
+  over claim-level pooling because instance-mean keeps each explanation one vote
+  and needs no new per-instance artifact fields. Directional formula versions
+  **1.0.0 / 1.1.0 → 1.2.0**; mention / HFR unchanged, and **ARC deliberately
+  unchanged this pass** — restricting ARC to top-k changes what the rank metric
+  *means* and worsens a distinct `<2`-point structural-zero problem, so it is a
+  separate prereg decision (open). New gated analysis config `pilot_dsa_asserted`.
+  Validated on the four cached 1.4.0 re-scored runs (NaN-exclusion half; rows are
+  pre-top-k): B0/B1 exactly **1.000** at every scale, Mistral-B4 **0.404 → 0.995**,
+  every attribution-seeing generator 0.96–1.00, B2 0.60–0.76 at assertion rate
+  0.11–0.61. Runs must be re-scored (token-free replay) before cross-run
+  `dsa_asserted` use; the preregistration must still designate `dsa_asserted`
+  (+ rate) as primary before the freeze.
+- **B4/VtE coverage accounting — verifier trace + abstention denominator
+  (NEXT-QUEUE item 2).** Verifiers now return a structured
+  `VerifierVerdict(supported, call_id, reason, detail)` instead of a bare
+  `(bool, str)`, and B4 records it under
+  `ExplanationRecord.metadata['verifier_trace']` on both branches (metadata was
+  empty, so abstention causes were invisible). RuleVerifier reasons:
+  `no_evidence` / `no_cited_feature` / `direction_mismatch` (+ offending feature)
+  / `supported`; the LLM Verifier reports the verdict-token pattern. Firewall side
+  A stays disjoint (the new `verdict` module imports nothing from `faithfulids`).
+  `coverage` / `abstention_rate` are now scoped to **abstention-capable (B4)**
+  generations, not all five baselines — the 32B smoke's 24 abstentions over 60 B4
+  cells read as **0.08** (24/300) and are now **0.400** (24/60); the two rows carry
+  grouping `{scope, generators, n_denominator}`, tokens/latency/$ stay run-global.
 
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
   family; ε_att metrics unchanged).
+- `configs/metrics/layer1.yaml`: `1.1.0 → 1.2.0`. Directional metrics `dsa` /
+  `dsa_asserted` / `direction_assertion_rate` gain top-k scope + documented
+  NaN-exclusion aggregation (`dsa` `1.0.0 → 1.2.0`, the two asserted metrics
+  `1.1.0 → 1.2.0`); `mention_*`, `arc`, `hfr` unchanged at `1.0.0`.
 - Schema (backward-compatible): `metric.v1.json` gains optional `component` /
   `delta_space`; `detector.v1.json` gains optional `competence_gate`;
   `llm.v1.json` requires `weights.revision` to be a 40-char commit hash (enforced
   going forward; satisfied by the now-pinned configs).
 
-All 105 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
+All 122 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
 firewall-audit, validate-configs, data-integrity, manifest-audit,
 mapping-completeness, release-closure, prereg-freeze, and doc-links are green.
 
