@@ -67,10 +67,36 @@ def test_directional_metrics_restrict_to_top_k():
     assert dsa_asserted(claims, attribution, top_k=None) == pytest.approx(0.5)
 
 
+def test_arc_restricts_to_top_k_and_counts_pairs():
+    """1.2.0: ARC correlates ranks only within the attribution's top-k. A cited
+    feature outside top-k (near-zero SHAP, noisy rank) is dropped; when that leaves
+    < 2 pairs ARC is undefined and returns a structural 0.0 (gated out downstream)."""
+    from faithfulids.framework import ClaimTuple, Direction
+    from faithfulids.metrics.layer1 import arc, arc_n_pairs
+
+    fx = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    attribution = AttributionArtifact.from_dict(fx["attribution"])  # top-3 = {A,B,C}, D outside
+    claims = ClaimSet(
+        instance_id="i0",
+        claims=(
+            ClaimTuple(feature="A", direction=Direction.POSITIVE, rank=1, direction_evidence="word"),
+            ClaimTuple(feature="D", direction=Direction.POSITIVE, rank=2, direction_evidence="word"),
+        ),
+        extractor_id="eval_extractor",
+        extractor_version="1.0.0",
+        prompt_sha256="a" * 64,
+    )
+    # top_k=3 drops D -> only 1 pair -> ARC undefined (0.0); full vocab keeps both -> 1.0
+    assert arc_n_pairs(claims, attribution, top_k=3) == 1.0
+    assert arc(claims, attribution, top_k=3) == 0.0
+    assert arc_n_pairs(claims, attribution, top_k=None) == 2.0
+    assert arc(claims, attribution, top_k=None) == pytest.approx(1.0)
+
+
 def test_directional_metric_versions_are_1_2_0():
     from faithfulids.metrics.layer1 import LAYER1_METRICS
 
-    for name in ("dsa", "dsa_asserted", "direction_assertion_rate"):
+    for name in ("dsa", "dsa_asserted", "direction_assertion_rate", "arc", "arc_n_pairs"):
         assert LAYER1_METRICS[name][1].formula_version == "1.2.0"
 
 

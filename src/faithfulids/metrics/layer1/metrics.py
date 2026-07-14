@@ -20,16 +20,18 @@ FORMULA_VERSION = "1.0.0"  # mention_* / arc / hfr — unchanged
 # 1.1.0 (file): add dsa_asserted + direction_assertion_rate (additive) — splits
 # reading fidelity from assertion style via the direction_evidence stamp
 # (2026-07-11 audit follow-up).
-# 1.2.0 (directional): dsa / dsa_asserted / direction_assertion_rate now score
-# only claims about the attribution's TOP-K features (2026-07-14). Previously
-# they graded EVERY claimed feature present in the attribution, so a claim about
-# a bottom-of-vocab feature was checked against a near-zero SHAP value whose sign
-# is numerical noise — inflating/deflating DSA with meaningless matches. Bounding
-# to top-k mirrors the mention metrics and confines directional agreement to the
-# region where the sign is real. dsa jumps 1.0.0->1.2.0 (skips 1.1.0) so all three
-# directional metrics share one version. Run-level means of dsa_asserted must
-# additionally EXCLUDE no-assertion instances (direction_assertion_rate == 0),
-# where the metric is undefined and returns a structural 0.0 — see analysis.run.
+# 1.2.0 (directional): dsa / dsa_asserted / direction_assertion_rate / arc /
+# arc_n_pairs now score only claims about the attribution's TOP-K features
+# (2026-07-14). Previously they graded EVERY claimed feature present in the
+# attribution, so a claim about a bottom-of-vocab feature was checked against a
+# near-zero SHAP value whose sign/rank is numerical noise — inflating/deflating the
+# metric with meaningless matches. Bounding to top-k mirrors the mention metrics and
+# confines agreement to the region where the sign/order is real. dsa jumps
+# 1.0.0->1.2.0 (skips 1.1.0) so all directional metrics share one version; arc
+# also 1.0.0->1.2.0, and gains the companion count arc_n_pairs. Run-level means
+# must EXCLUDE structural-0.0 instances where the metric is undefined:
+# dsa_asserted where direction_assertion_rate == 0, arc where arc_n_pairs < 2 —
+# see analysis.run's gated aggregation.
 _DIRECTIONAL_VERSION = "1.2.0"
 
 
@@ -162,10 +164,14 @@ def _spearman(a: list[float], b: list[float]) -> float:
     return num / (da * db)
 
 
-def arc(claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int | None = None) -> float:
-    """Attribution Rank Correlation: Spearman between claimed ranks and the
-    attribution's ranks, over features that are claimed-with-rank and attributed."""
-    ref_order = list(attribution.ranked_features(None))
+def _arc_pairs(
+    claims: ClaimSet, attribution: AttributionArtifact, top_k: int | None
+) -> tuple[list[float], list[float]]:
+    """(claimed_ranks, attr_ranks) over features that are claimed-with-rank AND in
+    the attribution's top-k. Restricting to top-k confines the correlation to the
+    region where the attribution's ORDERING is real signal — out-of-top-k ranks
+    merely separate near-zero SHAP noise. ``top_k=None`` = all features (back-compat)."""
+    ref_order = list(attribution.ranked_features(top_k))
     ref_rank = {f: i + 1 for i, f in enumerate(ref_order)}
     claimed_ranks: list[float] = []
     attr_ranks: list[float] = []
@@ -173,9 +179,29 @@ def arc(claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int | None
         if c.rank is not None and c.feature in ref_rank:
             claimed_ranks.append(float(c.rank))
             attr_ranks.append(float(ref_rank[c.feature]))
+    return claimed_ranks, attr_ranks
+
+
+def arc(claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int | None = None) -> float:
+    """Attribution Rank Correlation: Spearman between claimed ranks and the
+    attribution's ranks, over features that are claimed-with-rank and in the top-k.
+
+    Returns a structural 0.0 when < 2 such pairs exist (Spearman undefined), so its
+    run-level mean MUST exclude those instances (gate on ``arc_n_pairs >= 2``, done
+    in analysis.run) — else low-citation instances drag the mean toward 0. Read it
+    WITH ``arc_n_pairs``, never alone."""
+    claimed_ranks, attr_ranks = _arc_pairs(claims, attribution, top_k)
     if len(claimed_ranks) < 2:
         return 0.0
     return _spearman(claimed_ranks, attr_ranks)
+
+
+def arc_n_pairs(claims: ClaimSet, attribution: AttributionArtifact, *, top_k: int | None = None) -> float:
+    """Number of rank-pairs ARC rests on (claimed-with-rank ∩ top-k). ARC's
+    coverage companion and aggregation gate: ``>= 2`` iff ARC is defined for the
+    instance, so run-level means drop the undefined (structural-0.0) instances."""
+    claimed_ranks, _ = _arc_pairs(claims, attribution, top_k)
+    return float(len(claimed_ranks))
 
 
 #: name -> (callable, MetricSpec)
@@ -189,7 +215,8 @@ LAYER1_METRICS = {
         direction_assertion_rate,
         MetricSpec("direction_assertion_rate", "layer1", _DIRECTIONAL_VERSION),
     ),
-    "arc": (arc, MetricSpec("arc", "layer1", FORMULA_VERSION)),
+    "arc": (arc, MetricSpec("arc", "layer1", _DIRECTIONAL_VERSION)),
+    "arc_n_pairs": (arc_n_pairs, MetricSpec("arc_n_pairs", "layer1", _DIRECTIONAL_VERSION)),
     "hfr": (hfr, MetricSpec("hfr", "layer1", FORMULA_VERSION)),
 }
 

@@ -219,10 +219,15 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   the mention metrics; `top_k=None` still means all features (back-compat). Chosen
   over claim-level pooling because instance-mean keeps each explanation one vote
   and needs no new per-instance artifact fields. Directional formula versions
-  **1.0.0 / 1.1.0 → 1.2.0**; mention / HFR unchanged, and **ARC deliberately
-  unchanged this pass** — restricting ARC to top-k changes what the rank metric
-  *means* and worsens a distinct `<2`-point structural-zero problem, so it is a
-  separate prereg decision (open). New gated analysis config `pilot_dsa_asserted`.
+  **1.0.0 / 1.1.0 → 1.2.0**; mention / HFR unchanged. **ARC restricted to top-k
+  too**, with the same NaN-exclusion: ARC now correlates ranks only within the
+  attribution's top-k (out-of-top-k ranks merely separate near-zero SHAP noise),
+  and because that can leave `<2` rank-pairs — where Spearman is undefined and the
+  code returns a structural 0.0 — a new companion metric **`arc_n_pairs`** counts
+  the pairs and the run mean drops instances with `arc_n_pairs < 2` (gated
+  `mean_ci`, `gate_min: 2`). B0/B1 stay exactly 1.000 (a perfectly-ordered set's
+  top-k subset is still perfectly ordered). New gated analysis configs
+  `pilot_dsa_asserted` and `pilot_arc`.
   Validated on the four cached 1.4.0 re-scored runs (NaN-exclusion half; rows are
   pre-top-k): B0/B1 exactly **1.000** at every scale, Mistral-B4 **0.404 → 0.995**,
   every attribution-seeing generator 0.96–1.00, B2 0.60–0.76 at assertion rate
@@ -247,10 +252,11 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
   family; ε_att metrics unchanged).
-- `configs/metrics/layer1.yaml`: `1.1.0 → 1.2.0`. Directional metrics `dsa` /
-  `dsa_asserted` / `direction_assertion_rate` gain top-k scope + documented
-  NaN-exclusion aggregation (`dsa` `1.0.0 → 1.2.0`, the two asserted metrics
-  `1.1.0 → 1.2.0`); `mention_*`, `arc`, `hfr` unchanged at `1.0.0`.
+- `configs/metrics/layer1.yaml`: `1.1.0 → 1.2.0`. Directional/rank metrics `dsa` /
+  `dsa_asserted` / `direction_assertion_rate` / `arc` gain top-k scope + documented
+  NaN-exclusion aggregation (`dsa` and `arc` `1.0.0 → 1.2.0`, the two asserted
+  metrics `1.1.0 → 1.2.0`), plus a new companion metric `arc_n_pairs` (`1.2.0`);
+  `mention_*` and `hfr` unchanged at `1.0.0`.
 - Schema (backward-compatible): `metric.v1.json` gains optional `component` /
   `delta_space`; `detector.v1.json` gains optional `competence_gate`;
   `llm.v1.json` requires `weights.revision` to be a 40-char commit hash (enforced

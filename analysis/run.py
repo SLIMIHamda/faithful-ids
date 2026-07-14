@@ -50,17 +50,19 @@ def _resolve_run_ids(cfg: dict, runs_root) -> list[str]:
     raise ValueError(f"analysis config {cfg.get('id')} must give run_ids or source.select")
 
 
-def _instance_values(rows, metric, generator, *, gate_metric=None):
+def _instance_values(rows, metric, generator, *, gate_metric=None, gate_min=None):
     """Per-instance ``metric`` values for one generator, sorted by instance id.
 
     ``gate_metric`` implements NaN-exclusion aggregation (2026-07-14): instances
-    where the gate metric is 0 are DROPPED because the target metric is *undefined*
-    there, not zero. The motivating case is ``dsa_asserted`` gated on
-    ``direction_assertion_rate`` — an instance that asserts no directions returns a
-    structural ``dsa_asserted`` of 0.0; averaging those in pulls a confirmatory
-    reading-fidelity mean toward the fraction of silent instances rather than
-    measuring reading fidelity. A genuinely all-wrong instance keeps
-    ``direction_assertion_rate > 0`` and stays in, so real failures are not hidden."""
+    where the gate metric fails its threshold are DROPPED because the target metric
+    is *undefined* there, not zero. Two cases in use: ``dsa_asserted`` gated on
+    ``direction_assertion_rate`` (default threshold ``> 0`` — an instance that
+    asserts no directions returns a structural 0.0), and ``arc`` gated on
+    ``arc_n_pairs`` with ``gate_min=2`` (Spearman needs ≥ 2 pairs). Averaging the
+    structural zeros in would pull the mean toward the fraction of undefined
+    instances rather than the metric. A genuinely bad instance keeps the gate
+    satisfied (rate > 0 / pairs ≥ 2) and stays in, so real failures are not hidden.
+    """
     def _by_instance(m):
         return {
             r["instance_id"]: r["value"] for r in rows
@@ -70,7 +72,8 @@ def _instance_values(rows, metric, generator, *, gate_metric=None):
     vals = _by_instance(metric)
     if gate_metric is not None:
         gate = _by_instance(gate_metric)
-        return [v for inst, v in sorted(vals.items()) if gate.get(inst, 0.0) > 0.0]
+        keep = (lambda v: v >= gate_min) if gate_min is not None else (lambda v: v > 0.0)
+        return [v for inst, v in sorted(vals.items()) if keep(gate.get(inst, 0.0))]
     return [v for _, v in sorted(vals.items())]
 
 
@@ -106,12 +109,13 @@ def build_result(name: str, runs_root=None) -> tuple[dict, list[str]]:
         result.update({"metric": cfg["metric"], "methods": cfg["generators"], "scores": matrix})
     elif test == "mean_ci":
         gate = cfg.get("gate_metric")  # e.g. direction_assertion_rate for dsa_asserted
+        gate_min = cfg.get("gate_min")  # e.g. 2 for arc gated on arc_n_pairs
         per, n_kept = {}, {}
         for g in cfg["generators"]:
-            vals = _instance_values(rows, cfg["metric"], g, gate_metric=gate)
+            vals = _instance_values(rows, cfg["metric"], g, gate_metric=gate, gate_min=gate_min)
             n_kept[g] = len(vals)
             per[g] = bootstrap_mean_ci(vals, seed=cfg.get("seed", 0)) if vals else None
-        result = {"metric": cfg["metric"], "gate_metric": gate,
+        result = {"metric": cfg["metric"], "gate_metric": gate, "gate_min": gate_min,
                   "n_instances": n_kept, "per_generator": per}
     elif test == "coverage_risk":
         g = cfg["generator"]

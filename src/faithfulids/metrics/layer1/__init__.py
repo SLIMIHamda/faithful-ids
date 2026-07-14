@@ -6,6 +6,7 @@ from faithfulids.metrics.layer1.metrics import (
     FORMULA_VERSION,
     LAYER1_METRICS,
     arc,
+    arc_n_pairs,
     compute_all,
     direction_assertion_rate,
     dsa,
@@ -27,5 +28,6 @@ __all__ = [
     "dsa_asserted",
     "direction_assertion_rate",
     "arc",
+    "arc_n_pairs",
     "hfr",
 ]

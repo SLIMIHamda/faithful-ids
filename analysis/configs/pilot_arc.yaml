@@ -1,0 +1,19 @@
+id: pilot_arc
+hypothesis: null
+description: >-
+  NON-CITABLE pilot analysis. Bootstrap mean + 95% CI of Layer-1 ARC (Attribution
+  Rank Correlation, top-k) per generator, from the REAL pilot run. Gated on
+  arc_n_pairs >= 2: Spearman is undefined with < 2 rank-pairs and the per-instance
+  value there is a structural 0.0 (NaN-exclusion aggregation, 2026-07-14) — averaging
+  those in would report low-citation coverage as low rank fidelity. Report the
+  kept-instance count (n_instances) alongside every mean. Uses source.select: latest
+  because the pilot is non-citable; confirmatory analyses enumerate run_ids.
+source:
+  experiment: EXP-PILOT-001
+  select: latest
+test: mean_ci
+metric: arc
+gate_metric: arc_n_pairs
+gate_min: 2
+generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte]
+seed: 0

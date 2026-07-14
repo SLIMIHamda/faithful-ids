@@ -79,6 +79,20 @@ def test_gated_instance_values_excludes_undefined_but_keeps_failures():
     assert ungated == [1.0, 0.0, 0.0]  # naive mean would be 0.333 — the structural-zero trap
 
 
+def test_gated_instance_values_arc_pairs_threshold():
+    """ARC gated on arc_n_pairs>=2 (Spearman needs >=2 points): drops <2-pair
+    instances (structural 0.0) but keeps a genuine anti-correlation (pairs>=2)."""
+    from analysis.run import _instance_values
+
+    rows = [
+        _row("i0", "arc", 1.0), _row("i0", "arc_n_pairs", 3.0),    # defined, kept
+        _row("i1", "arc", -1.0), _row("i1", "arc_n_pairs", 2.0),   # anti-corr FAILURE -> keep
+        _row("i2", "arc", 0.0), _row("i2", "arc_n_pairs", 1.0),    # < 2 pairs -> undefined -> drop
+    ]
+    gated = _instance_values(rows, "arc", "b4_vte", gate_metric="arc_n_pairs", gate_min=2)
+    assert gated == [1.0, -1.0]  # i2 dropped; the real failure i1 stays in
+
+
 def test_variance_shares_bounded():
     sh = variance_shares([1, 2, 3, 4, 5, 6], {"g": ["a", "a", "a", "b", "b", "b"]})
     assert 0.0 <= sh["g"] <= 1.0

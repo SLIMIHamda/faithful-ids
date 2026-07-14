@@ -31,8 +31,16 @@ metrics:
       the extractor defaulting. Coverage companion to dsa_asserted and its aggregation
       gate (rate>0 iff dsa_asserted is defined for the instance).
   - name: arc
-    formula_version: 1.0.0
-    notes: Attribution Rank Correlation (Spearman) between claimed and true ranks.
+    formula_version: 1.2.0
+    notes: Attribution Rank Correlation (Spearman) between claimed and true ranks,
+      over the attribution's top-k features only (out-of-top-k ranks separate
+      near-zero SHAP noise). Run-level mean EXCLUDES instances with < 2 rank-pairs
+      (arc_n_pairs < 2) — the per-instance 0.0 there is a structural undefined, not
+      zero correlation (see analysis.run gated mean). Read WITH arc_n_pairs.
+  - name: arc_n_pairs
+    formula_version: 1.2.0
+    notes: Number of rank-pairs ARC rests on (claimed-with-rank in top-k). Coverage
+      companion to arc and its aggregation gate (>= 2 iff arc is defined).
   - name: hfr
     formula_version: 1.0.0
     notes: Hallucinated-Feature Rate (claimed features absent from the attribution).

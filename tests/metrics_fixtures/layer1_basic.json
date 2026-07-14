@@ -1,5 +1,5 @@
 {
-  "description": "Hand-computed Layer-1 fixture. Attribution top-3 = {A,B,C} (by |value|). Claims name A(+,1, word-evidenced), B(+,2) [WRONG sign: attr B is negative; direction_evidence 'default' = extractor guess, no textual assertion], and E(+,3, word-evidenced) [HALLUCINATED: absent from attribution]. Present claims = {A,B}; asserted present = {A}. So dsa = 1/2 (grades the default guess), dsa_asserted = 1/1 (A only, correct), direction_assertion_rate = 1/2. All other values as before.",
+  "description": "Hand-computed Layer-1 fixture. Attribution top-3 = {A,B,C} (by |value|). Claims name A(+,1, word-evidenced), B(+,2) [WRONG sign: attr B is negative; direction_evidence 'default' = extractor guess, no textual assertion], and E(+,3, word-evidenced) [HALLUCINATED: absent from attribution]. Present claims = {A,B}; asserted present = {A}. So dsa = 1/2 (grades the default guess), dsa_asserted = 1/1 (A only, correct), direction_assertion_rate = 1/2. ARC rank-pairs = claimed-with-rank in top-3 = {A(1),B(2)} -> arc_n_pairs = 2, arc = 1.0 (perfectly ordered). All other values as before.",
   "top_k": 3,
   "attribution": {
     "instance_id": "i0",
@@ -29,6 +29,7 @@
     "dsa_asserted": 1.0,
     "direction_assertion_rate": 0.5,
     "arc": 1.0,
+    "arc_n_pairs": 2.0,
     "hfr": 0.3333333333333333
   }
 }
