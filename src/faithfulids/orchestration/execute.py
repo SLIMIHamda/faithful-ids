@@ -218,14 +218,29 @@ def run_pilot(
     artifacts = run_cells(cases, generators, components, seed=gen_seed)
 
     # -- cost accounting ---------------------------------------------------- #
+    # tokens/latency/$ are run-global; coverage/abstention_rate belong ONLY to
+    # abstention-capable generators (B4). Averaging abstention over all five
+    # baselines made 24/60 read as 0.08 — scope the denominator to B4's cells.
     records = list(ledger.index.values())
-    abstentions = [e.abstained for e in artifacts.explanations]
+    abst_capable = {
+        gid for gid in generator_ids if load_config("generator", gid).get("abstention")
+    }
+    abstentions = [e.abstained for e in artifacts.explanations if e.generator_id in abst_capable]
+    _scoped = {"coverage", "abstention_rate"}
     for name, value in cost_accounting(records, abstentions).items():
-        if isinstance(value, (int, float)):
-            artifacts.metric_rows.append({
-                "instance_id": "__aggregate__", "layer": "cost", "metric": name,
-                "value": float(value), "grouping": {},
-            })
+        if not isinstance(value, (int, float)):
+            continue
+        if name in _scoped and not abstentions:
+            continue  # no abstention-capable generator in this run → undefined, omit
+        grouping = (
+            {"scope": "abstention_capable", "generators": sorted(abst_capable),
+             "n_denominator": len(abstentions)}
+            if name in _scoped else {}
+        )
+        artifacts.metric_rows.append({
+            "instance_id": "__aggregate__", "layer": "cost", "metric": name,
+            "value": float(value), "grouping": grouping,
+        })
 
     # -- write the run ------------------------------------------------------ #
     if code_version is None:

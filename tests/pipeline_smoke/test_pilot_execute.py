@@ -83,6 +83,13 @@ def test_pilot_execute_end_to_end(tmp_path):
     # Layer-2 (model-level) and cost rows present
     assert any(r["layer"] == "layer2" for r in rows)
     assert any(r["layer"] == "cost" and r["metric"] == "coverage" for r in rows)
+    # queue #2: abstention_rate denominator is scoped to abstention-capable (B4)
+    # generations, NOT all five baselines (else 24/60 reads as 0.08)
+    ar = [r for r in rows if r["layer"] == "cost" and r["metric"] == "abstention_rate"]
+    n_b4 = len({r["instance_id"] for r in rows
+                if r["layer"] == "layer1" and r["grouping"].get("generator_id") == "b4_vte"})
+    assert ar and ar[0]["grouping"].get("scope") == "abstention_capable"
+    assert ar[0]["grouping"]["n_denominator"] == n_b4 and n_b4 > 0
     # B1 is faithful-by-construction -> its mean mention_f1 exceeds the free-form
     # stub generators' (a real, interpretable signal even in the wiring test)
     def mean_f1(g):

@@ -71,3 +71,20 @@ def test_b4_abstains_and_degrades_to_b1(tmp_path):
     assert rec.fallback_generator_id == "b1_template"
     assert rec.text.startswith("The model classified this flow as DoS Hulk")
     assert len(rec.llm_call_ids) == 2  # draft + verify, both logged
+    # queue #2: the abstention now carries a verifier trace (metadata was empty)
+    trace = rec.metadata["verifier_trace"]
+    assert trace["supported"] is False and trace["reason"]
+
+
+def test_rule_verifier_reasons():
+    """The rule verifier reports WHY it (dis)approved — the abstention trace."""
+    from faithfulids.generation.b4_vte.verifier import RuleVerifier
+
+    rv = RuleVerifier()
+    rfl = "1. Flow Duration (increases)\n2. SYN Flag Count (decreases)"
+    assert rv.verify("Flow Duration is higher than usual.", rfl).reason == "supported"
+    assert rv.verify("Nothing relevant here.", rfl).reason == "no_cited_feature"
+    assert rv.verify("Anything.", "no evidence lines here").reason == "no_evidence"
+    bad = rv.verify("Flow Duration decreased sharply.", rfl)  # evidence says increases
+    assert bad.supported is False and bad.reason == "direction_mismatch"
+    assert bad.detail["feature"] == "flow duration"

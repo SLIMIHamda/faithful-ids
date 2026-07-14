@@ -70,10 +70,13 @@ class B4VtE(Generator):
             model_config=self.model, prompt=prompt,
             params={"temperature": self.temperature, "top_k": self.top_k, "seed": seed},
         )
-        supported, verify_call = self.verifier.verify(draft.text, rfl, seed=seed)
-        call_ids = (draft.request_hash, verify_call)
+        verdict = self.verifier.verify(draft.text, rfl, seed=seed)
+        call_ids = (draft.request_hash, verdict.call_id)
+        # Verifier trace: WHY the draft was (dis)approved — the coverage/abstention
+        # audit record (metadata was previously empty, hiding the abstention cause).
+        trace = verdict.as_trace(getattr(self.verifier, "model_family", "unknown"))
 
-        if decide_abstention(supported):
+        if decide_abstention(verdict.supported):
             fb = self.fallback.generate(context)
             return ExplanationRecord(
                 instance_id=context.instance_id,
@@ -82,6 +85,7 @@ class B4VtE(Generator):
                 llm_call_ids=call_ids,
                 abstained=True,
                 fallback_generator_id=self.fallback.generator_id,
+                metadata={"verifier_trace": trace},
             )
         return ExplanationRecord(
             instance_id=context.instance_id,
@@ -89,6 +93,7 @@ class B4VtE(Generator):
             text=draft.text,
             llm_call_ids=call_ids,
             abstained=False,
+            metadata={"verifier_trace": trace},
         )
 
 

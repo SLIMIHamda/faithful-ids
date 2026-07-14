@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
+from faithfulids.generation.b4_vte.verifier.verdict import VerifierVerdict
 from faithfulids.llm import load_prompt
 
 
@@ -23,12 +24,13 @@ class Verifier:
         self.model = model_config
         self.model_family = verifier_config["model_family"]
 
-    def verify(self, draft_text: str, ranked_feature_list: str, *, seed: int) -> tuple[bool, str]:
-        """Return (supported, verifier_call_hash).
+    def verify(self, draft_text: str, ranked_feature_list: str, *, seed: int) -> VerifierVerdict:
+        """Return a :class:`VerifierVerdict` (``call_id`` = the verifier call hash).
 
         The verifier prompt emits a ``SUPPORTED`` / ``UNSUPPORTED`` verdict token;
         anything not clearly SUPPORTED is treated as unsupported (fail-safe →
-        abstention → B1 fallback, never silence).
+        abstention → B1 fallback, never silence). ``reason`` records which token
+        pattern drove the verdict, for the abstention trace.
         """
         prompt = self.template.replace(
             "{{ranked_feature_list}}", ranked_feature_list
@@ -38,4 +40,7 @@ class Verifier:
         )
         text = resp.text.upper()
         supported = "SUPPORTED" in text and "UNSUPPORTED" not in text
-        return supported, resp.request_hash
+        reason = "supported" if supported else (
+            "unsupported_token" if "UNSUPPORTED" in text else "no_verdict_token"
+        )
+        return VerifierVerdict(supported, resp.request_hash, reason)
