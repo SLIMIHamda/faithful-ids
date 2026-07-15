@@ -1,0 +1,16 @@
+id: capability_scaling
+hypothesis: null
+description: >-
+  NON-CITABLE capability-anchored scaling analysis. Joins per-model faithfulness
+  (Layer-1 mention F1 for the attribution-blind B2 and SHAP-grounded B3 generators)
+  with the external capability anchor (analysis/data/capability_anchor.yaml), so
+  faithfulness is plotted against measured MMLU/IFEval instead of raw parameter
+  count — defusing the newer+bigger / cross-family confound of the scale sweep.
+  run_ids are enumerated AFTER the per-model runs exist (one run per generator LLM;
+  never globbed, hostile-audit A7) and the anchor is populated with harness-matched
+  numbers; until both hold, the analysis reports pending and the figure skips.
+run_ids: []
+test: capability_scaling
+metric: mention_f1
+generators: [b2_zeroshot, b3_dte_style]
+anchor: analysis/data/capability_anchor.yaml

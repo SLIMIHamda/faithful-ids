@@ -1,0 +1,13 @@
+id: pilot_cost
+hypothesis: null
+description: >-
+  NON-CITABLE pilot session-stats: run-level cost/throughput aggregates (from the
+  cost-layer metric rows — n_explanations, total_tokens, mean_latency_ms, coverage,
+  abstention_rate) for the latest pilot run. One generator LLM per run, so this
+  reports that model's operational cost; abstention_rate carries its scope grouping
+  (B4-only denominator, post the queue-#2 fix). Uses source.select: latest because
+  the pilot is non-citable.
+source:
+  experiment: EXP-PILOT-001
+  select: latest
+test: cost_summary

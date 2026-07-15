@@ -93,6 +93,31 @@ def test_gated_instance_values_arc_pairs_threshold():
     assert gated == [1.0, -1.0]  # i2 dropped; the real failure i1 stays in
 
 
+def test_capability_points_join_and_pending():
+    """Capability anchor join: sorts by params, joins by llm, and stays 'pending'
+    (capability_populated False) while any MMLU is null — never fabricates an x-axis."""
+    from analysis.run import _capability_points, _mean
+
+    assert _mean([]) is None and _mean([1.0, 2.0]) == 1.5
+    anchor = [
+        {"llm": "big", "params_b": 32.0, "mmlu": None, "ifeval": None},
+        {"llm": "small", "params_b": 3.0, "mmlu": 0.60, "ifeval": 0.50},
+    ]
+    summaries = [
+        {"llm": "big", "faithfulness": {"b2_zeroshot": 0.10}},
+        {"llm": "small", "faithfulness": {"b2_zeroshot": 0.06}},
+    ]
+    res = _capability_points(anchor, summaries, "mention_f1", ["b2_zeroshot"])
+    assert [p["llm"] for p in res["points"]] == ["small", "big"]  # sorted by params_b
+    assert res["capability_populated"] is False  # big.mmlu is null
+    # once every model's MMLU is filled, it becomes plottable
+    anchor[0]["mmlu"] = 0.80
+    res2 = _capability_points(anchor, summaries, "mention_f1", ["b2_zeroshot"])
+    assert res2["capability_populated"] is True
+    assert res2["points"][1] == {"llm": "big", "params_b": 32.0, "mmlu": 0.80,
+                                 "ifeval": None, "faithfulness": {"b2_zeroshot": 0.10}}
+
+
 def test_variance_shares_bounded():
     sh = variance_shares([1, 2, 3, 4, 5, 6], {"g": ["a", "a", "a", "b", "b", "b"]})
     assert 0.0 <= sh["g"] <= 1.0

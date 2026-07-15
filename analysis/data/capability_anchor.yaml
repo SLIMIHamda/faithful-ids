@@ -1,0 +1,62 @@
+# Capability anchor for the generator scaling analysis (NON-CITABLE pilot).
+#
+# WHY THIS EXISTS. The scale sweep (3B / 7B / 8B / 32B) uses parameter count as a
+# crude x-axis, but the generators also cross model *generations* and *families*
+# (Qwen2.5-3B vs Qwen3-8B is "newer+bigger", not pure scale; Mistral-7B is a
+# different family). Every scaling claim in this project must be read against an
+# EXTERNAL capability anchor (a standing methodological rule) so "bigger" is
+# replaced by *measured capability*. This file maps each pinned generator revision
+# to external benchmark scores; the capability_scaling analysis/figure plot
+# faithfulness against these instead of against raw parameter count.
+#
+# HOW TO POPULATE (values are null until measured — pending, never fabricated).
+# Run a single evaluation harness over the *exact pinned revisions* below so the
+# numbers are harness-matched (self-reported technical-report numbers are NOT
+# comparable across families/generations and must not be mixed in silently):
+#   lm-eval --model hf --model_args pretrained=<hf_repo>,revision=<revision> \
+#           --tasks mmlu,ifeval --batch_size auto
+# Paste the resulting accuracy (mmlu) and prompt-level strict accuracy (ifeval)
+# into `mmlu` / `ifeval` below, set `capability_source` to the harness+date, and
+# keep `params_b` (structural, already filled). One source for all four rows.
+#
+# TIER-A UPGRADE PATH. For a citable run this should graduate to a schema-validated,
+# provenance-hashed config under configs/ (new family + configs/schema/*.json) and
+# be pinned at prereg-v1; at pilot scale it lives here as analysis input.
+#
+# params_b = total parameters in billions (all four are DENSE, so total == active).
+
+id: capability_anchor
+note: "external capability scores per pinned generator revision; null = not yet measured"
+generators:
+  - llm: qwen2_5_3b_instruct
+    family: qwen
+    hf_repo: Qwen/Qwen2.5-3B-Instruct
+    revision: aa8e72537993ba99e69dfaafa59ed015b17504d1
+    params_b: 3.1
+    mmlu: null
+    ifeval: null
+    capability_source: null
+  - llm: mistral_7b_instruct_4bit
+    family: mistral
+    hf_repo: mistralai/Mistral-7B-Instruct-v0.3
+    revision: c170c708c41dac9275d15a8fff4eca08d52bab71
+    params_b: 7.2
+    mmlu: null
+    ifeval: null
+    capability_source: null
+  - llm: qwen3_8b_4bit
+    family: qwen
+    hf_repo: Qwen/Qwen3-8B
+    revision: b968826d9c46dd6066d109eabc6255188de91218
+    params_b: 8.2
+    mmlu: null
+    ifeval: null
+    capability_source: null
+  - llm: qwen3_32b_4bit
+    family: qwen
+    hf_repo: Qwen/Qwen3-32B
+    revision: 9216db5781bf21249d130ec9da846c4624c16137
+    params_b: 32.8
+    mmlu: null
+    ifeval: null
+    capability_source: null

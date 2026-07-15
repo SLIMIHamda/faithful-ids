@@ -277,6 +277,22 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   predates Qwen3 support) resolves to a recent Qwen3-capable 4.x; the exact resolved
   version is recorded post-pin. Replay-only re-scoring loads no model and is
   unaffected; LLM-assisted extraction (Gemma-4) needs v5 and runs in its own session.
+- **Capability anchor + session-stats analysis (NEXT-QUEUE item 6).** Two prep
+  artifacts for the scaling story. (1) **Capability anchor:**
+  `analysis/data/capability_anchor.yaml` maps each pinned generator revision
+  (Qwen2.5-3B / Mistral-7B-v0.3 / Qwen3-8B / Qwen3-32B) to parameter count and
+  external MMLU / IFEval slots, so the scaling x-axis becomes *measured capability*
+  rather than raw parameter count — defusing the newer+bigger / cross-family
+  confound of the scale sweep. The benchmark values ship **null (pending, never
+  fabricated)**; populate them with harness-matched `lm-eval` numbers over the exact
+  pinned revisions (one source for all four). A new `capability_scaling` analysis
+  test + `fig_capability_scaling` figure join faithfulness (B2/B3 mention F1) with
+  the anchor and stay pending / skip until both the per-model runs are enumerated
+  and the anchor is populated. (2) **Session-stats:** a `cost_summary` analysis test
+  + `pilot_cost` config surface the run-level cost/throughput aggregates
+  (`n_explanations`, `total_tokens`, `mean_latency_ms`, `coverage`,
+  `abstention_rate`) already emitted on the cost layer, wired into both Kaggle
+  launchers' analysis loops. The pure capability-join core is unit-tested.
 
 ### Metric formula versions / schema
 

@@ -24,7 +24,7 @@ from analysis.src.bootstrap_ci import bootstrap_mean_ci
 from analysis.src.coverage_risk import risk_coverage_curve
 from analysis.src.friedman_nemenyi import friedman_nemenyi
 from faithfulids.provenance import repo_root, sha256_json, sha256_text
-from faithfulids.results.api import ResultError, list_runs, load_metrics
+from faithfulids.results.api import ResultError, list_runs, load_metrics, load_run
 
 CONFIG_DIR = repo_root() / "analysis" / "configs"
 OUTPUT_DIR = repo_root() / "analysis" / "outputs"
@@ -75,6 +75,35 @@ def _instance_values(rows, metric, generator, *, gate_metric=None, gate_min=None
         keep = (lambda v: v >= gate_min) if gate_min is not None else (lambda v: v > 0.0)
         return [v for inst, v in sorted(vals.items()) if keep(gate.get(inst, 0.0))]
     return [v for _, v in sorted(vals.items())]
+
+
+def _mean(values):
+    return sum(values) / len(values) if values else None
+
+
+def _capability_points(anchor_generators, run_summaries, metric, generators):
+    """Pure join of the capability anchor with per-run faithfulness (2026-07-14).
+
+    Anchors the scaling x-axis on measured capability (MMLU/IFEval) instead of raw
+    parameter count, so "bigger" is replaced by capability and the newer+bigger /
+    cross-family confound is visible. Returns one point per run with the anchor's
+    params/capability and the requested generators' mean faithfulness. Kept pure so
+    it is unit-testable without run directories; the run.py test branch feeds it
+    real runs. ``capability_populated`` is False while any MMLU is null (the anchor
+    ships unpopulated — pending, never fabricated), and the figure stays pending."""
+    by_llm = {g["llm"]: g for g in anchor_generators}
+    points = []
+    for s in run_summaries:
+        a = by_llm.get(s["llm"], {})
+        points.append({
+            "llm": s["llm"], "params_b": a.get("params_b"),
+            "mmlu": a.get("mmlu"), "ifeval": a.get("ifeval"),
+            "faithfulness": s["faithfulness"],
+        })
+    points.sort(key=lambda p: (p["params_b"] is None, p["params_b"] or 0.0))
+    populated = bool(points) and all(p["mmlu"] is not None for p in points)
+    return {"metric": metric, "generators": list(generators), "points": points,
+            "capability_populated": populated}
 
 
 def _layer1_matrix(rows, metric, generators):
@@ -130,6 +159,29 @@ def build_result(name: str, runs_root=None) -> tuple[dict, list[str]]:
         confidences = [v for _, v in per_inst]
         result = risk_coverage_curve(risks, confidences)
         result.update({"metric": metric, "generator": g})
+    elif test == "cost_summary":
+        # session-stats: run-level cost/throughput aggregates (cost-layer rows,
+        # instance_id "__aggregate__"). Reported per run (one generator LLM/run).
+        per_run = {}
+        for rid in run_ids:
+            rrows = load_metrics(rid, runs_root)
+            cost = {r["metric"]: r["value"] for r in rrows if r["layer"] == "cost"}
+            scope = next((r["grouping"] for r in rrows
+                          if r["layer"] == "cost" and r["metric"] == "abstention_rate"), {})
+            per_run[rid] = {"cost": cost, "abstention_scope": scope}
+        result = {"per_run": per_run}
+    elif test == "capability_scaling":
+        anchor = yaml.safe_load((repo_root() / cfg["anchor"]).read_text(encoding="utf-8"))
+        gens = cfg["generators"]
+        summaries = []
+        for rid in run_ids:
+            handle = load_run(rid, runs_root)
+            llm = next((m.identity.split("@", 1)[0] for m in handle.manifest.models
+                        if m.role == "llm"), None)
+            rrows = load_metrics(rid, runs_root)
+            faith = {g: _mean(_instance_values(rrows, cfg["metric"], g)) for g in gens}
+            summaries.append({"run_id": rid, "llm": llm, "faithfulness": faith})
+        result = _capability_points(anchor["generators"], summaries, cfg["metric"], gens)
     else:
         raise ValueError(f"unknown analysis test: {test!r}")
     return {"analysis": name, "hypothesis": cfg.get("hypothesis"), "result": result}, run_ids
