@@ -1,0 +1,1052 @@
+{
+ "aud-000": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-108",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-001": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-6",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-002": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-130",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.6
+ },
+ "aud-003": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-17",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-004": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-38",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-005": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-99",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-006": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-16",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-007": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-11",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.6
+ },
+ "aud-008": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-7",
+  "b4_dsa_3B": 0.75,
+  "b4_dsa_8B": 0.6
+ },
+ "aud-009": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-73",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-010": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-65",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-011": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-5",
+  "b4_dsa_3B": 0.75,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-012": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-46",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-013": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-92",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-014": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-112",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-015": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-94",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-016": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-114",
+  "b4_dsa_3B": 0.667,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-017": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-33",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-018": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-117",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-019": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-54",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-020": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-13",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-021": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-32",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-022": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-102",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-023": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-125",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-024": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-70",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-025": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-42",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-026": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-18",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-027": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-111",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-028": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-10",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-029": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-35",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-030": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-127",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-031": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-144",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-032": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-61",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-033": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-144",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-034": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-107",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-035": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-85",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-036": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-143",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-037": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-89",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-038": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-20",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-039": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-87",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-040": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-21",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-041": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-49",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-042": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-34",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-043": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-101",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-044": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-78",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-045": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-124",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-046": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-148",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.6
+ },
+ "aud-047": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-29",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-048": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-131",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-049": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-137",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-050": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-3",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-051": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-58",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-052": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-113",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-053": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-58",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-054": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-60",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-055": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-36",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-056": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-146",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-057": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-122",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-058": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-88",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-059": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-93",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-060": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-1",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-061": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-76",
+  "b4_dsa_3B": 0.667,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-062": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-4",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-063": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-102",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-064": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-77",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-065": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-26",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-066": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-140",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-067": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-68",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-068": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-139",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-069": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-67",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-070": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-129",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-071": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-84",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-072": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-134",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-073": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-116",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-074": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-62",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-075": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-132",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-076": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-19",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-077": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-105",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-078": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-41",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-079": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-59",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-080": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-147",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-081": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-120",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-082": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-67",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-083": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-16",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-084": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-9",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-085": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-48",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-086": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-68",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-087": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-12",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-088": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-56",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-089": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-66",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-090": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-8",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-091": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-75",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-092": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-134",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-093": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-118",
+  "b4_dsa_3B": 0.75,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-094": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-25",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-095": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-127",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-096": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-149",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-097": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-98",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-098": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-138",
+  "b4_dsa_3B": 0.75,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-099": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-56",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-100": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-72",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-101": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-79",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-102": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-51",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-103": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-40",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-104": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-101",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-105": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-119",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-106": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-39",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-107": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-52",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-108": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-133",
+  "b4_dsa_3B": 0.75,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-109": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-43",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-110": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-106",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-111": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-47",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-112": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-95",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-113": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-37",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-114": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-8",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-115": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-24",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-116": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-14",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-117": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-22",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-118": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-44",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-119": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-117",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-120": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-141",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-121": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-86",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.333
+ },
+ "aud-122": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-92",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-123": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-126",
+  "b4_dsa_3B": 0.75,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-124": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-82",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-125": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-81",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-126": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-0",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-127": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-135",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-128": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-63",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-129": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-17",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-130": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-71",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-131": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-109",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-132": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-110",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-133": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-104",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-134": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-69",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-135": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-2",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-136": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-103",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-137": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-145",
+  "b4_dsa_3B": 0.75,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-138": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-74",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-139": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-36",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-140": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-80",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-141": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-27",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.75
+ },
+ "aud-142": {
+  "generator": "b4_vte",
+  "group": "control",
+  "instance_id": "cic-83",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-143": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-97",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-144": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-96",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-145": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-63",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.5
+ },
+ "aud-146": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-23",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.4
+ },
+ "aud-147": {
+  "generator": "b4_vte",
+  "group": "degraded",
+  "instance_id": "cic-45",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 0.667
+ },
+ "aud-148": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-83",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ },
+ "aud-149": {
+  "generator": "b3_dte_style",
+  "group": "distractor",
+  "instance_id": "cic-80",
+  "b4_dsa_3B": 1.0,
+  "b4_dsa_8B": 1.0
+ }
+}

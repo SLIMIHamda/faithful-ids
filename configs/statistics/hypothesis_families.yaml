@@ -14,11 +14,16 @@ families:
     members: [h1_gap_layer1, h1_gap_layer2, h1_plausibility_decoupling]
     correction: holm_bonferroni
   H2:
-    description: "Faithfulness drops as narration becomes more fluent/free-form."
-    members: [h2_layer1_f1_drop, h2_dsa_drop]
+    description: "Faithfulness drops as narration becomes more fluent/free-form. Confirmatory
+      directional metric: dsa_asserted (reading fidelity over text-asserted directions),
+      co-reported with direction_assertion_rate; content metric: Layer-1 mention F1. Legacy
+      dsa is descriptive only (it grades extractor-defaulted directions against the sign base rate)."
+    members: [h2_layer1_f1_drop, h2_dsa_asserted_drop]
     correction: holm_bonferroni
   H3:
-    description: "Verify-then-Explain improves faithfulness (verifier-INDEPENDENT signals only)."
+    description: "Verify-then-Explain improves faithfulness (verifier-INDEPENDENT signals only).
+      Layer-1 confirmatory directional metric: dsa_asserted (with direction_assertion_rate);
+      content metric: mention F1; Layer-2: per-feature ε_model. Legacy dsa is descriptive only."
     members: [h3_layer1_gain, h3_layer2_gain]
     correction: holm_bonferroni
   H-T:

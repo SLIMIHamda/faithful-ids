@@ -6,7 +6,9 @@ thresholds:
   h2_absolute_drop:
     value: 10
     unit: percentage_points
-    description: "H2 decision: >= 10-point absolute Layer-1 F1/DSA drop."
+    description: "H2 decision: >= 10-point absolute drop in Layer-1 mention F1 or dsa_asserted
+      (the confirmatory directional metric, read with direction_assertion_rate). Legacy dsa is
+      descriptive only."
   ht_cohens_d:
     value: 0.4
     unit: cohens_d

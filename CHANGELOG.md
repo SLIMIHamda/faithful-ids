@@ -247,6 +247,24 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   generations, not all five baselines — the 32B smoke's 24 abstentions over 60 B4
   cells read as **0.08** (24/300) and are now **0.400** (24/60); the two rows carry
   grouping `{scope, generators, n_denominator}`, tokens/latency/$ stay run-global.
+- **EXP-G-001 audit record committed + `dsa_asserted` designated primary
+  (NEXT-QUEUE item 3).** The blind human extractor audit (`extractor_audit_batch_v1`)
+  is now in-repo at `experiments/gates/EXP-G-001_audit_record/` with an
+  `AUDIT_RECORD.md` that states plainly it is **interim evidence, not a gate pass**:
+  150 items / one human annotator / directional-agreement scoring, vs the formal
+  gate's 300 items / two annotators / adjudicated F1 >= 0.95 + Krippendorff alpha.
+  So **EXP-G-001 stays `registered`** — the formal dual-annotated run against
+  extractor 1.4.0 is still owed before Tier-A citability. Reproduced from the
+  committed data: extractor-error **43.3% degraded** (135/238 correct) **vs 5.0%
+  control** (Fisher p = 1.9e-23), text directions 100% (degraded) / 99.5% (control),
+  all 117 disagreements the default-`+` artifact, 0/576 hedged; the excluded LLM
+  annotator (Meta MUSE, kappa 0.02) travels with it as provenance.
+  **Prereg designation (pre-freeze — the `prereg-v1` tag is not set yet):**
+  `dsa_asserted` is now the confirmatory directional metric across H2/H3,
+  co-reported with `direction_assertion_rate`, with legacy `dsa` demoted to
+  descriptive. `hypothesis_families.yaml` member `h2_dsa_drop` ->
+  `h2_dsa_asserted_drop`; H2/H3 descriptions and the `decision_thresholds.yaml`
+  `h2_absolute_drop` description name `dsa_asserted` explicitly.
 
 ### Metric formula versions / schema
 
