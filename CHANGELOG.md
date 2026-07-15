@@ -265,6 +265,18 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   descriptive. `hypothesis_families.yaml` member `h2_dsa_drop` ->
   `h2_dsa_asserted_drop`; H2/H3 descriptions and the `decision_thresholds.yaml`
   `h2_absolute_drop` description name `dsa_asserted` explicitly.
+- **`transformers<5` pinned in the generator launcher + post-pin env capture
+  (NEXT-QUEUE item 4).** `kaggle/kaggle_pilot_launcher.ipynb` install cell now pins
+  `transformers<5` before it writes `environment.txt` / `env-fingerprint.json`.
+  Kaggle ships transformers 5.0.0, whose bnb 4-bit load regressed
+  (huggingface/transformers#43032) and crashed the 4-bit generator load — the
+  Qwen3-32B run worked around it by hand in a cell that ran *after* the freeze, so
+  its exported `environment.txt` recorded 5.0.0 while the run actually used 4.57.6.
+  Baking the pin in ahead of the capture removes the manual step and makes the
+  provenance file match what runs. `<5` (not the repo's declared `4.46.2`, which
+  predates Qwen3 support) resolves to a recent Qwen3-capable 4.x; the exact resolved
+  version is recorded post-pin. Replay-only re-scoring loads no model and is
+  unaffected; LLM-assisted extraction (Gemma-4) needs v5 and runs in its own session.
 
 ### Metric formula versions / schema
 
