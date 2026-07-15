@@ -36,6 +36,7 @@ _FAMILY_BY_DIR = {
     "metrics": "metric",
     "sampling": "sampling",
     "seeds": "seed_table",
+    "taxonomy": "taxonomy",
 }
 
 

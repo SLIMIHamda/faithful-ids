@@ -11,14 +11,26 @@ Needs only ``pyyaml`` + ``jsonschema``.
 
 from __future__ import annotations
 
+import re
 import sys
 
 from faithfulids.orchestration.config_loader import (
     ConfigError,
     iter_config_files,
+    load_config,
     repo_root,
     validate_file,
 )
+
+_NON_ALNUM = re.compile(r"[^a-z0-9]+")
+
+
+def _norm_label(s: str) -> str:
+    """Normalise a class label for taxonomy lookup — MUST match
+    ``faithfulids.datasets.loaders.cicids2017._norm`` (kept in sync by
+    ``test_taxonomy_single_source``; the loader can't be imported here — it pulls
+    in pandas, and validate-configs runs on pyyaml+jsonschema only)."""
+    return _NON_ALNUM.sub(" ", str(s).lower()).strip()
 from faithfulids.orchestration.references import (
     _kb_versions,
     collect_prompt_refs,
@@ -52,11 +64,32 @@ def _check_references(config: dict, errors: list[str], where: str) -> None:
             index = load_all_experiments()
             if config["audit_gate_ref"] not in index:
                 errors.append(f"{where}: audit_gate_ref {config['audit_gate_ref']} not registered")
+        elif kind == "class_taxonomy":
+            # every label_map target is a canonical class or the "excluded" sentinel
+            canon = set(config["canonical_classes"])
+            for k, v in config["label_map"].items():
+                if v != "excluded" and v not in canon:
+                    errors.append(
+                        f"{where}: label_map[{k!r}] -> {v!r} is not a canonical class or 'excluded'"
+                    )
         elif kind in ("kb_feature_dictionary", "kb_attack_classes"):
             names = _kb_versions()
             ds, ver = config["dataset"], config["version"]
             if names.get(ds) != ver:
                 errors.append(f"{where}: KB {ds} version {ver} != registry {names.get(ds)}")
+            if kind == "kb_attack_classes":
+                # SILENT-DRIFT GUARD (queue #5.1b): every attack-class KB entry must
+                # map to exactly one canonical class (or "excluded") in the single
+                # taxonomy config — else the KB's class semantics and the detector's
+                # target labels can diverge, invalidating per-class metrics.
+                tax = load_config("taxonomy", ds)
+                lm = {_norm_label(k): v for k, v in tax["label_map"].items()}
+                for entry in config["entries"]:
+                    if _norm_label(entry["name"]) not in lm:
+                        errors.append(
+                            f"{where}: attack class {entry['name']!r} has no mapping in "
+                            f"taxonomy:{ds} (silent-drift guard — add it to the taxonomy label_map)"
+                        )
     except ConfigError as exc:
         errors.append(f"{where}: {exc}")
 

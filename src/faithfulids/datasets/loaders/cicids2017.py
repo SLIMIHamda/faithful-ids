@@ -5,7 +5,7 @@ a directory — on Kaggle this is a mounted dataset. Performs the minimal,
 uncontroversial cleaning a *pilot* needs (strip column names, drop flow-identity
 / timestamp leakage columns, coerce features numeric, drop NaN/Inf rows, derive
 ``attack_class``, binary ``label``, and the coarsened multi-class ``target_class``
-— see ``CANONICAL_CLASSES``). This is **pilot-grade cleaning, not** the
+— see ``configs/taxonomy/``). This is **pilot-grade cleaning, not** the
 full Engelen/Lanvin correction pipeline (which stays the confirmatory path); the
 run manifest records the exact input file hashes so the pilot is reproducible.
 """
@@ -14,10 +14,15 @@ from __future__ import annotations
 
 import glob
 import os
+import re
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
+
+from faithfulids.provenance import repo_root  # L0 repo-root discovery (layer-safe)
 
 # Flow-identity / timestamp columns that leak or are non-generalisable.
 LEAKAGE_COLUMNS = {
@@ -27,50 +32,49 @@ LEAKAGE_COLUMNS = {
 }
 _META = {"Label", "attack_class", "label", "target_class"}
 
-# Multi-class target taxonomy (queue #5.1). The raw CICIDS `Label` strings are
-# noisy (variant spellings, non-ASCII separators in "Web Attack \x96 ...") and
-# fine-grained; this coarsens them to a stable set the detector predicts and the
-# attack-class KB describes. PILOT-GRADE DEFAULT — a defensible standard CICIDS
-# grouping, not yet a pre-registered config; Tier-A should promote the mapping to
-# a schema-validated config and reconcile kb/attack_classes with it.
-#
-# Choices: DoS variants (Hulk/GoldenEye/slowloris/Slowhttptest) collapse to "DoS"
-# while volumetric "DDoS" stays separate (they are distinct flow patterns); the
-# three "Web Attack" variants collapse to "Web Attack"; Infiltration (~36 rows in
-# full CICIDS) and Heartbleed (~11) are EXCLUDED — too few for a per-class recall
-# floor — and map to None (their rows are dropped when the multi-class frame is
-# built, logged there). Unknown labels also map to None (fail-safe, logged).
-CANONICAL_CLASSES: tuple[str, ...] = (
-    "BENIGN", "DoS", "DDoS", "PortScan", "FTP-Patator", "SSH-Patator", "Web Attack", "Bot",
-)
+# Multi-class target taxonomy (queue #5.1 / #5.1b). The canonical class set and the
+# raw-label -> canonical mapping live in ONE schema-validated config,
+# configs/taxonomy/<dataset>.yaml, which the attack-class KB is also validated
+# against (validate-configs) so the two cannot drift silently. The loader reads
+# that config directly (repo-root file read — NO orchestration/L5 import) instead
+# of hard-coding the taxonomy. PILOT-GRADE DEFAULT — see the config header.
 
 
-def canonical_class(raw: str) -> str | None:
-    """Map a raw CICIDS `Label` to a `CANONICAL_CLASSES` member, or None if the
-    family is excluded (rare) or unknown. Whitespace-normalised, case-insensitive."""
-    s = " ".join(str(raw).strip().split()).lower()
-    if s == "benign":
-        return "BENIGN"
-    if s.startswith("web attack"):
-        return "Web Attack"
-    if s == "ddos":
-        return "DDoS"
-    if s.startswith("dos"):  # Hulk / GoldenEye / slowloris / Slowhttptest
-        return "DoS"
-    if s == "portscan":
-        return "PortScan"
-    if s == "ftp-patator":
-        return "FTP-Patator"
-    if s == "ssh-patator":
-        return "SSH-Patator"
-    if s == "bot":
-        return "Bot"
-    return None  # Infiltration / Heartbleed / unknown -> excluded
+def _taxonomy_path(dataset: str) -> Path:
+    return repo_root() / "configs" / "taxonomy" / f"{dataset}.yaml"
 
 
-def class_index_map() -> dict[str, int]:
+@lru_cache(maxsize=4)
+def load_taxonomy(dataset: str = "cicids2017") -> dict:
+    """The class taxonomy for ``dataset`` (single source of truth)."""
+    with open(_taxonomy_path(dataset), "r", encoding="utf-8") as fh:
+        return yaml.safe_load(fh)
+
+
+def _norm(raw: str) -> str:
+    """Normalise a raw label for taxonomy lookup: lowercase, every run of
+    non-alphanumeric chars -> a single space, stripped (so 'FTP-Patator',
+    'Web Attack \\x96 XSS', 'DoS Hulk' become 'ftp patator', 'web attack xss',
+    'dos hulk'). Must match the normalisation validate-configs uses."""
+    return re.sub(r"[^a-z0-9]+", " ", str(raw).lower()).strip()
+
+
+def canonical_classes(taxonomy: dict | None = None) -> tuple[str, ...]:
+    """The ordered canonical target classes (the detector's num_class order)."""
+    return tuple((taxonomy or load_taxonomy())["canonical_classes"])
+
+
+def canonical_class(raw: str, taxonomy: dict | None = None) -> str | None:
+    """Map a raw CICIDS `Label` to a canonical class, or None if the family is
+    excluded (rare) or unknown — resolved through the taxonomy config."""
+    tax = taxonomy or load_taxonomy()
+    val = tax["label_map"].get(_norm(raw))
+    return val if val in set(tax["canonical_classes"]) else None  # 'excluded'/unknown -> None
+
+
+def class_index_map(taxonomy: dict | None = None) -> dict[str, int]:
     """Canonical class name -> stable integer id (the detector's `num_class` order)."""
-    return {name: i for i, name in enumerate(CANONICAL_CLASSES)}
+    return {name: i for i, name in enumerate(canonical_classes(taxonomy))}
 
 
 def _strip_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -105,7 +109,8 @@ def load_cicids2017(
     # Additive multi-class target (queue #5.1); None for excluded/rare families.
     # No rows are dropped here — the binary `label` path and the toy stay unchanged;
     # `multiclass_frame` selects the valid-target rows when a K-way detector is built.
-    df["target_class"] = df["attack_class"].map(canonical_class)
+    _tax = load_taxonomy()
+    df["target_class"] = df["attack_class"].map(lambda r: canonical_class(r, _tax))
 
     if drop_leakage:
         df = df.drop(columns=[c for c in df.columns if c in LEAKAGE_COLUMNS], errors="ignore")
@@ -131,7 +136,7 @@ def multiclass_frame(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
     (a class the sample never contains would otherwise leave XGBoost a dead slot).
     The drop count is the caller's to log."""
     valid = df[df["target_class"].notna()].reset_index(drop=True)
-    present = [c for c in CANONICAL_CLASSES if c in set(valid["target_class"])]
+    present = [c for c in canonical_classes() if c in set(valid["target_class"])]
     idx = {name: i for i, name in enumerate(present)}
     valid = valid.copy()
     valid["target_index"] = valid["target_class"].map(idx).astype(int)

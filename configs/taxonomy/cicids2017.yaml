@@ -1,0 +1,37 @@
+id: cicids2017
+schema_version: v1
+kind: class_taxonomy
+dataset: cicids2017
+version: 1.0.0
+# SINGLE SOURCE OF TRUTH for the multi-class target (queue #5.1b). Both the
+# dataset loader (raw Label -> canonical) and the attack-class KB read/validate
+# against this file, so the two taxonomies cannot drift silently. validate-configs
+# enforces: every label_map value is a canonical class or "excluded", and every
+# kb/attack_classes entry maps here to exactly one canonical class (or "excluded").
+#
+# Canonical target the detector predicts and the KB describes. PILOT-GRADE DEFAULT:
+# DoS variants collapse to "DoS" (DDoS stays separate); the three Web Attack
+# variants collapse to "Web Attack"; Infiltration/Heartbleed are excluded (too
+# rare for a per-class recall floor). Tier-A may revise this (version bump).
+canonical_classes: [BENIGN, DoS, DDoS, PortScan, FTP-Patator, SSH-Patator, Web Attack, Bot]
+# Keys are NORMALISED raw labels: lowercased, every run of non-alphanumeric chars
+# (spaces, '-', the non-ASCII separator CICIDS uses in "Web Attack \x96 ...")
+# collapsed to a single space, stripped. Values are a canonical class or "excluded".
+# Both raw CSV variants AND the coarse KB family names are covered.
+label_map:
+  benign: BENIGN
+  dos hulk: DoS
+  dos goldeneye: DoS
+  dos slowloris: DoS
+  dos slowhttptest: DoS
+  ddos: DDoS
+  portscan: PortScan
+  ftp patator: FTP-Patator
+  ssh patator: SSH-Patator
+  bot: Bot
+  web attack: Web Attack
+  web attack brute force: Web Attack
+  web attack xss: Web Attack
+  web attack sql injection: Web Attack
+  infiltration: excluded
+  heartbleed: excluded

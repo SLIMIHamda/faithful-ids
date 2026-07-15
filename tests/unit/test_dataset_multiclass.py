@@ -5,10 +5,11 @@ from __future__ import annotations
 import pandas as pd
 
 from faithfulids.datasets.loaders.cicids2017 import (
-    CANONICAL_CLASSES,
     canonical_class,
+    canonical_classes,
     class_index_map,
     feature_columns,
+    load_taxonomy,
     multiclass_frame,
 )
 
@@ -33,8 +34,38 @@ def test_canonical_class_coarsens_variants_and_excludes_rare():
 
 def test_class_index_map_is_stable_over_the_full_taxonomy():
     m = class_index_map()
-    assert m["BENIGN"] == 0 and set(m) == set(CANONICAL_CLASSES)
-    assert len(m) == len(CANONICAL_CLASSES) == 8
+    classes = canonical_classes()
+    assert m["BENIGN"] == 0 and set(m) == set(classes)
+    assert len(m) == len(classes) == 8
+
+
+def test_kb_attack_classes_all_map_in_the_taxonomy():
+    """Silent-drift guard (5.1b): every attack-class KB entry resolves through the
+    single taxonomy config to a canonical class or 'excluded'. Mirrors the
+    validate-configs check, on the REAL committed configs."""
+    import yaml
+
+    from faithfulids.provenance import repo_root
+    from faithfulids.datasets.loaders.cicids2017 import _norm
+
+    kb = yaml.safe_load(
+        (repo_root() / "kb" / "attack_classes" / "cicids2017.yaml").read_text(encoding="utf-8")
+    )
+    tax = load_taxonomy("cicids2017")
+    keys = {_norm(k) for k in tax["label_map"]}
+    unmapped = [e["name"] for e in kb["entries"] if _norm(e["name"]) not in keys]
+    assert not unmapped, f"KB classes not in the taxonomy: {unmapped}"
+
+
+def test_loader_and_validate_configs_normalisers_agree():
+    """The loader's _norm and validate_configs._norm_label MUST match, or the
+    drift guard and the runtime mapping disagree (validate_configs can't import the
+    loader — pandas — so the two are pinned equal here)."""
+    from faithfulids.datasets.loaders.cicids2017 import _norm
+    from faithfulids.orchestration.validate_configs import _norm_label
+
+    for s in ("FTP-Patator", "Web Attack \x96 XSS", "DoS Hulk", "  benign ", "DDoS"):
+        assert _norm(s) == _norm_label(s)
 
 
 def _frame():
