@@ -64,10 +64,26 @@ def test_class_names_must_match_the_probability_width():
         det.predict_proba([{"a": 1.0}])
 
 
-def test_multiclass_margin_defers_to_5_4_rather_than_guessing():
+def test_binary_margin_is_per_class_and_antisymmetric():
+    """(queue #5.4) predict_margin mirrors predict_proba's (n,K). A binary head's
+    single attack margin m yields [-m, m] — logit(P(BENIGN)) = -logit(P(ATTACK))."""
+    det = FrozenDetector(["a"], lambda m: [0.25 for _ in m], margin=lambda m: [1.5 for _ in m])
+    assert det.predict_margin([{"a": 1.0}]) == [[-1.5, 1.5]]
+
+
+def test_multiclass_margin_uses_the_native_per_class_margin():
+    det = FrozenDetector(
+        ["a"], lambda m: [[0.5, 0.2, 0.3] for _ in m],
+        class_names=["BENIGN", "DoS", "PortScan"],
+        margin=lambda m: [[0.1, -0.2, 0.3] for _ in m],
+    )
+    assert det.predict_margin([{"a": 1.0}]) == [[0.1, -0.2, 0.3]]
+
+
+def test_multiclass_margin_without_a_native_margin_fails_loudly():
     det = FrozenDetector(
         ["a"], lambda m: [[0.5, 0.2, 0.3] for _ in m],
         class_names=["BENIGN", "DoS", "PortScan"],
     )
-    with pytest.raises(NotImplementedError, match="5.4"):
+    with pytest.raises(NotImplementedError, match="native per-class margin"):
         det.predict_margin([{"a": 1.0}])

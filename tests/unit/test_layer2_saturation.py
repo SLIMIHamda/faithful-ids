@@ -21,8 +21,9 @@ class _SaturatedDetector:
     def predict_proba(self, rows):  # per-class contract (queue #5.2)
         return [[1.0 - p, p] for p in self._p_attack(rows)]
 
-    def predict_margin(self, rows):
-        return [math.log(p / (1.0 - p)) for p in self._p_attack(rows)]
+    def predict_margin(self, rows):  # per-class (n,K) contract (queue #5.4)
+        return [[-math.log(p / (1.0 - p)), math.log(p / (1.0 - p))]
+                for p in self._p_attack(rows)]
 
 
 def test_summary_reports_saturation_factor():

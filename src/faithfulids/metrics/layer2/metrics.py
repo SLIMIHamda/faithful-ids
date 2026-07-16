@@ -40,16 +40,23 @@ FORMULA_VERSION = "1.1.0"  # ε_att + ε_model *_cited. 1.2.0 (file): add |S|-no
 
 
 def _detector_score(
-    detector: DetectorArtifact, rows: Sequence[Mapping[str, float]], delta_space: str
+    detector: DetectorArtifact,
+    rows: Sequence[Mapping[str, float]],
+    delta_space: str,
+    target_class: str,
 ) -> list[float]:
-    """Attack-class score per row, in probability or margin (log-odds) space.
+    """Score of ``target_class`` per row, in probability or margin (log-odds) space.
 
-    TODO(#5.4): under a multi-class detector the erasure delta must be taken on the
-    PREDICTED class, not on the binary attack side; until #5.4 settles that, this
-    keeps the pilot's binary semantics via the 1 - P(BENIGN) shim.
+    The caller PINS ``target_class`` from the unerased instance and reuses it for
+    every erased variant (queue #5.4): erasure can flip the argmax, and a delta
+    taken across two DIFFERENT classes measures nothing.
     """
+    names = tuple(detector.class_names)
+    if target_class not in names:
+        raise ValueError(f"target class {target_class!r} is not one of {names}")
+    c = names.index(target_class)
     if delta_space == "prob":
-        return attack_probability(detector, rows)
+        return [float(row[c]) for row in detector.predict_proba(rows)]
     if delta_space == "margin":
         fn = getattr(detector, "predict_margin", None)
         if fn is None:
@@ -57,8 +64,33 @@ def _detector_score(
                 "delta_space='margin' requires the detector to expose predict_margin; "
                 "this frozen detector does not."
             )
-        return [float(x) for x in fn(rows)]
+        return [float(row[c]) for row in fn(rows)]
     raise ValueError(f"unknown delta_space {delta_space!r} (expected 'prob' or 'margin')")
+
+
+def _target_class(
+    detector: DetectorArtifact,
+    instance: Mapping[str, float],
+    explained_class: str | None = None,
+) -> str:
+    """The class Layer-2 measures — the class the ATTRIBUTION explains (queue #5.4).
+
+    An erasure delta is only interpretable against the same class the attribution
+    is about, so this mirrors the #5.3 selection rule:
+
+    * **binary** — the attribution explains the positive/attack side for every
+      instance (benign rows included), so Layer-2 measures that side. This is the
+      pilot's established semantics, deliberately unchanged.
+    * **multi-class** — the attribution explains the class the detector predicted
+      on the FULL instance; ``explained_class`` (stamped on the artifact by #5.3b)
+      is used when available, else it is recomputed from the unerased instance.
+    """
+    names = tuple(detector.class_names)
+    if len(names) == 2:
+        return names[-1]
+    if explained_class is not None:
+        return explained_class
+    return detector.predicted_class([dict(instance)])[0]
 
 
 def _cited_topk(claims: ClaimSet, detector: DetectorArtifact, k: int) -> list[str]:
@@ -99,8 +131,9 @@ def comprehensiveness(
     High ⇒ the attribution's named features really drove the decision (φ ↔ f).
     """
     topk = list(attribution.ranked_features(k))
+    target = _target_class(detector, instance, attribution.explained_class)
     s_full, s_erased = _detector_score(
-        detector, [dict(instance), erasure.erase(instance, topk)], delta_space
+        detector, [dict(instance), erasure.erase(instance, topk)], delta_space, target
     )
     return s_full - s_erased
 
@@ -120,8 +153,9 @@ def sufficiency(
     """
     topk = set(attribution.ranked_features(k))
     to_remove = [f for f in attribution.feature_names if f not in topk]
+    target = _target_class(detector, instance, attribution.explained_class)
     s_full, s_kept = _detector_score(
-        detector, [dict(instance), erasure.erase(instance, to_remove)], delta_space
+        detector, [dict(instance), erasure.erase(instance, to_remove)], delta_space, target
     )
     return s_full - s_kept
 
@@ -145,8 +179,9 @@ def comprehensiveness_cited(
     nothing decision-relevant, i.e. it is maximally unfaithful to the model here.
     """
     s = _cited_topk(claims, detector, k)
+    target = _target_class(detector, instance)
     s_full, s_erased = _detector_score(
-        detector, [dict(instance), erasure.erase(instance, s)], delta_space
+        detector, [dict(instance), erasure.erase(instance, s)], delta_space, target
     )
     return s_full - s_erased
 
@@ -163,8 +198,9 @@ def sufficiency_cited(
     """ε_model: drop in attack score when only the top-k *cited* features are kept."""
     s = set(_cited_topk(claims, detector, k))
     to_remove = [f for f in detector.feature_names if f not in s]
+    target = _target_class(detector, instance)
     s_full, s_kept = _detector_score(
-        detector, [dict(instance), erasure.erase(instance, to_remove)], delta_space
+        detector, [dict(instance), erasure.erase(instance, to_remove)], delta_space, target
     )
     return s_full - s_kept
 
@@ -197,8 +233,9 @@ def comprehensiveness_cited_per_feature(
     s = _cited_topk(claims, detector, k)
     if not s:
         return 0.0
+    target = _target_class(detector, instance)
     s_full, s_erased = _detector_score(
-        detector, [dict(instance), erasure.erase(instance, s)], delta_space
+        detector, [dict(instance), erasure.erase(instance, s)], delta_space, target
     )
     return (s_full - s_erased) / len(s)
 
@@ -218,8 +255,9 @@ def sufficiency_cited_per_feature(
         return 0.0
     keep = set(s)
     to_remove = [f for f in detector.feature_names if f not in keep]
+    target = _target_class(detector, instance)
     s_full, s_kept = _detector_score(
-        detector, [dict(instance), erasure.erase(instance, to_remove)], delta_space
+        detector, [dict(instance), erasure.erase(instance, to_remove)], delta_space, target
     )
     return (s_full - s_kept) / len(s)
 

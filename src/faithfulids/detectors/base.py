@@ -141,38 +141,34 @@ class FrozenDetector:
         b = self._class_names.index(BENIGN_CLASS)
         return [1.0 - r[b] for r in self.predict_proba(rows)]
 
-    def predict_margin(self, rows: Sequence[Mapping[str, float]]) -> list[float]:
-        """Attack-class margin (raw log-odds). Consumed by margin-space Layer-2
-        deltas, which avoid probability saturation when the model is near-certain.
+    def predict_margin(self, rows: Sequence[Mapping[str, float]]) -> list[list[float]]:
+        """Per-class margin (raw log-odds), shape ``(n_samples, n_classes)`` —
+        mirroring ``predict_proba`` (queue #5.4). Consumed by margin-space Layer-2
+        deltas, which avoid probability saturation when the model is near-certain;
+        Layer-2 reads the column of the class the attribution explains.
 
         Uses the native margin when the family provides one; otherwise falls back
         to ``logit(clip(1 - P(BENIGN)))`` — exact for a binary-logistic head where
-        ``p = sigmoid(margin)``, monotone otherwise.
-
-        BINARY-ONLY for now: a multi-class head has one margin PER CLASS, and which
-        one to erase against is the predicted-class question that queue #5.4 settles
-        together with Layer-2. Until then this raises rather than guessing.
+        ``p = sigmoid(margin)``, monotone otherwise. A binary head reports a single
+        attack-side margin ``m``; the benign column is exactly ``-m``, since
+        ``logit(P(BENIGN)) = logit(1 - sigmoid(m)) = -m``.
         """
         if self._margin is not None:
             raw = [m for m in self._margin(self._matrix(rows))]
             if raw and hasattr(raw[0], "__len__"):
-                if len(raw[0]) != 2:
-                    raise NotImplementedError(
-                        "multi-class margin is per-class; the predicted-class margin "
-                        "is defined in queue #5.4 (Layer-2 targeting). Use predict_proba()."
-                    )
-                # binary head reporting a 2-column margin: the attack column
-                return [float(r[1]) for r in raw]
-            return [float(m) for m in raw]
+                return [[float(x) for x in r] for r in raw]
+            return [[-float(m), float(m)] for m in raw]  # binary head -> [BENIGN, ATTACK]
         if self.n_classes != 2:
             raise NotImplementedError(
-                "multi-class margin fallback is per-class; see queue #5.4."
+                "a multi-class head must expose a native per-class margin; the logit "
+                "fallback is only defined for a binary head."
             )
         eps = 1e-6
-        out: list[float] = []
+        out: list[list[float]] = []
         for p in self._attack_proba(rows):
             p = min(1.0 - eps, max(eps, float(p)))
-            out.append(math.log(p / (1.0 - p)))
+            m = math.log(p / (1.0 - p))
+            out.append([-m, m])
         return out
 
 
