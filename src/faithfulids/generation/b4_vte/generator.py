@@ -14,8 +14,12 @@ from faithfulids.generation.b1_template import B1Template
 from faithfulids.generation.b4_vte.abstention import decide_abstention
 from faithfulids.generation.b4_vte.kb_retrieval import KBRetriever
 from faithfulids.generation.b4_vte.verifier.verifier import Verifier
-from faithfulids.generation.base import ranked_feature_list, ranked_topk
-from faithfulids.llm import load_prompt
+from faithfulids.generation.base import (
+    load_prompt_pair,
+    ranked_feature_list,
+    ranked_topk,
+    select_template,
+)
 
 
 def _default_verifier_model(verifier_config: Mapping[str, Any]) -> dict[str, Any]:
@@ -48,8 +52,7 @@ class B4VtE(Generator):
     ) -> None:
         self.top_k = config["params"]["top_k"]
         self.temperature = config["params"]["temperature"]
-        p = config["prompt"]
-        self.template = load_prompt(p["name"], p["version"], expected_sha256=p["sha256"])
+        self.template, self.template_multiclass = load_prompt_pair(config)
         self.client = llm_client
         self.model = model_config
         self.verifier = verifier
@@ -58,10 +61,14 @@ class B4VtE(Generator):
 
     def generate(self, context: GenerationContext) -> ExplanationRecord:
         rows = ranked_topk(context.attribution, self.top_k)
-        rfl = ranked_feature_list(rows)
+        # The evidence list carries the score label, so the verifier checks the
+        # draft against the SAME wording the drafter saw (its evidence regex keys
+        # on the increases/decreases verbs, not the label).
+        rfl = ranked_feature_list(rows, context.score_label)
         kb_snippets = self.kb.snippets([r.feature for r in rows])
+        template = select_template(self.template, self.template_multiclass, context.score_label)
         prompt = (
-            self.template.replace("{{predicted_class}}", context.predicted_class)
+            template.replace("{{predicted_class}}", context.predicted_class)
             .replace("{{ranked_feature_list}}", rfl)
             .replace("{{kb_feature_snippets}}", kb_snippets)
         )

@@ -10,6 +10,13 @@ prompt:
   name: b4_vte/generator
   version: 1.0.0
   sha256: 17d1443863464e2dd3251f560d5cfe5c149f323c6344c19d50f9f808f338c256
+# Selected at runtime for K-way runs (see b3_dte_style.yaml for the rationale).
+# The verifier prompt below needs NO variant: its checks are class-agnostic
+# (features present? directions match the evidence signs?).
+prompt_multiclass:
+  name: b4_vte/generator
+  version: 1.1.0
+  sha256: 9b7841148c35318c5e24c22179265c92f249262aec0518f5fbb7d2cd7af697aa
 # KB grounding source (feature-semantics), versioned. The per-dataset dictionary
 # is selected at run time from the dataset's kb_ref; this pins the KB version.
 kb_ref: kb:feature_semantics@1.0.0

@@ -7,8 +7,7 @@ client. The generator never sees how it will be scored (edge 3).
 from __future__ import annotations
 
 from faithfulids.framework import ExplanationRecord, GenerationContext, Generator
-from faithfulids.generation.base import feature_value_table
-from faithfulids.llm import load_prompt
+from faithfulids.generation.base import feature_value_table, load_prompt_pair, select_template
 
 
 class B2ZeroShot(Generator):
@@ -18,13 +17,13 @@ class B2ZeroShot(Generator):
     def __init__(self, config: dict, llm_client, model_config: dict) -> None:
         self.top_k = config["params"]["top_k"]
         self.temperature = config["params"]["temperature"]
-        p = config["prompt"]
-        self.template = load_prompt(p["name"], p["version"], expected_sha256=p["sha256"])
+        self.template, self.template_multiclass = load_prompt_pair(config)
         self.client = llm_client
         self.model = model_config
 
     def generate(self, context: GenerationContext) -> ExplanationRecord:
-        prompt = self.template.replace(
+        template = select_template(self.template, self.template_multiclass, context.score_label)
+        prompt = template.replace(
             "{{predicted_class}}", context.predicted_class
         ).replace("{{feature_table}}", feature_value_table(dict(context.feature_values)))
         params = {

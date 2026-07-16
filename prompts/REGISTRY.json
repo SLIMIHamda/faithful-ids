@@ -6,6 +6,11 @@
         "frozen": true,
         "path": "prompts/generation/b2_zeroshot/v1.0.0.md",
         "sha256": "fdff0dc355f2135960f616f0c09a85aa9d0a96b4b7afed37164322ca27da55ae"
+      },
+      "1.1.0": {
+        "frozen": true,
+        "path": "prompts/generation/b2_zeroshot/v1.1.0.md",
+        "sha256": "a583d2b3b54a9b86ce5b8a0e777337cb4f1bf4ddc199908e8c2ac21f6b8fbff3"
       }
     },
     "b3_dte_style": {
@@ -13,6 +18,11 @@
         "frozen": true,
         "path": "prompts/generation/b3_dte_style/v1.0.0.md",
         "sha256": "a2f8ffc64b258b9358fb82168dcef74379ec45f1dbcb963f8756c15e33e3bd7a"
+      },
+      "1.1.0": {
+        "frozen": true,
+        "path": "prompts/generation/b3_dte_style/v1.1.0.md",
+        "sha256": "3d60aa487f5e413a33f82c649d86778b02df53da1f42f8a1929659369285f3d5"
       }
     },
     "b4_vte/generator": {
@@ -20,6 +30,11 @@
         "frozen": true,
         "path": "prompts/generation/b4_vte/generator/v1.0.0.md",
         "sha256": "17d1443863464e2dd3251f560d5cfe5c149f323c6344c19d50f9f808f338c256"
+      },
+      "1.1.0": {
+        "frozen": true,
+        "path": "prompts/generation/b4_vte/generator/v1.1.0.md",
+        "sha256": "9b7841148c35318c5e24c22179265c92f249262aec0518f5fbb7d2cd7af697aa"
       }
     },
     "b4_vte/verifier": {

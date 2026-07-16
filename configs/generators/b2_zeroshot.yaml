@@ -10,3 +10,8 @@ prompt:
   name: b2_zeroshot
   version: 1.0.0
   sha256: fdff0dc355f2135960f616f0c09a85aa9d0a96b4b7afed37164322ca27da55ae
+# Selected at runtime for K-way runs (see b3_dte_style.yaml for the rationale).
+prompt_multiclass:
+  name: b2_zeroshot
+  version: 1.1.0
+  sha256: a583d2b3b54a9b86ce5b8a0e777337cb4f1bf4ddc199908e8c2ac21f6b8fbff3

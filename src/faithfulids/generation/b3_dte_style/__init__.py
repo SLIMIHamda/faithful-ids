@@ -7,8 +7,12 @@ Wires the frozen DTE-style prompt (by hash) through the LLM client.
 from __future__ import annotations
 
 from faithfulids.framework import ExplanationRecord, GenerationContext, Generator
-from faithfulids.generation.base import ranked_feature_list, ranked_topk
-from faithfulids.llm import load_prompt
+from faithfulids.generation.base import (
+    load_prompt_pair,
+    ranked_feature_list,
+    ranked_topk,
+    select_template,
+)
 
 
 class B3DteStyle(Generator):
@@ -18,16 +22,16 @@ class B3DteStyle(Generator):
     def __init__(self, config: dict, llm_client, model_config: dict) -> None:
         self.top_k = config["params"]["top_k"]
         self.temperature = config["params"]["temperature"]
-        p = config["prompt"]
-        self.template = load_prompt(p["name"], p["version"], expected_sha256=p["sha256"])
+        self.template, self.template_multiclass = load_prompt_pair(config)
         self.client = llm_client
         self.model = model_config
 
     def generate(self, context: GenerationContext) -> ExplanationRecord:
         rows = ranked_topk(context.attribution, self.top_k)
-        prompt = self.template.replace(
+        template = select_template(self.template, self.template_multiclass, context.score_label)
+        prompt = template.replace(
             "{{predicted_class}}", context.predicted_class
-        ).replace("{{ranked_feature_list}}", ranked_feature_list(rows))
+        ).replace("{{ranked_feature_list}}", ranked_feature_list(rows, context.score_label))
         params = {
             "temperature": self.temperature,
             "top_k": self.top_k,

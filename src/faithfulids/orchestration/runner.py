@@ -114,6 +114,10 @@ def run_cells(
                     })
 
     # Generation → extraction → Layer-1 per (instance, generator).
+    # Binary detectors keep the frozen literal "attack" score label (request-hash
+    # continuity); a K-way detector's attribution explains the PREDICTED class,
+    # so that is the score the rendered directions are about (#5.3 semantics).
+    binary = len(tuple(components.detector.class_names)) == 2
     total = len(generators) * len(cases)
     done = 0
     for gen_id, generator in generators:
@@ -126,6 +130,8 @@ def run_cells(
                 predicted_class=case.predicted_class,
                 dataset_id=components.dataset_id,
                 metadata={"seed": seed},
+                score_label=("attack" if binary
+                             else case.attribution.explained_class or case.predicted_class),
             )
             record = generator.generate(ctx)
             claimset = components.extractor.extract(record)

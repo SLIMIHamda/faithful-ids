@@ -364,6 +364,31 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   FAILS the gate explicitly (recorded as NaN; the remedy is representation, not
   exemption).
 
+- **Multi-class generation wording — predicted-class score labels.** Under the
+  K-way detector the attribution explains the PREDICTED class (BENIGN included),
+  but every rendered direction was attack-framed: B1 wrote "increased the attack
+  score", `ranked_feature_list` rendered "(increases attack score, …)", and the
+  b2/b3/b4 prompts instructed directions against "the likelihood of an attack" /
+  "the attack score" — false on BENIGN-predicted instances (B1 is the
+  faithful-by-construction reference and must never assert a false direction) and
+  self-contradictory prompts that risk a class-conditional sign artifact from the
+  generator LLM. Fix: additive `GenerationContext.score_label` — the noun of the
+  score the attribution explains. Binary runs pass the frozen literal `"attack"`
+  (rendered strings and request hashes stay byte-identical: token-free replay of
+  every cached run is untouched, pinned by a regression test); K-way runs pass
+  the explained class, so B1/`ranked_feature_list` render "increased the BENIGN
+  score" (extractor direction stems and the rule verifier's evidence regex parse
+  the verbs, not the noun — unchanged). New **v1.1.0 prompt assets** for
+  `b2_zeroshot`, `b3_dte_style`, `b4_vte/generator` state directions against the
+  `{{predicted_class}}` score (registered in `prompts/REGISTRY.json`; v1.0.0
+  untouched); generator configs gain an optional schema-validated
+  `prompt_multiclass` ref selected at runtime by `score_label`, and a K-way run
+  without one fails loudly. The b4 *verifier* prompt needs no variant (its checks
+  are class-agnostic). Deferred, documented: the LLM-assisted extraction prompt
+  (`eval_extractor` v1.0.0, unused in the pilot) still defines `+` as "raised the
+  attack likelihood" and needs a class-aware semver (audit-gated) before the
+  LLM-assisted extraction path activates.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

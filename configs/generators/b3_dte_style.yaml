@@ -10,3 +10,11 @@ prompt:
   name: b3_dte_style
   version: 1.0.0
   sha256: a2f8ffc64b258b9358fb82168dcef74379ec45f1dbcb963f8756c15e33e3bd7a
+# Selected at runtime for K-way runs (GenerationContext.score_label != "attack"):
+# directions are stated against the PREDICTED class's score, which is what the
+# multi-class attribution explains. Binary runs keep the v1.0.0 wording above —
+# it is baked into every cached run's LLM request hashes (token-free replay).
+prompt_multiclass:
+  name: b3_dte_style
+  version: 1.1.0
+  sha256: 3d60aa487f5e413a33f82c649d86778b02df53da1f42f8a1929659369285f3d5

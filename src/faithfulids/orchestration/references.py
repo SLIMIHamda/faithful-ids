@@ -153,6 +153,8 @@ def collect_prompt_refs(config: dict[str, Any]) -> list[dict[str, Any]]:
     if config.get("kind") == "generator":
         if config.get("prompt"):
             refs.append(config["prompt"])
+        if config.get("prompt_multiclass"):  # K-way wording variant (same freeze rules)
+            refs.append(config["prompt_multiclass"])
         verifier = config.get("verifier")
         if verifier and verifier.get("prompt"):
             refs.append(verifier["prompt"])

@@ -131,6 +131,15 @@ class GenerationContext:
     dataset_id: str
     kb_version: str | None = None
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    #: The noun of the score the attribution explains — what generators render
+    #: direction words against ("increased the {score_label} score"). Binary runs
+    #: pass the literal "attack" (a binary attribution explains the attack side
+    #: for every instance; the string is frozen — it is baked into every cached
+    #: run's LLM request hashes). Multi-class runs pass the PREDICTED class name
+    #: (#5.3 attribution semantics), so the rendered direction is literally true
+    #: for BENIGN-predicted instances too. Generators also select their
+    #: multi-class prompt variant off this field (== "attack" -> binary prompt).
+    score_label: str = "attack"
 
 
 class Generator(abc.ABC):

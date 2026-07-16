@@ -43,8 +43,13 @@ class B1Template(Generator):
         parts = []
         for r in rows:
             word = "increased" if r.direction.sign > 0 else "decreased"
+            # score_label: binary renders the frozen literal "attack" (byte-identical
+            # to every cached run); multi-class renders the predicted class, so the
+            # sentence stays TRUE on BENIGN-predicted instances — B1 is the
+            # faithful-by-construction reference and must never assert a false
+            # direction.
             parts.append(
-                f"{r.rank}. {r.feature} {word} the attack score "
+                f"{r.rank}. {r.feature} {word} the {context.score_label} score "
                 f"(magnitude {abs(r.value):.4f})"
             )
         text = (

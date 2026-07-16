@@ -58,13 +58,60 @@ def feature_value_table(feature_values: dict) -> str:
     return "\n".join(f"- {k} = {feature_values[k]}" for k in sorted(feature_values))
 
 
-def ranked_feature_list(rows: list[RankedFeature]) -> str:
-    """Deterministic ranked list with direction words for DTE/VtE prompts."""
+def ranked_feature_list(rows: list[RankedFeature], score_label: str = "attack") -> str:
+    """Deterministic ranked list with direction words for DTE/VtE prompts.
+
+    ``score_label`` is the noun of the score the attribution explains
+    (``GenerationContext.score_label``): the binary default "attack" keeps the
+    rendered string byte-identical to every cached run (request-hash continuity);
+    a multi-class run passes the predicted class name so "increases BENIGN score"
+    is literally true. Keeps the increases/decreases verbs the extractor's
+    direction stems and the rule verifier's evidence regex parse.
+    """
     lines = []
     for r in rows:
         word = "increases" if r.direction is Direction.POSITIVE else "decreases"
-        lines.append(f"{r.rank}. {r.feature} ({word} attack score, magnitude {abs(r.value):.4f})")
+        lines.append(f"{r.rank}. {r.feature} ({word} {score_label} score, magnitude {abs(r.value):.4f})")
     return "\n".join(lines)
+
+
+def load_prompt_pair(config: dict) -> tuple[str, str | None]:
+    """Load a generator's frozen prompt template plus its optional multi-class
+    variant (``prompt_multiclass`` in the generator config), both hash-verified.
+
+    Two pinned versions, selected at runtime by ``select_template``: the binary
+    v1.0.0 wording is baked into every cached run's LLM request hashes, so it can
+    never be edited in place — multi-class rewording lives in its own registered
+    semver instead.
+    """
+    from faithfulids.llm import load_prompt
+
+    p = config["prompt"]
+    template = load_prompt(p["name"], p["version"], expected_sha256=p["sha256"])
+    mp = config.get("prompt_multiclass")
+    template_mc = (
+        load_prompt(mp["name"], mp["version"], expected_sha256=mp["sha256"]) if mp else None
+    )
+    return template, template_mc
+
+
+def select_template(template: str, template_multiclass: str | None, score_label: str) -> str:
+    """Pick the prompt variant for this instance's task (see GenerationContext).
+
+    ``score_label == "attack"`` is the binary task -> the frozen binary template.
+    Anything else is a class name from a K-way run -> the multi-class variant,
+    and its absence is a hard error: falling back to attack-framed wording would
+    render false directions for BENIGN-predicted instances.
+    """
+    if score_label == "attack":
+        return template
+    if template_multiclass is None:
+        raise ValueError(
+            f"multi-class generation (score_label={score_label!r}) requires a "
+            "prompt_multiclass entry in the generator config; the binary prompt's "
+            "attack-framed wording would be false for BENIGN-predicted instances."
+        )
+    return template_multiclass
 
 
 def get_generator(config: dict, **deps) -> Generator:
