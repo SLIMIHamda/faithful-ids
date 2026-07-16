@@ -64,3 +64,30 @@ def test_prediction_view_binary_strings_are_unchanged():
     scores, classes = _prediction_view(_Binary(), [{"a": 1.0}, {"a": 0.0}])
     assert classes == ["attack", "benign"]
     assert scores == [pytest.approx(0.8), pytest.approx(0.1)]
+
+
+def test_predicted_but_never_true_class_fails_the_gate_instead_of_crashing():
+    """A class the detector PREDICTED but that has zero true instances in the
+    evaluation set has undefined (None) recall — it cannot demonstrate the floor,
+    so the gate FAILS (recorded as NaN) rather than raising TypeError on
+    ``None < recall_floor``. Reachable on a small explained sample."""
+    import math
+
+    t = multiclass_classification_table(
+        ["BENIGN", "DoS", "DoS", "PortScan"],
+        ["BENIGN", "DoS", "Bot", "PortScan"],  # 'Bot' predicted, never true
+    )
+    assert t["per_family"]["Bot"]["detection_recall"] is None
+    res = evaluate_competence(t, macro_f1_min=0.0, recall_floor=0.6)
+    assert not res.passed
+    fams = dict(res.failures)
+    assert math.isnan(fams["Bot"])
+    assert fams["DoS"] == 0.5  # ordinary below-floor failure still reported
+
+
+def test_none_recall_is_exemptable_like_any_family():
+    t = multiclass_classification_table(["BENIGN", "DoS"], ["BENIGN", "Bot"])
+    res = evaluate_competence(
+        t, macro_f1_min=0.0, recall_floor=0.6, exemptions=["Bot", "DoS"]
+    )
+    assert res.passed and not res.failures

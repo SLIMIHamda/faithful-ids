@@ -88,6 +88,7 @@ def run_pilot(
     seed: int | None = None,
     n_explain: int | None = None,
     max_rows: int | None = None,
+    rows_per_file: int | None = None,
     code_version: CodeVersion | None = None,
     detector_family: str | None = None,
     detector_hyperparameters: dict | None = None,
@@ -126,7 +127,10 @@ def run_pilot(
 
     # -- data --------------------------------------------------------------- #
     loader = data_loader or load_cicids2017
-    df = loader(data_dir, max_rows=max_rows)
+    loader_kwargs: dict[str, Any] = {"max_rows": max_rows}
+    if rows_per_file is not None:  # only pass when set — injected test loaders may not accept it
+        loader_kwargs["rows_per_file"] = rows_per_file
+    df = loader(data_dir, **loader_kwargs)
     feat_cols = feature_columns(df)
     _mc = str((detector_hyperparameters or detcfg["hyperparameters"]).get("objective", "")
               ).startswith("multi:")
@@ -136,6 +140,11 @@ def run_pilot(
         # stratify on the K-way target so every canonical class is represented in the
         # explained set (binary keeps the historical attack_class stratification)
         stratify="target_class" if _mc else "attack_class",
+        # K-way: over-quota picks are dropped evenly across classes — CICIDS classes
+        # are contiguous per-day blocks, so the legacy lowest-index truncation can
+        # erase late-day classes from the very set the per-class gate measures.
+        # Binary keeps "index": it is what every cached run used (replay hashes).
+        truncation="round_robin" if _mc else "index",
     )
 
     # -- detector (train -> frozen -> load) --------------------------------- #
@@ -150,6 +159,18 @@ def run_pilot(
         train_mc, class_idx = multiclass_frame(train_df)
         explain_df, _ = multiclass_frame(explain_df)
         class_names = [c for c, _ in sorted(class_idx.items(), key=lambda kv: kv[1])]
+        if len(class_names) < 3:
+            # A K<3 "multi-class" run silently re-creates the trivially separable
+            # binary task this detector exists to replace (and straddles the
+            # len(class_names)==2 binary-continuity branches with per-class SHAP).
+            # The usual cause: a global max_rows keeps only the first day's CSV.
+            raise ValueError(
+                f"multi-class run degenerated to {len(class_names)} class(es) "
+                f"{class_names}: the loaded rows cover too few attack families. "
+                f"max_rows appends whole files in name order — use rows_per_file "
+                f"(env FAITHFULIDS_ROWS_PER_FILE) or raise/unset max_rows so every "
+                f"day's families load."
+            )
         print(f"multi-class detector: {len(class_names)} classes {class_names}; "
               f"dropped {len(train_df) - len(train_mc)} excluded/rare train rows")
         get_trainer(family)(
@@ -306,6 +327,7 @@ def run_pilot(
         "experiment": experiment_id, "dataset": dataset_id, "detector": family,
         "attribution": attrcfg["method"], "llm": llm_id, "generators": generator_ids,
         "n_explain": len(instances), "n_train": int(len(train_df)),
+        "max_rows": max_rows, "rows_per_file": rows_per_file,
         "layer1_top_k": top_k, "layer2_k_values": _LAYER2_K, "seed": gen_seed,
         "extractor": "rule_assisted", "verifier": "rule_verifier", "llm_mode": llm_mode,
         "detector_competence": {

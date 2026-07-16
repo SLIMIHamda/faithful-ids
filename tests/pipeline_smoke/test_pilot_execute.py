@@ -155,3 +155,30 @@ def test_pilot_replay_rescore_reproduces_metrics_without_provider(tmp_path):
     live = l1(live_dir.name, live_runs)
     replay = l1(replay_dir.name, replay_runs)
     assert live and replay == live  # identical Layer-1, produced with no LLM provider
+
+
+def test_multiclass_run_refuses_to_degenerate_below_three_classes(tmp_path):
+    """K<3 guard: this synthetic data holds only BENIGN + DoS, so a multi:*
+    objective must fail loudly (naming the rows_per_file remedy) rather than
+    silently re-create the trivially separable binary task the K-way detector
+    exists to replace. Fires before any trainer/LLM work."""
+    import pytest
+
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    _synthetic_cicids(data_dir / "day1.csv", n=400)
+
+    with pytest.raises(ValueError, match="degenerated.*rows_per_file") as exc:
+        run_pilot(
+            "EXP-PILOT-001",
+            data_dir=data_dir,
+            runs_root=tmp_path / "runs",
+            seed=8005,
+            n_explain=40,
+            code_version=CV,
+            detector_family="random_forest",
+            detector_hyperparameters={"objective": "multi:softprob", "n_estimators": 5},
+            attributor=StubAttributor(),
+            llm_provider=DeterministicStubProvider(),
+        )
+    assert "BENIGN" in str(exc.value) and "DoS" in str(exc.value)

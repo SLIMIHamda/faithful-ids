@@ -42,6 +42,11 @@ def cmd_run(args: argparse.Namespace) -> int:
         enforce_gates(exp, runs_root)
         n = os.environ.get("FAITHFULIDS_PILOT_N")
         max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
+        # Per-FILE row cap (evenly-spaced subsample): unlike the global MAX_ROWS —
+        # which appends whole files in name order and so keeps only the first
+        # day's attack families — every day survives. REQUIRED for the K-way
+        # detector to see all canonical classes under a memory cap.
+        rows_per_file = os.environ.get("FAITHFULIDS_ROWS_PER_FILE")
         # Per-run generator LLM (scale test: run once per model, compare b2 across).
         llm_override = os.environ.get("FAITHFULIDS_PILOT_LLM") or None
         # Per-run detector config (queue #5.6): select the K-way detector
@@ -54,6 +59,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             exp["id"], data_dir=data_dir, runs_root=runs_root,
             n_explain=int(n) if n else None,
             max_rows=int(max_rows) if max_rows else None,
+            rows_per_file=int(rows_per_file) if rows_per_file else None,
             llm_id_override=llm_override,
             detector_id_override=detector_override,
             enforce_competence=enforce,

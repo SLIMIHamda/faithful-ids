@@ -339,6 +339,31 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   the multi-class detector changes what the generators SEE, so it requires fresh
   generation (not replay) — it defines the full-N Tier-A run rather than preceding it.
 
+- **Multi-class data-coverage review fixes (pre-smoke).** Review of item 5 found two
+  defects that would have defeated or crashed the Kaggle multi-class smoke:
+  **(a)** the launcher's global `FAITHFULIDS_MAX_ROWS=200000` appends whole CSVs in
+  sorted-name order, so only the first day's file loads (the reason every binary
+  pilot was BENIGN-vs-DDoS) — a K-way run silently degenerated to 2 classes,
+  re-creating the trivially separable task and straddling the
+  `len(class_names)==2` binary-continuity branches with per-class SHAP. New
+  `rows_per_file` loader option (env `FAITHFULIDS_ROWS_PER_FILE`) takes a
+  deterministic evenly-spaced stride per FILE — every day's families survive a
+  memory cap, and a stride (not a head) also survives within-day time blocks
+  (FTP-Patator morning / SSH-Patator afternoon). `run_pilot` now fails loudly if a
+  `multi:*` run resolves to K < 3, and records `max_rows`/`rows_per_file` in the
+  resolved config; the multi-class smoke cell swaps the global cap for
+  `ROWS_PER_FILE=50000`.
+  **(b)** `stratified_explanation_sample` truncated over-quota picks by lowest pool
+  index; CICIDS classes are contiguous per-day blocks, so late-day classes could
+  vanish from the explained set — and a class then *predicted* but never *true*
+  has undefined (`None`) per-class recall, which crashed `evaluate_competence`
+  with `TypeError` (even with enforcement off). The K-way path now truncates
+  round-robin across classes (each stratum keeps ~n/K; the binary path keeps the
+  legacy index truncation byte-for-byte — it is baked into every cached run's
+  replay hashes), NA strata no longer consume quota, and a `None` recall now
+  FAILS the gate explicitly (recorded as NaN; the remedy is representation, not
+  exemption).
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

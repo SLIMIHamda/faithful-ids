@@ -9,9 +9,11 @@ stratified) instances whose explanations will be scored. An explicit, logged
 scale. The full per-family table is emitted so the Tier-A stratification decision
 has data behind it.
 
-The detector is binary (attack vs benign); ``families`` carries the original
-multiclass ``attack_class`` so recall can be reported per attack family even
-though the classifier itself is binary.
+Two table builders share the gate: ``classification_table`` for the binary
+detector (``families`` carries the original ``attack_class`` so recall is
+reported per family even though the classifier is binary), and
+``multiclass_classification_table`` for the K-way detector (recall = classified
+as the RIGHT family, queue #5.5).
 """
 
 from __future__ import annotations
@@ -138,12 +140,20 @@ def evaluate_competence(
     recall_floor: float,
     exemptions: Sequence[str] = (),
 ) -> CompetenceResult:
-    """Apply the pre-registered gate to a ``classification_table`` result."""
+    """Apply the pre-registered gate to a ``classification_table`` result.
+
+    A ``detection_recall`` of ``None`` (a class the detector PREDICTED but that has
+    zero true instances in the evaluation set — possible on a small explained
+    sample) cannot demonstrate the floor, so it FAILS the gate, recorded as NaN.
+    The remedy is representation, not exemption: raise N or fix the sampling so
+    the class has support.
+    """
     ex = {str(e).strip() for e in exemptions}
     failures = [
-        (fam, float(row["detection_recall"]))
+        (fam, float("nan") if row["detection_recall"] is None else float(row["detection_recall"]))
         for fam, row in table["per_family"].items()
-        if row["is_attack"] and fam not in ex and row["detection_recall"] < recall_floor
+        if row["is_attack"] and fam not in ex
+        and (row["detection_recall"] is None or row["detection_recall"] < recall_floor)
     ]
     passed = (float(table["macro_f1"]) >= macro_f1_min) and not failures
     return CompetenceResult(
