@@ -63,6 +63,7 @@ class TreeShapAttributor(AttributionMethod):
             predicted = list(detector.predicted_class(instances))
             class_index = [class_names.index(name) for name in predicted]
             selected, base_per_instance = select_predicted_class_shap(values, base, class_index)
+            explained = predicted  # provenance: per-instance, the class explained
         else:
             # BINARY / single-output: SHAP explains the positive (attack) side, which
             # is this pilot's established semantics for every instance — benign rows
@@ -72,6 +73,9 @@ class TreeShapAttributor(AttributionMethod):
             selected = np.asarray(values, dtype=float)
             b = float(np.ravel(base)[-1]) if np.ndim(base) else float(base)
             base_per_instance = [b] * len(instance_ids)
+            # the positive class (last column) is what a binary head's SHAP explains
+            names = tuple(getattr(detector, "class_names", ()) or ())
+            explained = [names[-1] if names else "ATTACK"] * len(instance_ids)
 
         artifacts: list[AttributionArtifact] = []
         for i, iid in enumerate(instance_ids):
@@ -84,6 +88,7 @@ class TreeShapAttributor(AttributionMethod):
                     method="treeshap",
                     exact=True,
                     background_policy=self.background_policy,
+                    explained_class=explained[i],
                 )
             )
         return artifacts

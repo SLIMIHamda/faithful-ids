@@ -88,6 +88,7 @@ def toy_attribution(instance_id: str, fv: dict[str, float]) -> AttributionArtifa
         method="toy_linear",
         exact=True,
         background_policy="interventional_zero",
+        explained_class="ATTACK",  # binary toy: the positive side (queue #5.3b)
     )
 
 

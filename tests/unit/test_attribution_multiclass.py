@@ -56,3 +56,26 @@ def test_rejects_out_of_range_class_index():
 def test_rejects_non_per_class_array():
     with pytest.raises(ValueError, match="per-class SHAP"):
         select_predicted_class_shap(np.array([[0.0, 1.0], [2.0, 3.0]]), _BASE, [0, 1])
+
+
+def test_explained_class_provenance_round_trips(tmp_path):
+    """5.3b: an exported attribution records WHICH class it explains — without it a
+    multi-class export is uninterpretable (per-instance vectors may be about
+    different classes). Additive: absent -> None (legacy binary artifacts)."""
+    import jsonschema
+
+    from faithfulids.framework import ATTRIBUTION_ARTIFACT_SCHEMA, AttributionArtifact
+
+    a = AttributionArtifact(
+        instance_id="i0", feature_names=("A",), values=(0.5,), base_value=0.1,
+        method="treeshap", exact=True, background_policy="tree_path_dependent",
+        explained_class="PortScan",
+    )
+    d = a.to_dict()
+    jsonschema.validate(instance=d, schema=ATTRIBUTION_ARTIFACT_SCHEMA)
+    assert d["explained_class"] == "PortScan"
+    assert AttributionArtifact.from_dict(d) == a  # round-trips
+
+    legacy = {k: v for k, v in d.items() if k != "explained_class"}
+    jsonschema.validate(instance=legacy, schema=ATTRIBUTION_ARTIFACT_SCHEMA)  # still valid
+    assert AttributionArtifact.from_dict(legacy).explained_class is None

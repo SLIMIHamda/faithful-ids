@@ -210,6 +210,13 @@ class AttributionArtifact:
     ``configs/attribution/*``. This is the ground-truth attribution against which
     Layer-1 claim faithfulness is measured — it is never the erasure background
     (blueprint: erasure background is deliberately NOT the SHAP baseline).
+
+    ``explained_class`` (additive, queue #5.3b) records WHICH class this vector
+    explains. Mandatory provenance under a multi-class detector: each instance's
+    attribution is selected for the class the detector predicted, so without this
+    field two exported vectors can be about different classes with nothing saying
+    so, and the export is uninterpretable. ``None`` = unrecorded (legacy binary
+    artifacts, whose vectors explain the positive/attack side).
     """
 
     instance_id: str
@@ -219,6 +226,7 @@ class AttributionArtifact:
     method: str
     exact: bool
     background_policy: str
+    explained_class: str | None = None
 
     def __post_init__(self) -> None:
         if len(self.feature_names) != len(self.values):
@@ -249,6 +257,7 @@ class AttributionArtifact:
             "method": self.method,
             "exact": self.exact,
             "background_policy": self.background_policy,
+            "explained_class": self.explained_class,
         }
 
     @classmethod
@@ -261,6 +270,7 @@ class AttributionArtifact:
             method=d["method"],
             exact=bool(d["exact"]),
             background_policy=d["background_policy"],
+            explained_class=d.get("explained_class"),
         )
 
 
@@ -352,5 +362,8 @@ ATTRIBUTION_ARTIFACT_SCHEMA: dict[str, Any] = {
         "method": {"type": "string", "minLength": 1},
         "exact": {"type": "boolean"},
         "background_policy": {"type": "string", "minLength": 1},
+        # additive (queue #5.3b): which class this vector explains; null =
+        # unrecorded (legacy binary artifacts explain the positive/attack side).
+        "explained_class": {"type": ["string", "null"]},
     },
 }
