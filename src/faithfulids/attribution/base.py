@@ -15,7 +15,7 @@ from __future__ import annotations
 import importlib
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 from faithfulids.framework import AttributionArtifact
 from faithfulids.provenance.hashing import content_address
@@ -27,6 +27,47 @@ ATTRIBUTION_MODULES: dict[str, str] = {
 
 ARTIFACTS_FILE = "attributions.jsonl"
 INPUTS_FILE = "cache_inputs.json"
+
+
+def select_predicted_class_shap(values: Any, base: Any, class_index: Sequence[int]):
+    """Pick each instance's PREDICTED-class SHAP vector + base value out of a
+    multi-class attributor output (queue #5.3).
+
+    A multi-class tree model has one attribution PER CLASS; an explanation is only
+    meaningful about the class the detector actually predicted, so we select that
+    column per instance and keep the downstream contract at one vector per
+    instance. ``values`` is either a list of K arrays shaped ``(n, F)`` or one
+    ``(n, F, K)`` array — both shapes SHAP emits — and ``base`` is the per-class
+    expected value. Returns ``(values_2d (n,F), base_per_instance (n,))``.
+
+    Pure + numpy-only on purpose: ``shap`` is absent off-Kaggle, so this keeps the
+    selection logic unit-testable offline.
+    """
+    import numpy as np
+
+    if isinstance(values, list):
+        per_class = [np.asarray(v, dtype=float) for v in values]
+    else:
+        arr = np.asarray(values, dtype=float)
+        if arr.ndim != 3:
+            raise ValueError(
+                f"expected per-class SHAP (list of (n,F) or one (n,F,K) array); got {arr.shape}"
+            )
+        per_class = [arr[:, :, k] for k in range(arr.shape[2])]
+
+    n = per_class[0].shape[0]
+    if len(class_index) != n:
+        raise ValueError(f"class_index has {len(class_index)} entries for {n} instances")
+    for k in class_index:
+        if not 0 <= k < len(per_class):
+            raise ValueError(f"class index {k} out of range for {len(per_class)} SHAP classes")
+
+    b = np.ravel(np.asarray(base, dtype=float))
+    out_vals = np.array([per_class[class_index[i]][i] for i in range(n)], dtype=float)
+    out_base = np.array(
+        [b[class_index[i]] if b.size > 1 else b[0] for i in range(n)], dtype=float
+    )
+    return out_vals, out_base
 
 
 def get_attributor(method: str, **kwargs: Any):
