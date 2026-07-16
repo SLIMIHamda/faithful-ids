@@ -8,7 +8,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from faithfulids.framework import AttributionArtifact, ClaimSet, ClaimTuple, Direction
+from faithfulids.framework import (
+    AttributionArtifact,
+    ClaimSet,
+    ClaimTuple,
+    Direction,
+    attack_probability,
+)
 from faithfulids.metrics.layer2 import (
     ConditionalExpectationImputer,
     SimpleBackgroundErasure,
@@ -31,12 +37,17 @@ class ToyLinearDetector:
         self._w = weights
         self._fn = tuple(feature_names)
 
+    class_names = ("BENIGN", "ATTACK")
+
     @property
     def feature_names(self):
         return self._fn
 
-    def predict_proba(self, rows):
+    def _p_attack(self, rows):
         return [self._bias + sum(self._w[f] * r[f] for f in self._fn) for r in rows]
+
+    def predict_proba(self, rows):  # per-class contract (queue #5.2)
+        return [[1.0 - p, p] for p in self._p_attack(rows)]
 
 
 def test_layer2_matches_hand_computed_fixture():
@@ -45,7 +56,7 @@ def test_layer2_matches_hand_computed_fixture():
     attribution = AttributionArtifact.from_dict(fx["attribution"])
     erasure = SimpleBackgroundErasure(fx["background"])
     k = fx["k"]
-    assert det.predict_proba([fx["instance"]])[0] == pytest.approx(fx["expected"]["p_full"])
+    assert attack_probability(det, [fx["instance"]])[0] == pytest.approx(fx["expected"]["p_full"])
     assert comprehensiveness(attribution, det, fx["instance"], erasure, k=k) == pytest.approx(
         fx["expected"]["comprehensiveness"]
     )
@@ -144,9 +155,9 @@ def test_erasure_efficacy_smoke():
     v1's comprehensiveness ≈ 0 everywhere) before any LLM tokens are spent.
     """
     det = ToyLinearDetector(**_DET)
-    p_full = det.predict_proba([_INSTANCE])[0]
-    p_none = det.predict_proba([_BG.erase(_INSTANCE, [])])[0]
-    p_all = det.predict_proba([_BG.erase(_INSTANCE, ["A", "B", "C"])])[0]
+    p_full = attack_probability(det, [_INSTANCE])[0]
+    p_none = attack_probability(det, [_BG.erase(_INSTANCE, [])])[0]
+    p_all = attack_probability(det, [_BG.erase(_INSTANCE, ["A", "B", "C"])])[0]
     assert p_none == pytest.approx(p_full)       # erase nothing -> exactly no change
     assert abs(p_full - p_all) >= 0.3            # erase all -> large, material move
 
@@ -155,14 +166,18 @@ class _SaturatedDetector:
     """Near-certain detector: p≈0.9995 full, ≈0.994 when A is erased (A→0)."""
 
     feature_names = ("A", "B")
+    class_names = ("BENIGN", "ATTACK")
 
-    def predict_proba(self, rows):
+    def _p_attack(self, rows):
         return [0.9995 if r["A"] >= 1.0 else 0.994 for r in rows]
+
+    def predict_proba(self, rows):  # per-class contract (queue #5.2)
+        return [[1.0 - p, p] for p in self._p_attack(rows)]
 
     def predict_margin(self, rows):
         import math
 
-        return [math.log(p / (1.0 - p)) for p in self.predict_proba(rows)]
+        return [math.log(p / (1.0 - p)) for p in self._p_attack(rows)]
 
 
 def test_margin_space_rescues_saturated_signal():

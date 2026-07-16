@@ -13,12 +13,16 @@ class _SaturatedDetector:
     """p≈0.9995 full, ≈0.994 when A is erased (A→0) — near-certain, so prob Δ≈0."""
 
     feature_names = ("A", "B")
+    class_names = ("BENIGN", "ATTACK")
 
-    def predict_proba(self, rows):
+    def _p_attack(self, rows):
         return [0.9995 if r["A"] >= 1.0 else 0.994 for r in rows]
 
+    def predict_proba(self, rows):  # per-class contract (queue #5.2)
+        return [[1.0 - p, p] for p in self._p_attack(rows)]
+
     def predict_margin(self, rows):
-        return [math.log(p / (1.0 - p)) for p in self.predict_proba(rows)]
+        return [math.log(p / (1.0 - p)) for p in self._p_attack(rows)]
 
 
 def test_summary_reports_saturation_factor():

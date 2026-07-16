@@ -17,6 +17,7 @@ import importlib
 import json
 import math
 import pickle
+import warnings
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
@@ -37,18 +38,41 @@ DETECTOR_MODULES: dict[str, tuple[str, str]] = {
 }
 
 
+#: The benign class name. ``predict_attack_proba`` is defined as ``1 - P(BENIGN)``,
+#: so every taxonomy must name its negative class exactly this.
+BENIGN_CLASS = "BENIGN"
+
+
+def _as_rows(out: Any, n: int) -> list[list[float]]:
+    """Normalise a family's proba/margin output to ``(n, n_classes)``.
+
+    A binary head may report a single attack probability per row (shape ``(n,)``);
+    it becomes ``[P(BENIGN), P(ATTACK)] = [1-p, p]`` so every family satisfies the
+    same per-class contract (queue #5.2).
+    """
+    rows = [r for r in out]
+    if rows and not hasattr(rows[0], "__len__"):
+        return [[1.0 - float(p), float(p)] for p in rows]
+    return [[float(x) for x in r] for r in rows]
+
+
 class FrozenDetector:
     """A frozen detector loaded for inference (framework.DetectorArtifact)."""
 
     def __init__(
         self,
         feature_names: Sequence[str],
-        proba: Callable[[Sequence[Sequence[float]]], Sequence[float]],
+        proba: Callable[[Sequence[Sequence[float]]], Sequence[Any]],
+        class_names: Sequence[str] = ("BENIGN", "ATTACK"),
         native_model: Any | None = None,
-        margin: Callable[[Sequence[Sequence[float]]], Sequence[float]] | None = None,
+        margin: Callable[[Sequence[Sequence[float]]], Sequence[Any]] | None = None,
     ) -> None:
         self._feature_names = tuple(feature_names)
         self._proba = proba
+        #: positional labels for predict_proba's columns (queue #5.2) — the
+        #: detector's own record of what its outputs MEAN, so no consumer has to
+        #: assume a column order.
+        self._class_names = tuple(class_names)
         #: raw log-odds / margin callable, if the family exposes one natively
         #: (e.g. XGBoost ``output_margin=True``). ``None`` -> logit fallback.
         self._margin = margin
@@ -61,25 +85,92 @@ class FrozenDetector:
     def feature_names(self) -> tuple[str, ...]:
         return self._feature_names
 
+    @property
+    def class_names(self) -> tuple[str, ...]:
+        return self._class_names
+
+    @property
+    def n_classes(self) -> int:
+        return len(self._class_names)
+
     def _matrix(self, rows: Sequence[Mapping[str, float]]) -> list[list[float]]:
         return [[float(r[f]) for f in self._feature_names] for r in rows]
 
-    def predict_proba(self, rows: Sequence[Mapping[str, float]]) -> list[float]:
-        return [float(p) for p in self._proba(self._matrix(rows))]
+    def predict_proba(self, rows: Sequence[Mapping[str, float]]) -> list[list[float]]:
+        """Per-class probabilities, shape ``(n_samples, n_classes)`` — columns are
+        positionally labelled by ``class_names`` (queue #5.2)."""
+        out = _as_rows(self._proba(self._matrix(rows)), len(rows))
+        for r in out:
+            if len(r) != self.n_classes:
+                raise ValueError(
+                    f"detector returned {len(r)} probabilities but class_names has "
+                    f"{self.n_classes} entries: {self._class_names}"
+                )
+        return out
+
+    def predicted_class(self, rows: Sequence[Mapping[str, float]]) -> list[str]:
+        """The argmax class NAME per row."""
+        return [self._class_names[max(range(len(r)), key=r.__getitem__)]
+                for r in self.predict_proba(rows)]
+
+    def predict_attack_proba(self, rows: Sequence[Mapping[str, float]]) -> list[float]:
+        """DEPRECATED legacy shim: one scalar "attack probability" per row, defined
+        **exactly** as ``1 - P(BENIGN)``.
+
+        Kept so pre-multi-class callers (and older notebooks/experiments) keep
+        running while they migrate to the per-class ``predict_proba``. Removed
+        after the pilot — new code should read ``predict_proba`` +
+        ``class_names`` / ``predicted_class`` instead.
+        """
+        warnings.warn(
+            "predict_attack_proba() is a deprecated binary shim (1 - P(BENIGN)); "
+            "use predict_proba() with class_names / predicted_class. "
+            "It is removed after the pilot.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._attack_proba(rows)
+
+    def _attack_proba(self, rows: Sequence[Mapping[str, float]]) -> list[float]:
+        """``1 - P(BENIGN)`` without the deprecation warning (internal migration use)."""
+        if BENIGN_CLASS not in self._class_names:
+            raise ValueError(
+                f"attack probability is defined as 1 - P({BENIGN_CLASS}), but this "
+                f"detector's classes are {self._class_names}"
+            )
+        b = self._class_names.index(BENIGN_CLASS)
+        return [1.0 - r[b] for r in self.predict_proba(rows)]
 
     def predict_margin(self, rows: Sequence[Mapping[str, float]]) -> list[float]:
         """Attack-class margin (raw log-odds). Consumed by margin-space Layer-2
         deltas, which avoid probability saturation when the model is near-certain.
 
         Uses the native margin when the family provides one; otherwise falls back
-        to ``logit(clip(p))`` — exact for a binary-logistic head where
+        to ``logit(clip(1 - P(BENIGN)))`` — exact for a binary-logistic head where
         ``p = sigmoid(margin)``, monotone otherwise.
+
+        BINARY-ONLY for now: a multi-class head has one margin PER CLASS, and which
+        one to erase against is the predicted-class question that queue #5.4 settles
+        together with Layer-2. Until then this raises rather than guessing.
         """
         if self._margin is not None:
-            return [float(m) for m in self._margin(self._matrix(rows))]
+            raw = [m for m in self._margin(self._matrix(rows))]
+            if raw and hasattr(raw[0], "__len__"):
+                if len(raw[0]) != 2:
+                    raise NotImplementedError(
+                        "multi-class margin is per-class; the predicted-class margin "
+                        "is defined in queue #5.4 (Layer-2 targeting). Use predict_proba()."
+                    )
+                # binary head reporting a 2-column margin: the attack column
+                return [float(r[1]) for r in raw]
+            return [float(m) for m in raw]
+        if self.n_classes != 2:
+            raise NotImplementedError(
+                "multi-class margin fallback is per-class; see queue #5.4."
+            )
         eps = 1e-6
         out: list[float] = []
-        for p in self.predict_proba(rows):
+        for p in self._attack_proba(rows):
             p = min(1.0 - eps, max(eps, float(p)))
             out.append(math.log(p / (1.0 - p)))
         return out

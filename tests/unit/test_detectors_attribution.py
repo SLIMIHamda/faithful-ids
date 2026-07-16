@@ -41,9 +41,13 @@ def test_rf_train_then_frozen_predict_roundtrip(tmp_path):
     assert detector.native_model is not None  # exposed for tree attributors
 
     rows = [{"f1": 0.1, "f2": 0.0}, {"f1": 0.9, "f2": 1.0}]
+    # per-class contract (queue #5.2): (n_samples, n_classes), columns labelled
+    assert detector.class_names == ("BENIGN", "ATTACK")
     probs = detector.predict_proba(rows)
-    assert len(probs) == 2
-    assert all(0.0 <= p <= 1.0 for p in probs)
+    assert len(probs) == 2 and all(len(r) == 2 for r in probs)
+    assert all(0.0 <= p <= 1.0 for r in probs for p in r)
+    assert all(abs(sum(r) - 1.0) < 1e-9 for r in probs)
+    assert set(detector.predicted_class(rows)) <= {"BENIGN", "ATTACK"}
 
 
 def test_inference_module_does_not_import_training(tmp_path):

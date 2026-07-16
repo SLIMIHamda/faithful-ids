@@ -57,6 +57,16 @@ def test_kb_attack_classes_all_map_in_the_taxonomy():
     assert not unmapped, f"KB classes not in the taxonomy: {unmapped}"
 
 
+def test_every_canonical_class_has_a_mapped_label():
+    """Orphan guard (5.2): a canonical class no raw label maps to would be a dead
+    num_class slot the detector can never predict. Mirrors the validate-configs
+    check, on the REAL committed taxonomy."""
+    tax = load_taxonomy("cicids2017")
+    mapped = set(tax["label_map"].values())
+    orphans = [c for c in tax["canonical_classes"] if c not in mapped]
+    assert not orphans, f"canonical classes with no raw label mapped to them: {orphans}"
+
+
 def test_loader_and_validate_configs_normalisers_agree():
     """The loader's _norm and validate_configs._norm_label MUST match, or the
     drift guard and the runtime mapping disagree (validate_configs can't import the

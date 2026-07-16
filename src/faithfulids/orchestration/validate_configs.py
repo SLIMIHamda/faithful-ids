@@ -67,10 +67,20 @@ def _check_references(config: dict, errors: list[str], where: str) -> None:
         elif kind == "class_taxonomy":
             # every label_map target is a canonical class or the "excluded" sentinel
             canon = set(config["canonical_classes"])
+            mapped = set(config["label_map"].values())
             for k, v in config["label_map"].items():
                 if v != "excluded" and v not in canon:
                     errors.append(
                         f"{where}: label_map[{k!r}] -> {v!r} is not a canonical class or 'excluded'"
+                    )
+            # ORPHAN GUARD: a canonical class no raw label maps to would be a dead
+            # num_class slot the detector can never predict (and an empty row in every
+            # per-class metric).
+            for cls in config["canonical_classes"]:
+                if cls not in mapped:
+                    errors.append(
+                        f"{where}: canonical class {cls!r} has no raw label mapped to it "
+                        f"(orphan class — map a label or drop the class)"
                     )
         elif kind in ("kb_feature_dictionary", "kb_attack_classes"):
             names = _kb_versions()

@@ -33,6 +33,7 @@ from faithfulids.framework import (
     DetectorArtifact,
     ErasureOperator,
     MetricSpec,
+    attack_probability,
 )
 
 FORMULA_VERSION = "1.1.0"  # ε_att + ε_model *_cited. 1.2.0 (file): add |S|-normalised *_per_feature (additive)
@@ -41,9 +42,14 @@ FORMULA_VERSION = "1.1.0"  # ε_att + ε_model *_cited. 1.2.0 (file): add |S|-no
 def _detector_score(
     detector: DetectorArtifact, rows: Sequence[Mapping[str, float]], delta_space: str
 ) -> list[float]:
-    """Attack-class score per row, in probability or margin (log-odds) space."""
+    """Attack-class score per row, in probability or margin (log-odds) space.
+
+    TODO(#5.4): under a multi-class detector the erasure delta must be taken on the
+    PREDICTED class, not on the binary attack side; until #5.4 settles that, this
+    keeps the pilot's binary semantics via the 1 - P(BENIGN) shim.
+    """
     if delta_space == "prob":
-        return [float(x) for x in detector.predict_proba(rows)]
+        return attack_probability(detector, rows)
     if delta_space == "margin":
         fn = getattr(detector, "predict_margin", None)
         if fn is None:

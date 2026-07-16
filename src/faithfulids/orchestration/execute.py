@@ -25,6 +25,7 @@ from faithfulids.datasets.loaders.cicids2017 import (
     stratified_explanation_sample,
 )
 from faithfulids.extraction import build as build_extractor
+from faithfulids.framework import attack_probability
 from faithfulids.generation import get_generator
 from faithfulids.generation.b4_vte.kb_retrieval import load_feature_semantics
 from faithfulids.generation.b4_vte.verifier import RuleVerifier
@@ -128,7 +129,9 @@ def run_pilot(
             attrcfg["method"], background_policy=attrcfg["background_policy"]["removal_semantics"]
         )
     attributions = attributor.attribute(detector, instances, ids)
-    preds = list(detector.predict_proba(instances))
+    # TODO(#5.5): under a multi-class detector this becomes the PREDICTED class's
+    # probability + its argmax name; the binary shim keeps the pilot behaviour here.
+    preds = list(attack_probability(detector, instances))
     cases = [
         InstanceCase(
             instance_id=ids[i], feature_values=instances[i], attribution=attributions[i],

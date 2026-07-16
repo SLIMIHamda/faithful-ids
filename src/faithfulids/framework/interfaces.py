@@ -42,17 +42,55 @@ class DetectorArtifact(Protocol):
     """A *frozen* trained detector, loaded for inference only.
 
     Inference code obtains one of these from ``models/`` and can never trigger
-    training (import-linter edge 6). ``predict_proba`` returns the attack-class
-    probability per row. A detector MAY additionally expose an optional
-    ``predict_margin(rows)`` returning the raw log-odds / margin, consumed by
-    margin-space Layer-2 deltas (which avoid probability saturation); it is not
-    part of this required contract.
+    training (import-linter edge 6).
+
+    **Multi-class contract (queue #5.2).** ``predict_proba`` returns one row of
+    per-class probabilities per input row — shape ``(n_samples, n_classes)`` — for
+    EVERY family, binary included (a binary head reports ``[P(BENIGN), P(ATTACK)]``).
+    ``class_names`` labels those columns positionally, so a consumer never has to
+    guess which column is which; ``predicted_class`` is the argmax name.
+
+    ``predict_attack_proba(rows)`` is a **deprecated** convenience shim for legacy
+    callers that expect one scalar attack probability; it is defined exactly as
+    ``1 - P(BENIGN)`` and is removed after the pilot. A detector MAY additionally
+    expose ``predict_margin(rows)`` (raw log-odds), consumed by margin-space
+    Layer-2 deltas; it is not part of this required contract.
     """
 
     @property
     def feature_names(self) -> tuple[str, ...]: ...
 
-    def predict_proba(self, rows: Sequence[Mapping[str, float]]) -> Sequence[float]: ...
+    @property
+    def class_names(self) -> tuple[str, ...]: ...
+
+    def predict_proba(self, rows: Sequence[Mapping[str, float]]) -> Sequence[Sequence[float]]: ...
+
+    def predicted_class(self, rows: Sequence[Mapping[str, float]]) -> Sequence[str]: ...
+
+
+#: The negative class. "Attack probability" is defined as ``1 - P(BENIGN)``.
+BENIGN_CLASS = "BENIGN"
+
+
+def attack_probability(
+    detector: DetectorArtifact, rows: Sequence[Mapping[str, float]]
+) -> list[float]:
+    """``1 - P(BENIGN)``, read off the per-class ``predict_proba`` contract.
+
+    The single definition of "attack probability" for binary-semantics consumers
+    that have not yet migrated to predicted-class targeting (queue #5.4 Layer-2,
+    #5.5 generation). ``DetectorArtifact.predict_attack_proba`` is the same
+    quantity but is the *deprecated shim for external/legacy callers* and warns;
+    internal code uses this helper instead, so the shim has no internal dependents
+    to unwind when it is removed after the pilot.
+    """
+    names = tuple(detector.class_names)
+    if BENIGN_CLASS not in names:
+        raise ValueError(
+            f"attack probability is defined as 1 - P({BENIGN_CLASS}); classes are {names}"
+        )
+    b = names.index(BENIGN_CLASS)
+    return [1.0 - float(row[b]) for row in detector.predict_proba(rows)]
 
 
 class AttributionMethod(abc.ABC):

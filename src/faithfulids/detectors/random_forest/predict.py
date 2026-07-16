@@ -17,7 +17,19 @@ def load(model_dir: str | Path) -> FrozenDetector:
     feature_names = blob["feature_names"]
     positive_index = blob["positive_index"]
 
-    def proba(matrix):
-        return estimator.predict_proba(matrix)[:, positive_index]
+    # Per-class contract (queue #5.2): expose sklearn's full (n, K) proba rather
+    # than slicing the positive column, and label the columns.
+    class_names = blob.get("class_names")
+    if not class_names:
+        n_classes = len(getattr(estimator, "classes_", [0, 1]))
+        if n_classes != 2:
+            raise ValueError(
+                f"frozen random_forest has {n_classes} classes but no class_names in its "
+                "artifact; retrain so the column labels are frozen with the model"
+            )
+        class_names = ["ATTACK", "BENIGN"] if positive_index == 0 else ["BENIGN", "ATTACK"]
 
-    return FrozenDetector(feature_names, proba, native_model=estimator)
+    def proba(matrix):
+        return estimator.predict_proba(matrix)  # (n, K), column order = estimator.classes_
+
+    return FrozenDetector(feature_names, proba, class_names=class_names, native_model=estimator)

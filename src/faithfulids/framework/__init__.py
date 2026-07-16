@@ -12,6 +12,7 @@ from faithfulids.framework.decomposition import (
     FaithfulnessDecomposition,
 )
 from faithfulids.framework.interfaces import (
+    BENIGN_CLASS,
     AttributionMethod,
     ClaimExtractor,
     DetectorArtifact,
@@ -22,6 +23,7 @@ from faithfulids.framework.interfaces import (
     Layer2Metric,
     MetricResult,
     MetricSpec,
+    attack_probability,
 )
 from faithfulids.framework.schemas import (
     ATTRIBUTION_ARTIFACT_SCHEMA,
@@ -36,6 +38,8 @@ from faithfulids.framework.schemas import (
 )
 
 __all__ = [
+    "BENIGN_CLASS",
+    "attack_probability",
     # schemas
     "Direction",
     "ClaimTuple",

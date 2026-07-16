@@ -15,7 +15,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from faithfulids.extraction import build as build_extractor
-from faithfulids.framework import AttributionArtifact
+from faithfulids.framework import AttributionArtifact, attack_probability
 from faithfulids.generation import get_generator
 from faithfulids.llm import CallLedger, LLMClient
 from faithfulids.llm.providers import DeterministicStubProvider
@@ -53,16 +53,28 @@ TOY_INSTANCES = [
 
 
 class ToyLinearDetector:
-    """proba = clip(bias + Σ w_f x_f, 0, 1). Fully deterministic (framework.DetectorArtifact)."""
+    """proba = clip(bias + Σ w_f x_f, 0, 1). Fully deterministic (framework.DetectorArtifact).
+
+    Binary, but reports the per-class contract (queue #5.2): predict_proba returns
+    ``[P(BENIGN), P(ATTACK)] = [1-p, p]`` per row, labelled by ``class_names``.
+    """
 
     feature_names = tuple(TOY_FEATURES)
+    class_names = ("BENIGN", "ATTACK")
 
-    def predict_proba(self, rows):
+    def _p_attack(self, rows):
         out = []
         for r in rows:
             p = TOY_BIAS + sum(TOY_WEIGHTS[f] * r[f] for f in TOY_FEATURES)
             out.append(min(1.0, max(0.0, p)))
         return out
+
+    def predict_proba(self, rows):
+        return [[1.0 - p, p] for p in self._p_attack(rows)]
+
+    def predicted_class(self, rows):
+        return [self.class_names[max(range(len(r)), key=r.__getitem__)]
+                for r in self.predict_proba(rows)]
 
 
 def toy_attribution(instance_id: str, fv: dict[str, float]) -> AttributionArtifact:
@@ -82,7 +94,7 @@ def toy_attribution(instance_id: str, fv: dict[str, float]) -> AttributionArtifa
 def _cases(detector: ToyLinearDetector) -> list[InstanceCase]:
     cases: list[InstanceCase] = []
     for i, fv in enumerate(TOY_INSTANCES):
-        pred = detector.predict_proba([fv])[0]
+        pred = attack_probability(detector, [fv])[0]  # TODO(#5.5): predicted-class prob
         cases.append(
             InstanceCase(
                 instance_id=f"toy-{i}",
