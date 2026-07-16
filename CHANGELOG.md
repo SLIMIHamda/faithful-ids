@@ -294,6 +294,51 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `abstention_rate`) already emitted on the cost layer, wired into both Kaggle
   launchers' analysis loops. The pure capability-join core is unit-tested.
 
+- **Multi-class detector — the citability gate (NEXT-QUEUE item 5).** The pilot
+  detector collapsed every attack family to `label = (attack_class != "BENIGN")`
+  with `binary:logistic`, which on CICIDS2017 is trivially separable (AUC = 1.0,
+  macro-F1 = 1.0): explanations of a perfect toy classifier are not interpretable
+  evidence, probability-space Layer-2 saturated (comprehensiveness ≈ 0.006 — only
+  margin space carried signal), and the per-family recall floor never bit. Built in
+  six reviewed steps:
+  **(5.1)** a coarsened 8-class target — `BENIGN, DoS, DDoS, PortScan, FTP-Patator,
+  SSH-Patator, Web Attack, Bot` — added as an additive `target_class` column
+  (DoS/Web variants grouped; Infiltration + Heartbleed excluded as too rare for a
+  recall floor); the binary path and the deterministic toy are untouched.
+  **(5.1b)** that taxonomy and `kb/attack_classes` were two competing class
+  vocabularies that could drift silently and invalidate per-class metrics, so both
+  now derive from ONE schema-validated `configs/taxonomy/<dataset>.yaml`;
+  validate-configs enforces that every KB class maps to exactly one canonical class
+  and that no canonical class is an orphan (a dead `num_class` slot).
+  **(5.2)** `predict_proba` returns `(n_samples, n_classes)` for every family
+  (binary heads normalised to `[P(BENIGN), P(ATTACK)]`), `class_names` is frozen
+  **with** the model and labels those columns positionally, and `predicted_class`
+  is the argmax name. `predict_attack_proba` is a deprecated shim defined exactly
+  as `1 - P(BENIGN)`, removed after the pilot; internal callers use
+  `framework.attack_probability` instead, so the shim has no internal dependents.
+  **(5.3 / 5.3b)** multi-class TreeSHAP emits one attribution per class — the old
+  `values[-1]` silently explained the LAST class; it now selects the **predicted**
+  class per instance, and `AttributionArtifact.explained_class` records which class
+  a vector explains (mandatory provenance: without it a multi-class export is
+  uninterpretable).
+  **(5.4)** Layer-2 measures the class the attribution explains, PINNED from the
+  unerased instance and reused for every erased variant (erasure can flip the
+  argmax; a delta across two different classes measures nothing);
+  `predict_margin` became per-class to match.
+  **(5.5)** the gate now asks the stricter K-way question — was it classified as the
+  RIGHT family, not merely as *some* attack — and generation is told the argmax
+  class name and its probability.
+  **(5.6)** `configs/detectors/xgboost_multiclass.yaml` (`multi:softprob`;
+  `num_class` derived from the frozen `class_names`, never hard-coded) selects the
+  K-way path, which trains on `target_index` and stratifies the explained set on
+  `target_class`.
+  **Binary continuity is deliberate throughout**: a binary attribution explains the
+  attack side for every instance, so Layer-2 keeps measuring that side and the
+  `attack`/`benign` prompt strings are unchanged — renaming them would alter every
+  LLM request hash and break token-free replay of the cached binary runs. Selecting
+  the multi-class detector changes what the generators SEE, so it requires fresh
+  generation (not replay) — it defines the full-N Tier-A run rather than preceding it.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

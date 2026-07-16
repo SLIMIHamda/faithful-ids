@@ -44,6 +44,9 @@ def cmd_run(args: argparse.Namespace) -> int:
         max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
         # Per-run generator LLM (scale test: run once per model, compare b2 across).
         llm_override = os.environ.get("FAITHFULIDS_PILOT_LLM") or None
+        # Per-run detector config (queue #5.6): select the K-way detector
+        # (xgboost_multiclass) instead of the binary attack-vs-benign collapse.
+        detector_override = os.environ.get("FAITHFULIDS_PILOT_DETECTOR") or None
         # Competence gate on by default; set FAITHFULIDS_ENFORCE_COMPETENCE=0 to
         # REPORT the per-family table without halting (exploratory pilot).
         enforce = os.environ.get("FAITHFULIDS_ENFORCE_COMPETENCE", "1") != "0"
@@ -52,6 +55,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             n_explain=int(n) if n else None,
             max_rows=int(max_rows) if max_rows else None,
             llm_id_override=llm_override,
+            detector_id_override=detector_override,
             enforce_competence=enforce,
         )
         print(f"pilot run complete: {run_dir}")

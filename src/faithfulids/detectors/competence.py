@@ -24,6 +24,46 @@ def _is_attack_family(name: str) -> bool:
     return str(name).strip().upper() != "BENIGN"
 
 
+def multiclass_classification_table(
+    y_true: Sequence[str], y_pred: Sequence[str]
+) -> dict[str, Any]:
+    """Macro-F1 over the K canonical classes + per-class recall (queue #5.5).
+
+    The binary table below asks only "was this flagged as SOME attack"; under a
+    K-way detector the gate must ask the stricter question the explanations depend
+    on — **was it classified as the RIGHT family** — because an explanation of a
+    misattributed class is explaining the wrong decision. Recall for class c is the
+    fraction of true-c instances predicted c; ``detection_recall`` is kept as the
+    key name so the existing per-family recall floor applies unchanged.
+    """
+    from sklearn.metrics import f1_score
+
+    yt = [str(v).strip() for v in y_true]
+    yp = [str(v).strip() for v in y_pred]
+    if len(yt) != len(yp):
+        raise ValueError("y_true and y_pred must be the same length")
+    n = len(yt)
+    labels = sorted(set(yt) | set(yp))
+
+    per_family: dict[str, dict[str, Any]] = {}
+    for c in labels:
+        idx = [i for i, g in enumerate(yt) if g == c]
+        hit = sum(1 for i in idx if yp[i] == c)
+        per_family[c] = {
+            "n": len(idx),
+            "detection_recall": (hit / len(idx)) if idx else None,
+            "is_attack": _is_attack_family(c),
+        }
+    return {
+        "macro_f1": float(f1_score(yt, yp, average="macro", labels=labels, zero_division=0)),
+        "accuracy": float(sum(int(a == b) for a, b in zip(yt, yp)) / n) if n else 0.0,
+        "auc": None,  # not defined for K-way without a one-vs-rest choice
+        "n": n,
+        "classes": labels,
+        "per_family": per_family,
+    }
+
+
 def classification_table(
     y_true: Sequence[int],
     y_pred: Sequence[int],

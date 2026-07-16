@@ -22,11 +22,14 @@ from typing import Any, Callable
 from faithfulids.datasets.loaders.cicids2017 import (
     feature_columns,
     load_cicids2017,
+    multiclass_frame,
     stratified_explanation_sample,
 )
 from faithfulids.extraction import build as build_extractor
 from faithfulids.framework import attack_probability
 from faithfulids.generation import get_generator
+
+
 from faithfulids.generation.b4_vte.kb_retrieval import load_feature_semantics
 from faithfulids.generation.b4_vte.verifier import RuleVerifier
 from faithfulids.llm import CallLedger, LLMClient
@@ -46,6 +49,26 @@ from faithfulids.provenance import (
     sha256_file,
     sha256_json,
 )
+
+def _prediction_view(detector, instances):
+    """(score, class-name) per instance for the GenerationContext (queue #5.5).
+
+    Multi-class: the argmax class NAME and ITS probability — what an analyst is
+    actually told, and what the attribution/Layer-2 are about (#5.3/#5.4).
+
+    Binary: the attack probability with the literal 'attack'/'benign' strings,
+    UNCHANGED. These land in the generation prompt, so renaming them would change
+    every LLM request hash and break token-free replay of the cached binary runs.
+    """
+    names = tuple(detector.class_names)
+    if len(names) == 2:
+        p = list(attack_probability(detector, instances))
+        return p, ["attack" if x >= 0.5 else "benign" for x in p]
+    proba = detector.predict_proba(instances)
+    predicted = list(detector.predicted_class(instances))
+    scores = [float(row[names.index(c)]) for row, c in zip(proba, predicted)]
+    return scores, predicted
+
 
 _LAYER2_K = [1, 3, 5]
 
@@ -73,6 +96,7 @@ def run_pilot(
     data_loader: Callable[..., Any] | None = None,
     enforce_competence: bool = True,
     llm_id_override: str | None = None,
+    detector_id_override: str | None = None,
     llm_mode: str = "live",
     llm_cache_dir: str | Path | None = None,
 ) -> Path:
@@ -82,7 +106,9 @@ def run_pilot(
     exp = load_experiment(experiment_id)
     axes = exp["design"]["axes"]
     dataset_id = axes["datasets"][0]
-    detector_id = axes["detectors"][0]
+    # One detector per run; detector_id_override selects the K-way detector
+    # (queue #5.6) without editing the registered experiment.
+    detector_id = detector_id_override or axes["detectors"][0]
     # One LLM per run (Kaggle memory). llm_id_override selects it per run so the
     # scale-test cell can run the pilot once per model and compare (e.g. 3B vs 7B).
     llm_id = llm_id_override or axes["llms"][0]
@@ -102,19 +128,40 @@ def run_pilot(
     loader = data_loader or load_cicids2017
     df = loader(data_dir, max_rows=max_rows)
     feat_cols = feature_columns(df)
+    _mc = str((detector_hyperparameters or detcfg["hyperparameters"]).get("objective", "")
+              ).startswith("multi:")
     train_df, explain_df = stratified_explanation_sample(
         df, n_explain=n_explain, seed=int(seeds["split"]),
         minority_floor=int(load_config("sampling", "pilot_n150")["minority_floor"]),
+        # stratify on the K-way target so every canonical class is represented in the
+        # explained set (binary keeps the historical attack_class stratification)
+        stratify="target_class" if _mc else "attack_class",
     )
 
     # -- detector (train -> frozen -> load) --------------------------------- #
     family = detector_family or detcfg["family"]
     hyper = detector_hyperparameters or detcfg["hyperparameters"]
     model_dir = Path(runs_root) / "_pilot_models" / f"{family}__{dataset_id}"
-    get_trainer(family)(
-        train_df[feat_cols + ["label"]], label_column="label",
-        hyperparameters=hyper, seed=int(seeds["detector_training"]), out_dir=model_dir,
-    )
+    # queue #5.6: a multi:* objective trains the K-way target (target_index) over the
+    # canonical taxonomy and freezes class_names with the model; a binary objective
+    # keeps the untouched `label` path, so the existing pilot is bit-for-bit as before.
+    multiclass = str(hyper.get("objective", "")).startswith("multi:")
+    if multiclass:
+        train_mc, class_idx = multiclass_frame(train_df)
+        explain_df, _ = multiclass_frame(explain_df)
+        class_names = [c for c, _ in sorted(class_idx.items(), key=lambda kv: kv[1])]
+        print(f"multi-class detector: {len(class_names)} classes {class_names}; "
+              f"dropped {len(train_df) - len(train_mc)} excluded/rare train rows")
+        get_trainer(family)(
+            train_mc[feat_cols + ["target_index"]], label_column="target_index",
+            hyperparameters=hyper, seed=int(seeds["detector_training"]), out_dir=model_dir,
+            class_names=class_names,
+        )
+    else:
+        get_trainer(family)(
+            train_df[feat_cols + ["label"]], label_column="label",
+            hyperparameters=hyper, seed=int(seeds["detector_training"]), out_dir=model_dir,
+        )
     detector = load_frozen(family, model_dir)
     feature_names = list(detector.feature_names)
 
@@ -129,14 +176,12 @@ def run_pilot(
             attrcfg["method"], background_policy=attrcfg["background_policy"]["removal_semantics"]
         )
     attributions = attributor.attribute(detector, instances, ids)
-    # TODO(#5.5): under a multi-class detector this becomes the PREDICTED class's
-    # probability + its argmax name; the binary shim keeps the pilot behaviour here.
-    preds = list(attack_probability(detector, instances))
+    preds, pred_classes = _prediction_view(detector, instances)
     cases = [
         InstanceCase(
             instance_id=ids[i], feature_values=instances[i], attribution=attributions[i],
             detector_prediction=float(preds[i]),
-            predicted_class="attack" if preds[i] >= 0.5 else "benign",
+            predicted_class=pred_classes[i],
         )
         for i in range(len(instances))
     ]
@@ -149,14 +194,23 @@ def run_pilot(
     # config; the full per-family table -> competence.json + the run manifest.
     from faithfulids.detectors.competence import (
         DetectorNotCompetent, classification_table, evaluate_competence,
+        multiclass_classification_table,
     )
 
-    comp_table = classification_table(
-        [int(v) for v in explain_df["label"].tolist()],
-        [1 if p >= 0.5 else 0 for p in preds],
-        [str(v) for v in explain_df["attack_class"].tolist()],
-        y_score=preds,
-    )
+    if len(detector.class_names) > 2:
+        # K-way: gate on "was it classified as the RIGHT family", not merely "as
+        # some attack" — an explanation of a misattributed class explains the wrong
+        # decision (queue #5.5).
+        comp_table = multiclass_classification_table(
+            [str(v) for v in explain_df["target_class"].tolist()], pred_classes
+        )
+    else:
+        comp_table = classification_table(
+            [int(v) for v in explain_df["label"].tolist()],
+            [1 if p >= 0.5 else 0 for p in preds],
+            [str(v) for v in explain_df["attack_class"].tolist()],
+            y_score=preds,
+        )
     (model_dir / "competence.json").write_text(
         json.dumps(comp_table, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
