@@ -1,0 +1,37 @@
+id: b5_narrative_vte
+schema_version: v1
+kind: generator
+code: b5_narrative_vte
+llm_dependent: true
+params:
+  top_k: 5
+  temperature: 0
+# ONE class-aware prompt from birth ({{score_label}} renders the score noun:
+# binary = the literal "attack", K-way = the predicted class). B5 has no cached
+# binary runs to replay, so no prompt_multiclass variant is needed.
+prompt:
+  name: b5_narrative_vte
+  version: 1.0.0
+  sha256: b377d7c54c7a522fa6618fa076d7654790a520948b76f49828bf58957ad07528
+# Grounding sources, both versioned: per-feature semantics (as B4) PLUS the
+# predicted class's profile from kb/attack_classes — the narrative "glue" (why
+# this evidence means this class) paraphrases a citable KB snippet instead of
+# the LLM's prior. Entries aggregate to canonical classes via configs/taxonomy.
+kb_ref: kb:feature_semantics@1.0.0
+kb_class_ref: kb:attack_classes@1.0.0
+verifier:
+  # FIREWALL SIDE A — deliberately the SAME instrument as b4_vte, so the only
+  # delta between B4 and B5 is narrative synthesis (does coherence cost
+  # faithfulness?). model_family stays disjoint from every generator LLM family
+  # AND from the extractor's family (tools/firewall_check.py).
+  model_family: phi
+  prompt:
+    name: b4_vte/verifier
+    version: 1.0.0
+    sha256: cb7f40facd0a874dfa9f567513747204021d2a27564f68411cc4bd87b3f8fc2a
+  threshold_ref: statistics:decision_thresholds:verifier_threshold
+  threshold_scope: dev_split
+abstention:
+  enabled: true
+  fallback_generator: b1_template
+  reporting: coverage_risk

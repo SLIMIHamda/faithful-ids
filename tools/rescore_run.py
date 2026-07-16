@@ -17,6 +17,11 @@ original run's instances byte-for-byte:
     FAITHFULIDS_PILOT_LLM   the same generator LLM id (e.g. qwen3_8b_4bit)
     FAITHFULIDS_LLM_CACHE_DIR  the ledger dir from the original run's artifacts
                                (…/runs/_pilot_llm_cache); defaults to runs/_pilot_llm_cache
+    FAITHFULIDS_PILOT_GENERATORS  the ORIGINAL run's generator list (comma-
+                               separated; see its resolved_config). Required for
+                               runs generated before b5_narrative_vte joined the
+                               axis — a b5 cell has no ledger entries there:
+                               b0_raw_shap,b1_template,b2_zeroshot,b3_dte_style,b4_vte
 
 Usage:  PYTHONPATH=src python tools/rescore_run.py [--experiment EXP-PILOT-001]
 """
@@ -56,6 +61,8 @@ def main(argv: list[str] | None = None) -> int:
     n = os.environ.get("FAITHFULIDS_PILOT_N")
     max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
     llm_override = os.environ.get("FAITHFULIDS_PILOT_LLM") or None
+    gens = os.environ.get("FAITHFULIDS_PILOT_GENERATORS") or None
+    gens_override = [g.strip() for g in gens.split(",") if g.strip()] if gens else None
 
     run_dir = run_pilot(
         args.experiment,
@@ -64,6 +71,7 @@ def main(argv: list[str] | None = None) -> int:
         n_explain=int(n) if n else None,
         max_rows=int(max_rows) if max_rows else None,
         llm_id_override=llm_override,
+        generator_ids_override=gens_override,
         enforce_competence=False,  # re-score is a measurement pass, not a gate
         llm_mode="replay",
         llm_cache_dir=cache_dir,

@@ -54,6 +54,8 @@ def _check_references(config: dict, errors: list[str], where: str) -> None:
         elif kind == "generator":
             if config.get("kb_ref"):
                 resolve_reference(config["kb_ref"])
+            if config.get("kb_class_ref"):  # B5's class-profile grounding source
+                resolve_reference(config["kb_class_ref"])
             if config.get("verifier"):
                 resolve_reference(config["verifier"]["threshold_ref"])
             if config.get("abstention"):

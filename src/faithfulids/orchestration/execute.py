@@ -73,6 +73,31 @@ def _prediction_view(detector, instances):
 _LAYER2_K = [1, 3, 5]
 
 
+def _class_semantics(kb_name: str) -> dict[str, str]:
+    """{canonical class -> KB profile} for B5's class grounding.
+
+    ``kb/attack_classes/<kb_name>.yaml`` entries are granular family names
+    ("DoS Hulk"); they aggregate to the CANONICAL classes the detector predicts
+    through the single taxonomy config (#5.1b), so the snippet B5 cites is
+    guaranteed to describe the class the attribution explains. Excluded families
+    drop out. Binary runs' 'attack'/'benign' labels simply miss (B5 renders its
+    neutral placeholder).
+    """
+    import yaml
+
+    from faithfulids.datasets.loaders.cicids2017 import canonical_class
+
+    path = repo_root() / "kb" / "attack_classes" / f"{kb_name}.yaml"
+    if not path.is_file():
+        return {}
+    out: dict[str, list[str]] = {}
+    for e in yaml.safe_load(path.read_text(encoding="utf-8")).get("entries", []):
+        c = canonical_class(e["name"])
+        if c is not None:
+            out.setdefault(c, []).append(str(e["description"]).strip())
+    return {c: " ".join(descs) for c, descs in out.items()}
+
+
 def _data_input_refs(data_dir: Path) -> list[ArtifactRef]:
     refs: list[ArtifactRef] = []
     for csv in sorted(data_dir.rglob("*.csv")):
@@ -98,6 +123,7 @@ def run_pilot(
     enforce_competence: bool = True,
     llm_id_override: str | None = None,
     detector_id_override: str | None = None,
+    generator_ids_override: list[str] | None = None,
     llm_mode: str = "live",
     llm_cache_dir: str | Path | None = None,
 ) -> Path:
@@ -113,7 +139,11 @@ def run_pilot(
     # One LLM per run (Kaggle memory). llm_id_override selects it per run so the
     # scale-test cell can run the pilot once per model and compare (e.g. 3B vs 7B).
     llm_id = llm_id_override or axes["llms"][0]
-    generator_ids = axes["generators"]
+    # Override for REPLAY re-scores of runs generated under an older generator
+    # axis: a generator added later (b5) has no ledger entries in those runs, so
+    # replaying the current axis would hard-error on the first b5 cell. Pin the
+    # original run's generator list (its resolved_config records it).
+    generator_ids = list(generator_ids_override) if generator_ids_override else axes["generators"]
 
     dcfg = load_config("dataset", dataset_id)
     detcfg = load_config("detector", detector_id)
@@ -266,7 +296,15 @@ def run_pilot(
 
         provider = llm_provider or TransformersProvider()
         client = LLMClient(provider, ledger, mode="live")
-    kb = load_feature_semantics(dataset_id)
+    # KB corpora are keyed by the dataset config's kb_ref NAME (kb:cicids2017@…),
+    # not the dataset id: kb/feature_semantics/cicids2017.yaml exists,
+    # cicids2017_corrected.yaml does not — so the historical dataset_id lookup
+    # silently returned {} and every cached binary run's b4 prompt carried an
+    # EMPTY "Feature meanings" section. That emptiness is now baked into those
+    # runs' request hashes, so the binary path keeps it (token-free replay);
+    # K-way runs resolve the KB name properly and get real grounding.
+    kb_name = (dcfg.get("kb_ref") or f"kb:{dataset_id}@").split(":", 1)[1].split("@", 1)[0]
+    kb = load_feature_semantics(kb_name if multiclass else dataset_id)
 
     generators = []
     for gid in generator_ids:
@@ -277,6 +315,13 @@ def run_pilot(
             generators.append((gid, get_generator(
                 gcfg, llm_client=client, model_config=llmcfg,
                 kb_feature_semantics=kb, verifier=RuleVerifier(),
+            )))
+        elif gcfg["code"] == "b5_narrative_vte":
+            generators.append((gid, get_generator(
+                gcfg, llm_client=client, model_config=llmcfg,
+                kb_feature_semantics=kb,
+                kb_class_semantics=_class_semantics(kb_name),
+                verifier=RuleVerifier(),
             )))
         else:
             generators.append((gid, get_generator(gcfg, llm_client=client, model_config=llmcfg)))

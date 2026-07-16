@@ -44,6 +44,13 @@
         "sha256": "cb7f40facd0a874dfa9f567513747204021d2a27564f68411cc4bd87b3f8fc2a"
       }
     },
+    "b5_narrative_vte": {
+      "1.0.0": {
+        "frozen": true,
+        "path": "prompts/generation/b5_narrative_vte/v1.0.0.md",
+        "sha256": "b377d7c54c7a522fa6618fa076d7654790a520948b76f49828bf58957ad07528"
+      }
+    },
     "eval_extractor": {
       "1.0.0": {
         "frozen": true,

@@ -21,6 +21,7 @@ GENERATOR_MODULES: dict[str, str] = {
     "b2_zeroshot": "faithfulids.generation.b2_zeroshot",
     "b3_dte_style": "faithfulids.generation.b3_dte_style",
     "b4_vte": "faithfulids.generation.b4_vte",
+    "b5_narrative_vte": "faithfulids.generation.b5_narrative_vte",
 }
 
 

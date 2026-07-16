@@ -389,6 +389,35 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   attack likelihood" and needs a class-aware semver (audit-gated) before the
   LLM-assisted extraction path activates.
 
+- **B5 — narrative Verify-then-Explain (`b5_narrative_vte`).** New generator:
+  where B4 states per-feature facts, B5 weaves the SAME ranked evidence into ONE
+  coherent account of the prediction, grounded in the KB twice over — per-feature
+  semantics (as B4) plus the PREDICTED class's profile from `kb/attack_classes`
+  (granular entries aggregate to canonical classes through the single taxonomy
+  config, so the story's "why this evidence means this class" glue paraphrases a
+  citable snippet instead of the LLM's prior; a unit test guarantees every
+  canonical class has a profile). The verification loop is deliberately the SAME
+  instrument as B4 (rule verifier, draft → verify claims against SHAP evidence →
+  abstain to B1): the only B4/B5 delta is narrative synthesis, so the pair
+  directly measures whether coherence costs faithfulness (ε_nar). One class-aware
+  prompt from birth (`{{score_label}}`; no `prompt_multiclass` needed — B5 has no
+  cached binary runs). Added to EXP-PILOT-001's generator axis (six generators);
+  Tier-A's 44-cell design is untouched. **Replay guard:** runs generated before
+  b5 joined the axis have no b5 ledger entries, so `run_pilot` gained
+  `generator_ids_override` (env `FAITHFULIDS_PILOT_GENERATORS`) and the rescore
+  launcher pins the original B0–B4 list.
+
+- **KB grounding was silently empty in every pilot run (found in review, fixed
+  for K-way).** `execute.run_pilot` looked up `kb/feature_semantics/<dataset_id>.yaml`
+  — but the corpus is keyed by the dataset config's `kb_ref` NAME
+  (`kb/feature_semantics/cicids2017.yaml` vs dataset id `cicids2017_corrected`)
+  — so `load_feature_semantics` returned `{}` and every cached run's b4 prompt
+  carried an EMPTY "Feature meanings" section: pilot-v1/v2 b4 was
+  verifier-grounded but NOT KB-informed, and any KB-attributable effect in those
+  runs is actually the verifier + prompt structure. The emptiness is baked into
+  those runs' request hashes, so the binary path keeps it (token-free replay);
+  K-way runs resolve the KB name from `kb_ref` and get real grounding.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

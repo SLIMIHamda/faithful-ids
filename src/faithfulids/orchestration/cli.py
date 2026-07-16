@@ -52,6 +52,10 @@ def cmd_run(args: argparse.Namespace) -> int:
         # Per-run detector config (queue #5.6): select the K-way detector
         # (xgboost_multiclass) instead of the binary attack-vs-benign collapse.
         detector_override = os.environ.get("FAITHFULIDS_PILOT_DETECTOR") or None
+        # Comma-separated generator-axis override. Main use: REPLAY re-scores of
+        # runs generated before b5 joined the axis (pin the original list).
+        gens = os.environ.get("FAITHFULIDS_PILOT_GENERATORS") or None
+        gens_override = [g.strip() for g in gens.split(",") if g.strip()] if gens else None
         # Competence gate on by default; set FAITHFULIDS_ENFORCE_COMPETENCE=0 to
         # REPORT the per-family table without halting (exploratory pilot).
         enforce = os.environ.get("FAITHFULIDS_ENFORCE_COMPETENCE", "1") != "0"
@@ -62,6 +66,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             rows_per_file=int(rows_per_file) if rows_per_file else None,
             llm_id_override=llm_override,
             detector_id_override=detector_override,
+            generator_ids_override=gens_override,
             enforce_competence=enforce,
         )
         print(f"pilot run complete: {run_dir}")

@@ -2,7 +2,7 @@ id: EXP-PILOT-001
 schema_version: v1
 kind: experiment
 tier: pilot
-title: Pilot vertical slice (CICIDS2017 x XGBoost x TreeSHAP x one LLM x B0-B4)
+title: Pilot vertical slice (CICIDS2017 x XGBoost x TreeSHAP x one LLM x B0-B5)
 research_question: >-
   NOT a hypothesis test. A single end-to-end vertical slice to validate the
   repository, the reproducibility pipeline, and the experimental workflow — and
@@ -20,7 +20,11 @@ design:
     # needed. Precision is declared in the llm config's `quantisation`, never
     # inferred. Swap to mistral_7b_instruct_4bit / a larger model on bigger GPUs.
     llms: [qwen2_5_3b_instruct]
-    generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte]
+    # b5 (narrative VtE) added for the multi-class pilot wave: same verifier
+    # instrument as b4, so the b4/b5 delta isolates narrative synthesis. NOTE:
+    # replay re-scores of runs generated BEFORE b5 was added must run with the
+    # original generator list (a b5 cell has no ledger entries to replay).
+    generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte, b5_narrative_vte]
 sampling_refs: [sampling:pilot_n150, sampling:stochasticity_k3]
 seed_ref: seeds:pilot
 # Pilot is exempt from the confirmatory gate ordering: EXP-G-001 needs 300 human

@@ -77,19 +77,21 @@ def test_pilot_execute_end_to_end(tmp_path):
     assert is_complete_and_verified(run_id, runs_root=tmp_path / "runs")
     rows = load_metrics(run_id, runs_root=tmp_path / "runs")
 
-    # all five generators represented in Layer-1
+    # all six generators represented in Layer-1
     gens = {r["grouping"].get("generator_id") for r in rows if r["layer"] == "layer1"}
-    assert {"b0_raw_shap", "b1_template", "b2_zeroshot", "b3_dte_style", "b4_vte"} <= gens
+    assert {"b0_raw_shap", "b1_template", "b2_zeroshot", "b3_dte_style", "b4_vte",
+            "b5_narrative_vte"} <= gens
     # Layer-2 (model-level) and cost rows present
     assert any(r["layer"] == "layer2" for r in rows)
     assert any(r["layer"] == "cost" and r["metric"] == "coverage" for r in rows)
-    # queue #2: abstention_rate denominator is scoped to abstention-capable (B4)
-    # generations, NOT all five baselines (else 24/60 reads as 0.08)
+    # queue #2: abstention_rate denominator is scoped to abstention-capable
+    # generations (B4 + B5), NOT all baselines (else 24/60 reads as 0.08)
     ar = [r for r in rows if r["layer"] == "cost" and r["metric"] == "abstention_rate"]
-    n_b4 = len({r["instance_id"] for r in rows
-                if r["layer"] == "layer1" and r["grouping"].get("generator_id") == "b4_vte"})
+    n_capable = len({(r["instance_id"], r["grouping"].get("generator_id")) for r in rows
+                     if r["layer"] == "layer1"
+                     and r["grouping"].get("generator_id") in ("b4_vte", "b5_narrative_vte")})
     assert ar and ar[0]["grouping"].get("scope") == "abstention_capable"
-    assert ar[0]["grouping"]["n_denominator"] == n_b4 and n_b4 > 0
+    assert ar[0]["grouping"]["n_denominator"] == n_capable and n_capable > 0
     # B1 is faithful-by-construction -> its mean mention_f1 exceeds the free-form
     # stub generators' (a real, interpretable signal even in the wiring test)
     def mean_f1(g):

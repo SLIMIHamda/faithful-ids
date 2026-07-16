@@ -249,3 +249,65 @@ def test_runner_sets_score_label_from_the_detector_arity():
                              layer1_top_k=3, layer2_k_values=[1]),
                   seed=0)
         assert gen.score_labels == [expected]
+
+
+# --------------------------------------------------------------------------- #
+# B5 — narrative Verify-then-Explain.
+# --------------------------------------------------------------------------- #
+def test_b5_abstains_and_degrades_to_b1(tmp_path):
+    """Same abstention contract as b4: the stub verifier never supports the stub
+    draft -> abstain -> B1 fallback (never silence), with a verifier trace."""
+    gen = get_generator(load_config("generator", "b5_narrative_vte"),
+                        llm_client=_client(tmp_path), model_config=MODEL)
+    rec = gen.generate(_ctx())
+    assert rec.generator_id == "b5_narrative_vte"
+    assert rec.abstained is True and rec.fallback_generator_id == "b1_template"
+    assert rec.text.startswith("The model classified this flow as DoS Hulk")
+    assert len(rec.llm_call_ids) == 2
+    assert rec.metadata["verifier_trace"]["reason"]
+
+
+def test_b5_prompt_is_narrative_class_grounded_and_score_labelled():
+    """The b5 prompt must carry: the class profile snippet (KB-grounded glue),
+    the score-labelled evidence list, and the woven-narrative citation rule —
+    with {{score_label}} rendered per instance (class-aware from birth, no
+    prompt_multiclass machinery)."""
+    from faithfulids.generation.b4_vte.verifier import RuleVerifier
+
+    client = _CapturingClient()
+    gen = get_generator(
+        load_config("generator", "b5_narrative_vte"),
+        llm_client=client, model_config=MODEL,
+        kb_feature_semantics={"Flow Duration": "Total time span of the flow."},
+        kb_class_semantics={"BENIGN": "Normal, non-malicious traffic."},
+        verifier=RuleVerifier(),  # rule verifier -> client captures ONLY draft prompts
+    )
+    gen.generate(_mc_ctx())
+    prompt = client.prompts[0]
+    assert "Normal, non-malicious traffic." in prompt          # class profile
+    assert "(increases BENIGN score" in prompt                 # evidence list
+    assert "decreased the BENIGN score" in prompt              # citation rule
+    assert "Flow Duration: Total time span of the flow." in prompt
+    for ph in ("{{predicted_class}}", "{{score_label}}", "{{kb_class_snippet}}",
+               "{{ranked_feature_list}}", "{{kb_feature_snippets}}"):
+        assert ph not in prompt  # every named placeholder filled
+
+    # unknown class (e.g. a binary run's 'attack' label) -> neutral placeholder
+    gen.generate(_ctx())
+    from faithfulids.generation.b5_narrative_vte import NO_CLASS_PROFILE
+    assert NO_CLASS_PROFILE in client.prompts[1]
+    assert "(increases attack score" in client.prompts[1]
+
+
+def test_class_semantics_aggregates_kb_entries_to_canonical_classes():
+    """execute._class_semantics: granular KB entries (DoS Hulk) aggregate to the
+    canonical classes the detector predicts; every canonical class has a profile
+    (B5's story glue is guaranteed citable); excluded families drop out."""
+    from faithfulids.datasets.loaders.cicids2017 import canonical_classes
+    from faithfulids.orchestration.execute import _class_semantics
+
+    m = _class_semantics("cicids2017")
+    missing = [c for c in canonical_classes() if not m.get(c)]
+    assert not missing, f"canonical classes with no KB profile: {missing}"
+    assert "denial-of-service" in m["DoS"]      # from the granular 'DoS Hulk' entry
+    assert "Infiltration" not in m and "Heartbleed" not in m  # excluded families

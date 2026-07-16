@@ -9,7 +9,7 @@
     "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
     "schema_version": {"const": "v1"},
     "kind": {"const": "generator"},
-    "code": {"enum": ["b0_raw_shap", "b1_template", "b2_zeroshot", "b3_dte_style", "b4_vte"]},
+    "code": {"enum": ["b0_raw_shap", "b1_template", "b2_zeroshot", "b3_dte_style", "b4_vte", "b5_narrative_vte"]},
     "llm_dependent": {"type": "boolean"},
     "params": {
       "type": "object",
@@ -23,6 +23,7 @@
     "prompt": {"$ref": "#/$defs/prompt_ref"},
     "prompt_multiclass": {"$ref": "#/$defs/prompt_ref"},
     "kb_ref": {"type": ["string", "null"], "pattern": "^kb:[a-z0-9_]+@[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "kb_class_ref": {"type": ["string", "null"], "pattern": "^kb:[a-z0-9_]+@[0-9]+\\.[0-9]+\\.[0-9]+$"},
     "verifier": {
       "type": ["object", "null"],
       "additionalProperties": false,
