@@ -3,8 +3,8 @@
 # the ref against this table. The human-readable history is in VERSIONS.md.
 kb_schema_version: v1
 names:
-  feature_semantics: 1.0.0
-  attack_classes: 1.0.0
-  cicids2017: 1.0.0
+  feature_semantics: 1.1.0
+  attack_classes: 1.1.0
+  cicids2017: 1.1.0
   unsw_nb15: 1.0.0
   cse_cic_ids2018: 1.0.0

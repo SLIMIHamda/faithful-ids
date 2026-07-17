@@ -52,9 +52,11 @@ def test_prompt_hash_verification_detects_tamper():
 
 
 def test_kb_reference_version_drift_is_rejected():
-    assert resolve_kb("kb:cicids2017@1.0.0") == {"name": "cicids2017", "version": "1.0.0"}
+    assert resolve_kb("kb:cicids2017@1.1.0") == {"name": "cicids2017", "version": "1.1.0"}
     with pytest.raises(ConfigError):
         resolve_kb("kb:cicids2017@9.9.9")
+    with pytest.raises(ConfigError):  # superseded version is drift too (registry moved to 1.1.0)
+        resolve_kb("kb:cicids2017@1.0.0")
     with pytest.raises(ConfigError):
         resolve_kb("kb:not_a_dataset@1.0.0")
 

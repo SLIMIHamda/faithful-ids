@@ -19,7 +19,7 @@ prompt_multiclass:
   sha256: 9b7841148c35318c5e24c22179265c92f249262aec0518f5fbb7d2cd7af697aa
 # KB grounding source (feature-semantics), versioned. The per-dataset dictionary
 # is selected at run time from the dataset's kb_ref; this pins the KB version.
-kb_ref: kb:feature_semantics@1.0.0
+kb_ref: kb:feature_semantics@1.1.0
 verifier:
   # FIREWALL SIDE A. model_family here must be disjoint from every generator LLM
   # family AND from the extractor's family (tools/firewall_check.py).

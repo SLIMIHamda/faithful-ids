@@ -1,7 +1,12 @@
 kind: kb_feature_dictionary
 schema_version: v1
 dataset: cicids2017
-version: 1.0.0
+version: 1.1.0
+# 1.1.0: full coverage of the 76-feature runtime vocabulary (was 8 entries, so
+# most prompts' "Feature meanings" sections were near-empty — found analyzing
+# the first K-way smoke). Entries are ordered by the frozen model's
+# feature_names.json; the original 8 descriptions are preserved verbatim.
+# Times (durations, IAT, active/idle) are CICFlowMeter microseconds.
 entries:
   - name: Flow Duration
     description: Total duration of the network flow; unusually short or long durations can indicate scanning or flooding.
@@ -13,18 +18,222 @@ entries:
   - name: Total Backward Packets
     description: Number of packets sent from destination to source; asymmetry with forward packets can indicate one-sided attack traffic.
     units: packets
+  - name: Total Length of Fwd Packets
+    description: Total bytes sent from source to destination; very large totals indicate bulk upload or exfiltration, near-zero totals indicate probe-only flows.
+    units: bytes
+  - name: Total Length of Bwd Packets
+    description: Total bytes sent from destination to source; near-zero replies against non-trivial forward traffic indicate unanswered probes or refused services.
+    units: bytes
+  - name: Fwd Packet Length Max
+    description: Largest packet sent by the source; small maxima mean no real payload was ever carried, typical of scans and control-only traffic.
+    units: bytes
+  - name: Fwd Packet Length Min
+    description: Smallest packet sent by the source; uniformly minimal packets are characteristic of crafted probe or flood traffic.
+    units: bytes
+  - name: Fwd Packet Length Mean
+    description: Mean size of forward packets; small uniform sizes can indicate scanning or control traffic.
+    units: bytes
+  - name: Fwd Packet Length Std
+    description: Variability of forward packet sizes; near-zero deviation means machine-generated uniform packets, typical of bots, floods, and brute-force tools.
+    units: bytes
+  - name: Bwd Packet Length Max
+    description: Largest packet sent by the destination; large maxima indicate substantive server responses, small maxima indicate error or reset-only replies.
+    units: bytes
+  - name: Bwd Packet Length Min
+    description: Smallest packet sent by the destination; minimal-only replies indicate acknowledgement or rejection traffic without payload.
+    units: bytes
+  - name: Bwd Packet Length Mean
+    description: Mean size of backward packets; near-zero responses can indicate unanswered scan probes.
+    units: bytes
+  - name: Bwd Packet Length Std
+    description: Variability of backward packet sizes; near-zero deviation indicates repeated identical server responses, as under brute-force login attempts.
+    units: bytes
   - name: Flow Bytes/s
     description: Byte throughput of the flow; very high values are associated with volumetric (D)DoS traffic.
     units: bytes_per_second
   - name: Flow Packets/s
     description: Packet rate of the flow; elevated rates are associated with flooding and scanning.
     units: packets_per_second
-  - name: Fwd Packet Length Mean
-    description: Mean size of forward packets; small uniform sizes can indicate scanning or control traffic.
+  - name: Flow IAT Mean
+    description: Mean time between consecutive packets in the flow; very small means indicate flooding, highly regular means indicate automated traffic.
+    units: microseconds
+  - name: Flow IAT Std
+    description: Jitter of packet inter-arrival times; near-zero jitter indicates machine-paced periodic traffic such as bot beaconing or flood tools.
+    units: microseconds
+  - name: Flow IAT Max
+    description: Longest gap between consecutive packets; large gaps indicate idle-and-resume behaviour typical of keep-alive or command-and-control channels.
+    units: microseconds
+  - name: Flow IAT Min
+    description: Shortest gap between consecutive packets; near-zero minima indicate back-to-back packet bursts characteristic of floods.
+    units: microseconds
+  - name: Fwd IAT Total
+    description: Time spanned by the source's packet train; short totals with many packets indicate high-rate bursts from the sender.
+    units: microseconds
+  - name: Fwd IAT Mean
+    description: Mean time between the source's packets; very small values indicate the sender is flooding, very regular values indicate tooled traffic.
+    units: microseconds
+  - name: Fwd IAT Std
+    description: Jitter of the source's packet timing; near-zero indicates automated fixed-rate sending rather than human-driven traffic.
+    units: microseconds
+  - name: Fwd IAT Max
+    description: Longest pause in the source's sending; long pauses indicate intermittent activity such as periodic retries or beaconing.
+    units: microseconds
+  - name: Fwd IAT Min
+    description: Shortest gap in the source's sending; near-zero indicates packet bursts from attack tools.
+    units: microseconds
+  - name: Bwd IAT Total
+    description: Time spanned by the destination's reply train; small or zero spans indicate the server barely responded.
+    units: microseconds
+  - name: Bwd IAT Mean
+    description: Mean time between the destination's replies; inflated means indicate a server struggling under load or throttling a client.
+    units: microseconds
+  - name: Bwd IAT Std
+    description: Jitter of the destination's reply timing; abnormal regularity or gaps distinguish scripted exchanges from organic sessions.
+    units: microseconds
+  - name: Bwd IAT Max
+    description: Longest pause in the destination's replies; long pauses indicate delayed or withheld responses under stress.
+    units: microseconds
+  - name: Bwd IAT Min
+    description: Shortest gap between destination replies; near-zero indicates rapid-fire responses such as rejection storms.
+    units: microseconds
+  - name: Fwd PSH Flags
+    description: Count of TCP PSH flags set by the source; pushing on every small packet is typical of interactive tools and credential-stuffing clients.
+    units: count
+  - name: Bwd PSH Flags
+    description: Count of TCP PSH flags set by the destination; indicates the server promptly pushing small responses such as login banners or errors.
+    units: count
+  - name: Fwd URG Flags
+    description: Count of TCP URG flags set by the source; URG is virtually absent in normal traffic, so non-zero counts indicate crafted or evasive packets.
+    units: count
+  - name: Bwd URG Flags
+    description: Count of TCP URG flags set by the destination; non-zero counts indicate anomalous or crafted response packets.
+    units: count
+  - name: Fwd Header Length
+    description: Total TCP/IP header bytes in the forward direction; a high header-to-payload ratio indicates control-heavy traffic such as scans and floods.
     units: bytes
-  - name: Bwd Packet Length Mean
-    description: Mean size of backward packets; near-zero responses can indicate unanswered scan probes.
+  - name: Bwd Header Length
+    description: Total TCP/IP header bytes in the backward direction; header-only reply streams indicate acknowledgement or reset traffic without content.
     units: bytes
+  - name: Fwd Packets/s
+    description: Packet rate from the source; high forward rates indicate flooding or aggressive scanning from the client side.
+    units: packets_per_second
+  - name: Bwd Packets/s
+    description: Packet rate from the destination; a low backward rate against a high forward rate indicates one-sided attack traffic.
+    units: packets_per_second
+  - name: Min Packet Length
+    description: Smallest packet observed in either direction; flows composed only of minimum-size packets are typical of scans and floods.
+    units: bytes
+  - name: Max Packet Length
+    description: Largest packet observed in either direction; small maxima mean the flow never carried real data.
+    units: bytes
+  - name: Packet Length Mean
+    description: Average packet size over the whole flow; small means indicate control or probe traffic, large means indicate data transfer.
+    units: bytes
+  - name: Packet Length Std
+    description: Variability of packet sizes over the flow; near-zero deviation indicates uniform machine-generated packets.
+    units: bytes
+  - name: Packet Length Variance
+    description: Variance of packet sizes over the flow; the squared counterpart of the size deviation, separating uniform crafted traffic from mixed organic sessions.
+    units: bytes_squared
+  - name: FIN Flag Count
+    description: Count of TCP FIN flags; missing FINs across many short flows indicate half-open scanning, excess FINs indicate FIN-scan probing.
+    units: count
   - name: SYN Flag Count
     description: Count of TCP SYN flags; elevated counts without corresponding ACKs indicate SYN-flood or scanning.
     units: count
+  - name: RST Flag Count
+    description: Count of TCP RST flags; high reset counts indicate connections refused at closed ports or forcibly torn down sessions.
+    units: count
+  - name: PSH Flag Count
+    description: Count of TCP PSH flags in both directions; elevated counts on small packets indicate scripted request-response exchanges.
+    units: count
+  - name: ACK Flag Count
+    description: Count of TCP ACK flags; ACK-dominated flows without payload indicate ACK scans or bare keep-alive channels.
+    units: count
+  - name: URG Flag Count
+    description: Count of TCP URG flags in both directions; any non-zero value is anomalous in modern benign traffic.
+    units: count
+  - name: CWE Flag Count
+    description: Count of TCP CWR (congestion window reduced) flags; essentially absent in normal traffic, so non-zero counts indicate crafted packets.
+    units: count
+  - name: ECE Flag Count
+    description: Count of TCP ECE (ECN-echo) flags; rare in practice, so non-zero counts indicate unusual stacks or crafted traffic.
+    units: count
+  - name: Down/Up Ratio
+    description: Ratio of download to upload volume; near-zero means the server sent nothing back (probes), high values mean the client is pulling data.
+    units: ratio
+  - name: Average Packet Size
+    description: Mean bytes per packet across the flow; small averages indicate control or probe traffic, large averages indicate content transfer.
+    units: bytes
+  - name: Avg Fwd Segment Size
+    description: Mean payload segment size from the source; tiny segments indicate credential-guessing or command traffic rather than uploads.
+    units: bytes
+  - name: Avg Bwd Segment Size
+    description: Mean payload segment size from the destination; tiny segments indicate terse server responses such as errors or rejections.
+    units: bytes
+  - name: Fwd Avg Bytes/Bulk
+    description: Average bytes per forward bulk-transfer episode; non-zero values indicate sustained data pushing toward the server, as in uploads or exfiltration.
+    units: bytes
+  - name: Fwd Avg Packets/Bulk
+    description: Average packets per forward bulk-transfer episode; measures how much of the client's traffic arrives in sustained runs rather than sparse requests.
+    units: packets
+  - name: Fwd Avg Bulk Rate
+    description: Average forward throughput during bulk episodes; high sustained rates indicate deliberate data pushing rather than interactive use.
+    units: bytes_per_second
+  - name: Bwd Avg Bytes/Bulk
+    description: Average bytes per backward bulk-transfer episode; non-zero values indicate the server delivering sustained content such as downloads.
+    units: bytes
+  - name: Bwd Avg Packets/Bulk
+    description: Average packets per backward bulk-transfer episode; separates content-serving flows from terse acknowledgement-only exchanges.
+    units: packets
+  - name: Bwd Avg Bulk Rate
+    description: Average backward throughput during bulk episodes; high rates indicate large server payloads being drawn from the host.
+    units: bytes_per_second
+  - name: Subflow Fwd Packets
+    description: Mean packets per forward subflow; for single-burst flows this mirrors the total forward packet count.
+    units: packets
+  - name: Subflow Fwd Bytes
+    description: Mean bytes per forward subflow; tracks how much data each client activity burst carries.
+    units: bytes
+  - name: Subflow Bwd Packets
+    description: Mean packets per backward subflow; low values against active forward subflows indicate unanswered activity bursts.
+    units: packets
+  - name: Subflow Bwd Bytes
+    description: Mean bytes per backward subflow; tracks how much data the server returns per activity burst.
+    units: bytes
+  - name: Init_Win_bytes_forward
+    description: Client's initial TCP window size; a stack and tool fingerprint whose fixed unusual values reveal crafted traffic, with 0 or -1 meaning no proper handshake.
+    units: bytes
+  - name: Init_Win_bytes_backward
+    description: Server's initial TCP window size; -1 means the destination never completed a handshake, typical of unanswered or refused probes.
+    units: bytes
+  - name: act_data_pkt_fwd
+    description: Forward packets carrying at least one payload byte; zero means a handshake-or-probe-only flow that never sent data.
+    units: packets
+  - name: min_seg_size_forward
+    description: Minimum forward segment (header) size observed; constant minimal values indicate uniform crafted packets from a single tool.
+    units: bytes
+  - name: Active Mean
+    description: Mean duration of active transmission periods; long activity indicates sustained transfer, short uniform bursts indicate scripted activity.
+    units: microseconds
+  - name: Active Std
+    description: Variability of active-period durations; near-zero deviation indicates mechanically repeated activity bursts.
+    units: microseconds
+  - name: Active Max
+    description: Longest active transmission period; bounds how long the flow ever sustained continuous activity.
+    units: microseconds
+  - name: Active Min
+    description: Shortest active transmission period; uniformly brief activity indicates single-shot request patterns.
+    units: microseconds
+  - name: Idle Mean
+    description: Mean idle gap between activity bursts; long regular idles are characteristic of periodic beaconing and keep-alive command channels.
+    units: microseconds
+  - name: Idle Std
+    description: Variability of idle gaps; near-zero deviation means clockwork-regular silence periods, a strong automation signature.
+    units: microseconds
+  - name: Idle Max
+    description: Longest idle gap in the flow; very long gaps indicate dormant sessions held open for later use.
+    units: microseconds
+  - name: Idle Min
+    description: Shortest idle gap in the flow; bounds how quickly activity resumes between bursts.
+    units: microseconds

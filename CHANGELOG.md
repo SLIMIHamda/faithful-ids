@@ -418,6 +418,21 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   those runs' request hashes, so the binary path keeps it (token-free replay);
   K-way runs resolve the KB name from `kb_ref` and get real grounding.
 
+- **KB `feature_semantics` (CICIDS2017) 1.0.0 → 1.1.0 — full 76-feature
+  coverage.** The corpus had 8 entries for a 76-feature runtime vocabulary, so
+  even after the lookup fix most prompts' "Feature meanings" sections stayed
+  near-empty (confirmed in the first K-way smoke ledger: only ~30 of the K-way
+  b4/b5 drafts carried any feature snippet). All 76 features now have
+  one-sentence semantics (what it measures; why unusual values matter), ordered
+  by the frozen model's `feature_names.json`; the original 8 descriptions are
+  byte-identical. Registry sync: `attack_classes` and the `cicids2017` dataset
+  key bump to 1.1.0 (attack-classes content unchanged — one registry key covers
+  both per-dataset KB files), and every `kb:` ref updates in lockstep
+  (drift-guard enforced). New tests: KB entries unique/complete, and every
+  extraction-alias canonical target has a KB description. NOTE: KB content lands
+  in b4/b5 prompts, so future live runs get new request hashes; re-scores of
+  existing runs are unaffected (replay pins the original commit).
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

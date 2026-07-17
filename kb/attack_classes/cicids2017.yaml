@@ -1,7 +1,7 @@
 kind: kb_attack_classes
 schema_version: v1
 dataset: cicids2017
-version: 1.0.0
+version: 1.1.0
 entries:
   - name: BENIGN
     description: Normal, non-malicious traffic.

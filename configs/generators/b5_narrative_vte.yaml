@@ -17,8 +17,8 @@ prompt:
 # predicted class's profile from kb/attack_classes — the narrative "glue" (why
 # this evidence means this class) paraphrases a citable KB snippet instead of
 # the LLM's prior. Entries aggregate to canonical classes via configs/taxonomy.
-kb_ref: kb:feature_semantics@1.0.0
-kb_class_ref: kb:attack_classes@1.0.0
+kb_ref: kb:feature_semantics@1.1.0
+kb_class_ref: kb:attack_classes@1.1.0
 verifier:
   # FIREWALL SIDE A — deliberately the SAME instrument as b4_vte, so the only
   # delta between B4 and B5 is narrative synthesis (does coherence cost
