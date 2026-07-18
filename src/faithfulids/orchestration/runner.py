@@ -184,8 +184,13 @@ def write_run(
     seeds: Mapping[str, int],
     inputs: Sequence[ArtifactRef],
     models: Sequence[ModelRef],
+    gate: str | None = None,
 ) -> Path:
-    """Persist a write-once run directory with a valid §6 manifest."""
+    """Persist a write-once run directory with a valid §6 manifest.
+
+    ``gate`` ("PASSED"/"FAILED") is set only by gate experiments (EXP-G-*);
+    ``orchestration.gates`` unlocks dependent experiments on a PASSED run.
+    """
     run_dir = Path(runs_root) / experiment_id / run_id
     if run_dir.exists():
         raise RunDirectoryExists(f"{run_dir} exists — runs/ is write-once; mint a new run id")
@@ -222,6 +227,7 @@ def write_run(
         randomness=dict(seeds),
         models=list(models),
         outputs=output_files,
+        gate=gate,
     )
     write_manifest(run_dir, manifest)
     write_status(run_dir, Status.COMPLETE)

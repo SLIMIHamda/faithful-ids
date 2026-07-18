@@ -13,7 +13,10 @@ original run's instances byte-for-byte:
 
     FAITHFULIDS_DATA_DIR    the same CICIDS2017 CSV directory
     FAITHFULIDS_PILOT_N     the same N as the original run (e.g. 150)
-    FAITHFULIDS_MAX_ROWS    the same row cap
+    FAITHFULIDS_MAX_ROWS    the same row cap (binary runs; unset for K-way)
+    FAITHFULIDS_ROWS_PER_FILE  the same per-file cap (K-way runs, e.g. 50000)
+    FAITHFULIDS_PILOT_DETECTOR the same detector config id if overridden
+                               (K-way runs: xgboost_multiclass)
     FAITHFULIDS_PILOT_LLM   the same generator LLM id (e.g. qwen3_8b_4bit)
     FAITHFULIDS_LLM_CACHE_DIR  the ledger dir from the original run's artifacts
                                (…/runs/_pilot_llm_cache); defaults to runs/_pilot_llm_cache
@@ -60,7 +63,9 @@ def main(argv: list[str] | None = None) -> int:
 
     n = os.environ.get("FAITHFULIDS_PILOT_N")
     max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
+    rows_per_file = os.environ.get("FAITHFULIDS_ROWS_PER_FILE")
     llm_override = os.environ.get("FAITHFULIDS_PILOT_LLM") or None
+    detector_override = os.environ.get("FAITHFULIDS_PILOT_DETECTOR") or None
     gens = os.environ.get("FAITHFULIDS_PILOT_GENERATORS") or None
     gens_override = [g.strip() for g in gens.split(",") if g.strip()] if gens else None
 
@@ -70,7 +75,9 @@ def main(argv: list[str] | None = None) -> int:
         runs_root=runs_root,
         n_explain=int(n) if n else None,
         max_rows=int(max_rows) if max_rows else None,
+        rows_per_file=int(rows_per_file) if rows_per_file else None,
         llm_id_override=llm_override,
+        detector_id_override=detector_override,
         generator_ids_override=gens_override,
         enforce_competence=False,  # re-score is a measurement pass, not a gate
         llm_mode="replay",

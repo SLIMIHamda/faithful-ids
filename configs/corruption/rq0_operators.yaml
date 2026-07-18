@@ -4,36 +4,53 @@ kind: corruption
 # RQ0 meta-validation: inject KNOWN corruptions into faithful-by-construction B1
 # outputs, with ground-truth labels, so metric sensitivity/specificity can be
 # calibrated. A metric is admissible only after passing this battery.
+#
+# detector_metrics (EXP-G-002 matched-pairs criterion): the metric(s) DESIGNATED
+# to detect each operator — a corruption is structurally invisible to some
+# metrics (DSA cannot see a rank inversion), so admissibility is per matched
+# pair: a designated metric must reach sens >= rq0_sensitivity on ITS operators
+# and spec >= rq0_specificity on faithful items, at the recorded ROC operating
+# point. An empty list is a DOCUMENTED BLIND SPOT (reported, non-blocking):
+# magnitude_inflation is undetectable by design — no admissible metric consumes
+# claim magnitude (Layer-1 scores features/directions/ranks; Layer-2 erases by
+# rank) — which this battery makes explicit for the prereg decision (add a
+# magnitude metric or drop the operator).
 base_generator: b1_template
 operators:
   - name: fabricated_feature
     ground_truth_label: corrupted
     injection_count: 1
+    detector_metrics: [hfr, mention_precision]
     params:
       inject: one_feature_absent_from_topk
   - name: sign_flip
     ground_truth_label: corrupted
     injection_count: 1
+    detector_metrics: [dsa_asserted]
     params:
       target: highest_magnitude_claim
   - name: rank_inversion
     ground_truth_label: corrupted
     injection_count: 1
+    detector_metrics: [arc]
     params:
       target: top_two_claims
   - name: omission
     ground_truth_label: corrupted
     injection_count: 1
+    detector_metrics: [mention_recall]
     params:
       target: rank_one_claim
   - name: magnitude_inflation
     ground_truth_label: corrupted
     injection_count: 1
+    detector_metrics: []
     params:
       factor: 3.0
       target: highest_magnitude_claim
   - name: vague_substitution
     ground_truth_label: corrupted
     injection_count: 1
+    detector_metrics: [mention_recall, hfr]
     params:
       replace_with: unnamed_generic_phrase

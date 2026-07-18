@@ -39,6 +39,39 @@ def sensitivity_specificity(
     return {"sensitivity": sens, "specificity": spec, "tp": tp, "fn": fn, "tn": tn, "fp": fp}
 
 
+def find_operating_point(
+    scores: Sequence[float],
+    labels: Sequence[int],
+    *,
+    lower_is_corrupt: bool = True,
+) -> dict[str, float]:
+    """The ROC operating point maximising Youden's J (sens + spec − 1), with its
+    threshold — EXP-G-002's calibration semantics: the gate asks whether an
+    operating point clearing the registered sens/spec bars EXISTS, and records
+    the threshold that achieves it (a prereg candidate for Tier-A).
+
+    Deterministic: candidate thresholds are the midpoints between consecutive
+    sorted unique scores (plus one beyond each end); ties on J resolve to the
+    lowest threshold. Returns the ``sensitivity_specificity`` dict of the chosen
+    point plus ``threshold`` and ``youden_j``.
+    """
+    s = np.asarray(scores, dtype=float)
+    uniq = np.unique(s)
+    if uniq.size == 1:
+        cands = [float(uniq[0])]  # degenerate: no separation possible
+    else:
+        mids = (uniq[:-1] + uniq[1:]) / 2.0
+        cands = [float(uniq[0] - 1.0), *map(float, mids), float(uniq[-1] + 1.0)]
+    best: dict[str, float] | None = None
+    for t in cands:
+        r = sensitivity_specificity(s, labels, t, lower_is_corrupt=lower_is_corrupt)
+        j = r["sensitivity"] + r["specificity"] - 1.0
+        if best is None or j > best["youden_j"] + 1e-12:
+            best = {**r, "threshold": t, "youden_j": j}
+    assert best is not None
+    return best
+
+
 def roc_auc(scores: Sequence[float], labels: Sequence[int], *, lower_is_corrupt: bool = True) -> float:
     s = np.asarray(scores, dtype=float)
     signed = -s if lower_is_corrupt else s

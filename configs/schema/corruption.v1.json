@@ -30,6 +30,7 @@
           },
           "ground_truth_label": {"const": "corrupted"},
           "injection_count": {"type": "integer", "minimum": 1},
+          "detector_metrics": {"type": "array", "items": {"type": "string", "pattern": "^[a-z0-9_]+$"}},
           "params": {"type": "object"}
         }
       }

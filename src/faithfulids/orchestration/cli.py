@@ -72,6 +72,33 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(f"pilot run complete: {run_dir}")
         return 0
 
+    if exp["id"] == "EXP-G-002":
+        # RQ0 metric calibration: token-free and LLM-free (B1 is deterministic;
+        # corruptions are claim-level), needs only data + the detector. Runs on
+        # Kaggle against the K-way detector by default (calibrates Layer-2 on
+        # the Tier-A regime); FAITHFULIDS_PILOT_DETECTOR overrides.
+        from faithfulids.orchestration.rq0_gate import run_rq0_gate
+
+        data_dir = os.environ.get("FAITHFULIDS_DATA_DIR")
+        if not data_dir:
+            print("ERROR: set FAITHFULIDS_DATA_DIR to the CICIDS2017 CSV directory.",
+                  file=sys.stderr)
+            return 2
+        n = os.environ.get("FAITHFULIDS_PILOT_N")
+        max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
+        rows_per_file = os.environ.get("FAITHFULIDS_ROWS_PER_FILE")
+        run_dir = run_rq0_gate(
+            exp["id"], data_dir=data_dir, runs_root=runs_root,
+            n_instances=int(n) if n else None,
+            max_rows=int(max_rows) if max_rows else None,
+            rows_per_file=int(rows_per_file) if rows_per_file else None,
+            detector_id_override=os.environ.get("FAITHFULIDS_PILOT_DETECTOR") or None,
+        )
+        from faithfulids.provenance import read_manifest
+
+        print(f"RQ0 gate run complete: {run_dir} — gate {read_manifest(run_dir).gate}")
+        return 0
+
     # Other real experiments (Tier A/B/…): enforce gates, then execute. Full
     # execution requires acquired datasets + frozen models + a live/replay LLM —
     # not yet wired. Fail loudly rather than fabricate outputs.

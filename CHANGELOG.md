@@ -433,6 +433,32 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   in b4/b5 prompts, so future live runs get new request hashes; re-scores of
   existing runs are unaffected (replay pins the original commit).
 
+- **EXP-G-002 execution driver — the RQ0 metric-calibration gate is now
+  runnable, token-free.** `orchestration/rq0_gate.run_rq0_gate` executes the
+  registered battery: B1's faithful-by-construction claim sets + the six
+  corruption operators per instance, every Layer-1 metric and the Layer-2 cited
+  metrics (both delta spaces, k=5) scored as corruption *detectors*. Criterion
+  (registered decisions): **matched metric↔operator pairs** — each operator
+  declares `detector_metrics` in `configs/corruption/rq0_operators.yaml`
+  (schema-extended), since a corruption is structurally invisible to some
+  metrics; a metric is admissible iff sens ≥ 0.9 on its designated operators AND
+  spec ≥ 0.9 on faithful items, at the **ROC operating point** (max Youden's J,
+  deterministic, threshold recorded as a Tier-A prereg candidate;
+  `metrics.meta.find_operating_point`). `magnitude_inflation` has no designated
+  detector — **a documented blind spot** (no admissible metric consumes claim
+  magnitude): reported, non-blocking, a prereg decision item. The run's §6
+  manifest now carries `gate: PASSED/FAILED` (`write_run(gate=…)`), which is
+  what `orchestration.gates` reads to unlock dependent experiments. CLI:
+  `run --experiment EXP-G-002` (env: data dir, rows-per-file, detector override
+  — defaults to `xgboost_multiclass` so Layer-2 calibrates on the Tier-A
+  regime); launcher gained a gate section. The fluency-correlation half of RQ0
+  needs LLM texts + a judge and is out of scope for the claim-level battery
+  (documented in the run config). Also: `tools/rescore_run.py` now forwards
+  `FAITHFULIDS_ROWS_PER_FILE` / `FAITHFULIDS_PILOT_DETECTOR`, making the K-way
+  pilot run token-free re-scorable, and the launcher's optional run-2 cell is
+  guarded behind `RUN_2=1` (a bare "Save & Run All" no longer spends its
+  tokens).
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
