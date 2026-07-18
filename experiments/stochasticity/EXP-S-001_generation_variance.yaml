@@ -4,14 +4,17 @@ kind: experiment
 tier: stochasticity
 title: Generation variance protocol
 research_question: >-
-  Quantify generation stochasticity: 100-instance subsample, k=3 generations at
-  operating temperature; variance components feed the mixed-effects model.
+  Quantify generation stochasticity: 100-instance subsample of the ANCHOR cell,
+  k=3 generations at operating temperature 0.7 (Tier-A cells themselves run
+  temperature 0, k=1 — greedy decoding is deterministic, so repeats there would
+  be byte-identical; design decision 2026-07-18). Variance components feed the
+  mixed-effects model and bound the "not a sampling fluke" claim.
 hypothesis_family: []
 design:
   mode: anchored
   anchor_ref: ANCHOR
   one_factor_overrides:
-    generators: [b2_zeroshot, b3_dte_style, b4_vte]
+    generators: [b2_zeroshot, b3_dte_style, b4_vte, b5_narrative_vte]
 sampling_refs: [sampling:stochasticity_k3]
 seed_ref: seeds:stochasticity
 gate_dependencies: [EXP-G-001, EXP-G-002]

@@ -196,7 +196,8 @@ def run_rq0_gate(
     feat_cols = feature_columns(df)
     hyper = detector_hyperparameters or detcfg["hyperparameters"]
     family = detector_family or detcfg["family"]
-    multiclass = str(hyper.get("objective", "")).startswith("multi:")
+    multiclass = (str(hyper.get("objective", "")).startswith("multi:")
+                  or detcfg.get("task") == "multiclass")
     train_df, explain_df = stratified_explanation_sample(
         df, n_explain=n_instances, seed=seed,
         stratify="target_class" if multiclass else "attack_class",

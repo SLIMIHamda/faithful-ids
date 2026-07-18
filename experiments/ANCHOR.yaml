@@ -2,7 +2,7 @@ id: ANCHOR
 schema_version: v1
 kind: experiment
 tier: anchor
-title: Anchor configuration (corrected CICIDS2017 x XGBoost x Llama-3.1-8B-Instruct)
+title: Anchor configuration (corrected CICIDS2017 x K-way XGBoost x Qwen3-8B-4bit)
 research_question: >-
   Defines the anchor cell once. Tier-B entries reference this by anchor_ref and
   never restate it (a restated anchor that drifts is a classic irreproducibility
@@ -10,10 +10,14 @@ research_question: >-
 hypothesis_family: []
 design:
   mode: single
+  # 2026-07-18 revision (with the EXP-A-001 redesign, logged in CHANGELOG):
+  # detector -> the K-way config (the binary collapse is not citable evidence),
+  # llm -> the pinned anchor rung of the Qwen3 ladder (llama31 was never
+  # characterized on this stack). Tier-B anchored entries inherit automatically.
   cell:
     dataset: cicids2017_corrected
-    detector: xgboost
-    llm: llama31_8b_instruct
+    detector: xgboost_multiclass
+    llm: qwen3_8b_4bit
     generator: b4_vte
 sampling_refs: [sampling:n400_stratified]
 seed_ref: seeds:tier_a

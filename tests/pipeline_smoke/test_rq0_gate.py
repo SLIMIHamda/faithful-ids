@@ -44,13 +44,15 @@ def test_rq0_gate_passes_and_records_the_verdict(tmp_path):
     rows = [json.loads(l) for l in open(run_dir / "artifacts" / "metrics.jsonl", encoding="utf-8")]
     verdict = next(r for r in rows if r["metric"] == "gate_verdict")["grouping"]
     assert verdict["passed"] is True
-    assert verdict["blind_spot_operators"] == ["magnitude_inflation"]
+    # magnitude_inflation was REMOVED from the battery (prereg decision
+    # 2026-07-18) after the gate run empirically confirmed it undetectable.
+    assert verdict["blind_spot_operators"] == []
     assert {"arc", "dsa_asserted", "hfr", "mention_precision", "mention_recall"} <= set(
         verdict["admissible_metrics"]
     )
-    # battery rows: 20 instances x (1 faithful + 6 corruptions) per metric
+    # battery rows: 20 instances x (1 faithful + 5 corruptions) per metric
     battery = [r for r in rows if r["layer"] == "rq0" and r["metric"] == "mention_recall"]
-    assert len(battery) == 20 * 7
+    assert len(battery) == 20 * 6
     # designated-pair sensitivities are exact at the recorded operating points
     summ = {r["metric"]: r["grouping"] for r in rows if r["layer"] == "rq0_meta"}
     assert summ["dsa_asserted"]["per_operator_sensitivity"]["sign_flip"] == 1.0

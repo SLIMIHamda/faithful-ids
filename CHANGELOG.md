@@ -459,6 +459,48 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   guarded behind `RUN_2=1` (a bare "Save & Run All" no longer spends its
   tokens).
 
+- **Tier-A design revision (pre-freeze, 2026-07-18) — the registered 44-cell
+  factorial becomes an anchor + spokes fractional design (36 cells).** Every
+  change below was decided against pilot evidence and is logged BEFORE
+  prereg-v1 freezes; the registration history stays in git. Decisions (user):
+  **(1) K-way task only** — the binary collapse is trivially separable
+  (AUC 1.0), so its explanations are not citable evidence (the pilot's central
+  methodological finding). **(2)** `EXP-A-001` is now the **anchor factorial**:
+  corrected CICIDS2017 × K-way XGBoost × a within-family **Qwen3 scale ladder
+  {4B, 8B, 32B} + Mistral-7B cross-family control** × B0–B5 = 18 cells at
+  N=400 (the registered llama31/frontier roster was uncharacterized, and the
+  pilot roster confounded family with size — the scale claim needs one family
+  across sizes). New pinned config `qwen3_4b_4bit` (main @ 2025-07-26, same
+  snapshot date as the 8B pin). **(3) Generality spokes** `EXP-A-002..004`
+  (second detector / second dataset / corner) run B0–B5 at the anchor LLM only,
+  6 cells each at N=150 (`n150_stratified`), closing the 2×2 dataset×detector
+  square around the anchor at ~40% of full-factorial tokens. UNSW-NB15 spokes
+  are wave 2 (dataset acquisition + taxonomy/KB/loader build precede
+  execution). **(4) ft_transformer → future work**, replaced by
+  `random_forest_multiclass`: natively K-way, **exact** TreeSHAP across the
+  whole detector axis (ε_att ≈ 0 preserved); new detector-config `task:
+  multiclass` field (families without a `multi:*` objective), RF trainer
+  freezes `class_names`, RF inference exposes a per-class **log-probability
+  margin** (`log(clip(P_k))` — documented as not log-odds) so margin-space
+  Layer-2 stays defined. **(5) Stochasticity**: Tier-A cells run temperature 0,
+  k=1 (greedy is deterministic — k=3 repeats would be byte-identical waste);
+  `EXP-S-001` quantifies variance at temperature 0.7 × k=3 on a 100-instance
+  anchor subsample (B2–B5). **(6) `magnitude_inflation` removed** from the RQ0
+  battery: the PASSED EXP-G-002 run empirically confirmed no registered metric
+  consumes claim magnitude; removal is non-blocking for the recorded verdict
+  (the operator was a documented blind spot) and the operator code remains.
+  **(7) ANCHOR updated** (K-way XGBoost, Qwen3-8B) — Tier-B anchored entries
+  inherit automatically. Driver: `run_pilot` now reads N/minority-floor from
+  the experiment's own sampling ref (the pilot's ref resolves identically —
+  replay-safe), resolves split/detector seeds through the canonical seed-table
+  sections when the tier section has no flat keys, and the CLI routes
+  `tier_a` experiments through the same path (per-LLM runs;
+  `enforce_gates` requires PASSED G-001/G-002 in-session). A new local
+  end-to-end K-way pipeline test (RF multiclass + stubs) closes the
+  long-standing gap where the multi-class orchestration only ever executed on
+  Kaggle. Execution plan: wave 1 ≈ 43 GPU-hours (anchor 4 LLMs + CICIDS
+  spoke), wave 2 adds the UNSW spokes.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

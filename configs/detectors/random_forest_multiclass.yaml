@@ -1,0 +1,29 @@
+id: random_forest_multiclass
+schema_version: v1
+kind: detector
+family: random_forest
+role: tier_a
+attribution_ref: attribution:treeshap
+# K-way detector-generality spoke (EXP-A-002/004): sklearn RF is natively
+# multi-class and exact TreeSHAP applies, so eps_att stays ~0 across the whole
+# Tier-A detector axis (the reason ft_transformer/DeepSHAP moved to future
+# work, design decision 2026-07-18). `task: multiclass` selects the K-way
+# training path (RF has no objective hyperparameter to key on); class_names are
+# frozen with the model exactly as for xgboost_multiclass. The per-class margin
+# is log(clip(P_k)) — a monotone log-probability margin (documented: NOT
+# log-odds), so margin-space Layer-2 stays defined on this family.
+task: multiclass
+hyperparameters:
+  n_estimators: 300
+  max_depth: null
+  min_samples_leaf: 1
+  criterion: gini
+  bootstrap: true
+  n_jobs: -1
+determinism:
+  device: cpu
+  byte_identical: true
+  torch_deterministic: null
+  notes: "sklearn RF is deterministic given the seed (CPU); exact TreeSHAP over the frozen forest."
+competence_gate:
+  recall_floor_exemptions: []

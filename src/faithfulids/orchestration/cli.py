@@ -26,9 +26,13 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(f"toy run complete (NON-CITABLE): {run_dir}")
         return 0
 
-    if exp["tier"] == "pilot":
+    if exp["tier"] in ("pilot", "tier_a"):
         # Real vertical slice on real data (CICIDS2017 CSVs mounted at
-        # $FAITHFULIDS_DATA_DIR). Pilot has no gate dependencies.
+        # $FAITHFULIDS_DATA_DIR). The pilot has no gate dependencies; Tier-A
+        # experiments declare EXP-G-001/EXP-G-002 and enforce_gates below
+        # refuses to run until PASSED gate runs exist under runs/. One LLM per
+        # run (Kaggle memory): the launcher loops FAITHFULIDS_PILOT_LLM over
+        # the experiment's roster; N comes from the experiment's sampling ref.
         from faithfulids.orchestration.execute import run_pilot
 
         data_dir = os.environ.get("FAITHFULIDS_DATA_DIR")

@@ -1,0 +1,22 @@
+id: qwen3_4b_4bit
+schema_version: v1
+kind: llm
+# Bottom rung of the Tier-A within-Qwen3 scale ladder {4B, 8B, 32B} (design
+# decision 2026-07-18: the confirmatory scale claim needs one family across
+# sizes + a cross-family control, replacing the pilot's family-confounded
+# roster). Ungated (Apache-2.0); model_family 'qwen' is already
+# firewall-disjoint from the verifier (phi) and extractor (gemma). Qwen3 emits
+# <think>…</think> by default; the provider disables it for this family
+# (enable_thinking=False, see llm/providers.py).
+model_family: qwen
+provider: local_open_weights
+# 4-bit (nf4) via bitsandbytes — ~3 GB, fits a single Kaggle T4 easily.
+quantisation: 4bit
+role: generator_llm
+weights:
+  hf_repo: Qwen/Qwen3-4B
+  # Pinned to a real HF commit (main @ 2025-07-26 — the same snapshot date as
+  # the qwen3_8b_4bit pin); the schema forbids branch names, so an unpinned
+  # generation revision is impossible.
+  revision: 1cfa9a7208912126459214e8b04321603b3df60c
+  sha256: null

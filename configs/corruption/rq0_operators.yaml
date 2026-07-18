@@ -10,11 +10,16 @@ kind: corruption
 # metrics (DSA cannot see a rank inversion), so admissibility is per matched
 # pair: a designated metric must reach sens >= rq0_sensitivity on ITS operators
 # and spec >= rq0_specificity on faithful items, at the recorded ROC operating
-# point. An empty list is a DOCUMENTED BLIND SPOT (reported, non-blocking):
-# magnitude_inflation is undetectable by design — no admissible metric consumes
-# claim magnitude (Layer-1 scores features/directions/ranks; Layer-2 erases by
-# rank) — which this battery makes explicit for the prereg decision (add a
-# magnitude metric or drop the operator).
+# point. An empty list is a DOCUMENTED BLIND SPOT (reported, non-blocking).
+#
+# magnitude_inflation REMOVED (prereg decision 2026-07-18): the EXP-G-002 run
+# of 2026-07-18 (gate PASSED) empirically confirmed no registered metric
+# consumes claim magnitude (Layer-1 scores features/directions/ranks; Layer-2
+# erases by rank), so the operator could never be detected. Recorded here, in
+# CHANGELOG, and in the gate run's verdict artifact. The removal does not touch
+# the PASSED verdict: the operator was non-blocking, and the five detectable
+# operators' calibration is unchanged. The operator's code remains in
+# corruption/operators.py should a magnitude-agreement metric ever be added.
 base_generator: b1_template
 operators:
   - name: fabricated_feature
@@ -41,13 +46,6 @@ operators:
     detector_metrics: [mention_recall]
     params:
       target: rank_one_claim
-  - name: magnitude_inflation
-    ground_truth_label: corrupted
-    injection_count: 1
-    detector_metrics: []
-    params:
-      factor: 3.0
-      target: highest_magnitude_claim
   - name: vague_substitution
     ground_truth_label: corrupted
     injection_count: 1

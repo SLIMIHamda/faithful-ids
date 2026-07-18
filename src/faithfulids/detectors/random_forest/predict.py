@@ -32,4 +32,17 @@ def load(model_dir: str | Path) -> FrozenDetector:
     def proba(matrix):
         return estimator.predict_proba(matrix)  # (n, K), column order = estimator.classes_
 
-    return FrozenDetector(feature_names, proba, class_names=class_names, native_model=estimator)
+    # K-way margin: log(clip(P_k)) — a monotone per-class LOG-PROBABILITY margin
+    # (documented: not log-odds; RF has no native raw score). Keeps margin-space
+    # Layer-2 defined on this family. The binary head keeps margin=None so the
+    # established logit fallback (and every existing binary number) is unchanged.
+    margin = None
+    if len(class_names) > 2:
+        import numpy as np
+
+        def margin(matrix):  # noqa: F811 — conditional definition is the point
+            return np.log(np.clip(estimator.predict_proba(matrix), 1e-12, 1.0))
+
+    return FrozenDetector(
+        feature_names, proba, class_names=class_names, native_model=estimator, margin=margin
+    )

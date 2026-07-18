@@ -87,3 +87,53 @@ def test_multiclass_margin_without_a_native_margin_fails_loudly():
     )
     with pytest.raises(NotImplementedError, match="native per-class margin"):
         det.predict_margin([{"a": 1.0}])
+
+
+def test_random_forest_multiclass_freezes_class_names_and_log_prob_margin(tmp_path):
+    """Tier-A detector axis (EXP-A-002/004): sklearn RF trained on target_index
+    freezes class_names with the model and exposes a per-class log-probability
+    margin (documented: log(clip(P_k)), not log-odds) so margin-space Layer-2
+    stays defined on this family."""
+    import numpy as np
+    import pandas as pd
+
+    from faithfulids.detectors.base import load_frozen
+    from faithfulids.detectors.random_forest.train import train
+
+    rng = np.random.RandomState(0)
+    n = 300
+    y = np.arange(n) % 3
+    df = pd.DataFrame({
+        "f1": y * 2.0 + rng.rand(n) * 0.1,   # cleanly separable by class
+        "f2": rng.rand(n),
+        "target_index": y,
+    })
+    names = ["BENIGN", "DoS", "PortScan"]
+    metrics = train(df, label_column="target_index",
+                    hyperparameters={"n_estimators": 10, "n_jobs": 1},
+                    seed=0, out_dir=tmp_path, class_names=names)
+    assert metrics["n_classes"] == 3 and metrics["class_names"] == names
+    assert metrics["train_auc"] is None  # AUC undefined K-way
+
+    det = load_frozen("random_forest", tmp_path)
+    assert det.class_names == tuple(names)
+    rows = [{"f1": 2.0, "f2": 0.5}, {"f1": 0.0, "f2": 0.5}]
+    proba = det.predict_proba(rows)
+    assert len(proba[0]) == 3
+    assert det.predicted_class(rows) == ["DoS", "BENIGN"]
+    margin = det.predict_margin(rows)
+    expect = np.log(np.clip(np.asarray(proba, dtype=float), 1e-12, 1.0))
+    assert np.allclose(np.asarray(margin), expect)
+
+
+def test_random_forest_rejects_sparse_target_indices(tmp_path):
+    import pandas as pd
+    import pytest
+
+    from faithfulids.detectors.random_forest.train import train
+
+    df = pd.DataFrame({"f1": [0.1, 0.9, 0.2, 0.8], "target_index": [0, 2, 0, 2]})  # no class 1
+    with pytest.raises(ValueError, match="0..K-1"):
+        train(df, label_column="target_index",
+              hyperparameters={"n_estimators": 5, "n_jobs": 1},
+              seed=0, out_dir=tmp_path, class_names=["A", "B", "C"])

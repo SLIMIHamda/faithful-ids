@@ -152,8 +152,19 @@ def run_pilot(
     attrcfg = load_config("attribution", attr_id)
     seeds = resolve_reference(exp["seed_ref"])
     gen_seed = seed if seed is not None else int(seeds["generation"])
+    # The pilot seed section carries flat split/detector_training keys; Tier-A
+    # sections route them through the canonical per-dataset `splits:` and
+    # per-family `detector_training:` sections of the seed table.
+    split_seed = (int(seeds["split"]) if "split" in seeds
+                  else int(resolve_reference("seeds:splits")[dataset_id]))
+    # Sampling protocol comes from the EXPERIMENT's first sampling ref (Tier-A
+    # anchor = n400_stratified, spokes = n150_stratified); the pilot's first ref
+    # is pilot_n150, so its resolved values are byte-identical to the historical
+    # hard-coded lookup (replay safety).
+    samp_id = (exp.get("sampling_refs") or ["sampling:pilot_n150"])[0].split(":", 1)[1]
+    sampcfg = load_config("sampling", samp_id)
     if n_explain is None:
-        n_explain = int(load_config("sampling", "pilot_n150")["n_per_dataset"])
+        n_explain = int(sampcfg["n_per_dataset"])
 
     # -- data --------------------------------------------------------------- #
     loader = data_loader or load_cicids2017
@@ -162,11 +173,14 @@ def run_pilot(
         loader_kwargs["rows_per_file"] = rows_per_file
     df = loader(data_dir, **loader_kwargs)
     feat_cols = feature_columns(df)
-    _mc = str((detector_hyperparameters or detcfg["hyperparameters"]).get("objective", "")
-              ).startswith("multi:")
+    # K-way selector: a multi:* objective (xgboost) OR the config's task field
+    # (families like random_forest have no objective hyperparameter to key on).
+    _mc = (str((detector_hyperparameters or detcfg["hyperparameters"]).get("objective", "")
+               ).startswith("multi:")
+           or detcfg.get("task") == "multiclass")
     train_df, explain_df = stratified_explanation_sample(
-        df, n_explain=n_explain, seed=int(seeds["split"]),
-        minority_floor=int(load_config("sampling", "pilot_n150")["minority_floor"]),
+        df, n_explain=n_explain, seed=split_seed,
+        minority_floor=int(sampcfg["minority_floor"]),
         # stratify on the K-way target so every canonical class is represented in the
         # explained set (binary keeps the historical attack_class stratification)
         stratify="target_class" if _mc else "attack_class",
@@ -179,12 +193,14 @@ def run_pilot(
 
     # -- detector (train -> frozen -> load) --------------------------------- #
     family = detector_family or detcfg["family"]
+    det_seed = (int(seeds["detector_training"]) if "detector_training" in seeds
+                else int(resolve_reference("seeds:detector_training")[family]))
     hyper = detector_hyperparameters or detcfg["hyperparameters"]
     model_dir = Path(runs_root) / "_pilot_models" / f"{family}__{dataset_id}"
-    # queue #5.6: a multi:* objective trains the K-way target (target_index) over the
-    # canonical taxonomy and freezes class_names with the model; a binary objective
-    # keeps the untouched `label` path, so the existing pilot is bit-for-bit as before.
-    multiclass = str(hyper.get("objective", "")).startswith("multi:")
+    # queue #5.6: the K-way selector trains the target_index over the canonical
+    # taxonomy and freezes class_names with the model; the binary path keeps the
+    # untouched `label` column, so the existing pilot is bit-for-bit as before.
+    multiclass = _mc
     if multiclass:
         train_mc, class_idx = multiclass_frame(train_df)
         explain_df, _ = multiclass_frame(explain_df)
@@ -205,13 +221,13 @@ def run_pilot(
               f"dropped {len(train_df) - len(train_mc)} excluded/rare train rows")
         get_trainer(family)(
             train_mc[feat_cols + ["target_index"]], label_column="target_index",
-            hyperparameters=hyper, seed=int(seeds["detector_training"]), out_dir=model_dir,
+            hyperparameters=hyper, seed=det_seed, out_dir=model_dir,
             class_names=class_names,
         )
     else:
         get_trainer(family)(
             train_df[feat_cols + ["label"]], label_column="label",
-            hyperparameters=hyper, seed=int(seeds["detector_training"]), out_dir=model_dir,
+            hyperparameters=hyper, seed=det_seed, out_dir=model_dir,
         )
     detector = load_frozen(family, model_dir)
     feature_names = list(detector.feature_names)
@@ -397,5 +413,7 @@ def run_pilot(
     return write_run(
         runs_root, run_id=run_id, experiment_id=experiment_id, artifacts=artifacts,
         resolved_config=resolved_config, code_version=code_version, environment=environment,
-        seeds={k: int(v) for k, v in seeds.items()}, inputs=inputs, models=models,
+        seeds={**{k: int(v) for k, v in seeds.items()},
+               "split": split_seed, "detector_training": det_seed},
+        inputs=inputs, models=models,
     )

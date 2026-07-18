@@ -184,3 +184,73 @@ def test_multiclass_run_refuses_to_degenerate_below_three_classes(tmp_path):
             llm_provider=DeterministicStubProvider(),
         )
     assert "BENIGN" in str(exc.value) and "DoS" in str(exc.value)
+
+
+def _synthetic_multiclass_cicids(path, n=1200, seed=0):
+    """Four canonical classes with cleanly separated feature bands, so the K-way
+    RF is genuinely competent and the full multi-class orchestration exercises
+    deterministically."""
+    rng = np.random.RandomState(seed)
+    labels = ["BENIGN", "DoS Hulk", "DDoS", "PortScan"]
+    lab = [labels[i % 4] for i in range(n)]
+    band = {"BENIGN": 0.1, "DoS Hulk": 0.4, "DDoS": 0.7, "PortScan": 1.0}
+    feats = {f"f{j}": rng.rand(n) for j in range(6)}
+    feats["f0"] = np.array([band[c] for c in lab]) + rng.uniform(-0.05, 0.05, n)
+    feats["f2"] = np.array([band[c] for c in lab]) + rng.uniform(-0.05, 0.05, n)
+    df = pd.DataFrame(feats)
+    df["Label"] = lab
+    df.to_csv(path, index=False)
+
+
+def test_pilot_multiclass_end_to_end_on_random_forest(tmp_path):
+    """The K-way orchestration end to end, locally: task-field selection (RF has
+    no multi:* objective), multiclass_frame + round-robin stratification, frozen
+    class_names, per-class log-prob margin, predicted-class score labels in the
+    rendered text, the K-way competence table, and all six generators — the
+    exact driver path Tier-A spoke EXP-A-002 uses on Kaggle."""
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    _synthetic_multiclass_cicids(data_dir / "day1.csv", n=1200)
+
+    run_dir = run_pilot(
+        "EXP-PILOT-001",
+        data_dir=data_dir,
+        runs_root=tmp_path / "runs",
+        seed=8005,
+        n_explain=32,
+        code_version=CV,
+        detector_id_override="random_forest_multiclass",
+        detector_family="random_forest",
+        detector_hyperparameters={"n_estimators": 30, "max_depth": 6, "n_jobs": 1},
+        attributor=StubAttributor(),
+        llm_provider=DeterministicStubProvider(),
+    )
+
+    assert read_status(run_dir) is Status.COMPLETE
+    rows = load_metrics(run_dir.name, runs_root=tmp_path / "runs")
+    gens = {r["grouping"].get("generator_id") for r in rows if r["layer"] == "layer1"}
+    assert {"b0_raw_shap", "b1_template", "b2_zeroshot", "b3_dte_style", "b4_vte",
+            "b5_narrative_vte"} <= gens
+    # margin-space Layer-2 exists (RF's native log-prob margin carried it)
+    assert any(r["layer"] == "layer2" and r.get("delta_space") == "margin" for r in rows)
+
+    # K-way wording end to end: B1 renders the PREDICTED class's score label
+    import json as _json
+
+    texts = [
+        _json.loads(l)["text"]
+        for l in open(run_dir / "artifacts" / "explanations.jsonl", encoding="utf-8")
+        if _json.loads(l)["generator_id"] == "b1_template"
+    ]
+    assert any("the DoS score" in t or "the PortScan score" in t or "the DDoS score" in t
+               for t in texts)
+    assert any("the BENIGN score" in t for t in texts)   # benign instances explained truly
+    assert not any("attack score" in t for t in texts)   # no binary wording leaked
+
+    # K-way competence table was recorded with per-class recall
+    import yaml as _yaml
+
+    cfg = _yaml.safe_load(open(run_dir / "config.resolved.yaml", encoding="utf-8"))
+    fams = set(cfg["detector_competence"]["per_family_recall"])
+    assert {"BENIGN", "DoS", "DDoS", "PortScan"} <= fams
+    assert cfg["detector_competence"]["gate_passed"] is True

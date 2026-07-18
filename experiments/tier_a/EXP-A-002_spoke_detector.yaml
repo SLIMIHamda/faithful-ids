@@ -1,0 +1,29 @@
+id: EXP-A-002
+schema_version: v1
+kind: experiment
+tier: tier_a
+title: Tier A generality spoke - second detector (K-way RandomForest, anchor LLM)
+research_question: >-
+  Detector-family generality of the anchor findings: the identical B0-B5 axis on
+  corrected CICIDS2017 with a K-way RandomForest (natively multi-class, exact
+  TreeSHAP so eps_att stays ~0 across the detector axis) at the anchor LLM
+  (Qwen3-8B). 2 + 4x1 = 6 cells at N=150 (fractional design: the full LLM
+  ladder runs only on the anchor combination, EXP-A-001).
+hypothesis_family: [H1, H2]
+design:
+  mode: factorial
+  axes:
+    datasets: [cicids2017_corrected]
+    detectors: [random_forest_multiclass]
+    llms: [qwen3_8b_4bit]
+    generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte, b5_narrative_vte]
+sampling_refs: [sampling:n150_stratified]
+seed_ref: seeds:tier_a
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure, metrics:plausibility_judge]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+  headline_eligible: true
+status: registered

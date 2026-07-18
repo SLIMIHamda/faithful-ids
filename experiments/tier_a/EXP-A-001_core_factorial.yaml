@@ -2,19 +2,26 @@ id: EXP-A-001
 schema_version: v1
 kind: experiment
 tier: tier_a
-title: Tier A core factorial
+title: Tier A anchor factorial (K-way CICIDS2017 x XGBoost x Qwen3 scale ladder)
 research_question: >-
-  H1/H2: the plausibility-faithfulness gap and its dependence on narration style
-  across datasets, detectors, LLMs, and generators. Expands to
-  2 x 2 x (2 + 3x3) = 44 generator-LLM cells.
+  H1/H2 on the ANCHOR combination (corrected CICIDS2017 x K-way XGBoost): the
+  plausibility-faithfulness gap and its scale dependence across a within-family
+  Qwen3 ladder {4B, 8B, 32B} plus a cross-family control (Mistral-7B), over
+  generators B0-B5. Expands to 2 + 4x4 = 18 cells at N=400. Revision 2026-07-18
+  (logged in CHANGELOG): K-way multi-class task (the binary collapse is
+  trivially separable - AUC 1.0 - so its explanations are not citable evidence);
+  ft_transformer -> generality spokes EXP-A-002..004; llama31/frontier roster ->
+  pinned scale ladder (the pilot roster confounded family with size); B5
+  narrative VtE added. Detector/dataset generality lives in the spoke
+  experiments at the anchor LLM (fractional design).
 hypothesis_family: [H1, H2]
 design:
   mode: factorial
   axes:
-    datasets: [cicids2017_corrected, unsw_nb15]
-    detectors: [xgboost, ft_transformer]
-    llms: [mistral_7b_instruct, llama31_8b_instruct, frontier_api]
-    generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte]
+    datasets: [cicids2017_corrected]
+    detectors: [xgboost_multiclass]
+    llms: [qwen3_4b_4bit, qwen3_8b_4bit, qwen3_32b_4bit, mistral_7b_instruct_4bit]
+    generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte, b5_narrative_vte]
 sampling_refs: [sampling:n400_stratified, sampling:stochasticity_k3]
 seed_ref: seeds:tier_a
 gate_dependencies: [EXP-G-001, EXP-G-002]

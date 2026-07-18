@@ -1,0 +1,29 @@
+id: EXP-A-003
+schema_version: v1
+kind: experiment
+tier: tier_a
+title: Tier A generality spoke - second dataset (K-way UNSW-NB15 x XGBoost, anchor LLM)
+research_question: >-
+  Dataset generality of the anchor findings: B0-B5 on UNSW-NB15 (native
+  attack_cat multi-class taxonomy, to be registered as configs/taxonomy/
+  unsw_nb15.yaml before execution) with the K-way XGBoost at the anchor LLM.
+  2 + 4x1 = 6 cells at N=150. Wave 2: requires dataset acquisition + the UNSW
+  taxonomy/KB/loader build (staged execution, design frozen now).
+hypothesis_family: [H1, H2]
+design:
+  mode: factorial
+  axes:
+    datasets: [unsw_nb15]
+    detectors: [xgboost_multiclass]
+    llms: [qwen3_8b_4bit]
+    generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte, b5_narrative_vte]
+sampling_refs: [sampling:n150_stratified]
+seed_ref: seeds:tier_a
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure, metrics:plausibility_judge]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+  headline_eligible: true
+status: registered
