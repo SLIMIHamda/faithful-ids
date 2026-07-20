@@ -23,13 +23,24 @@ FROZEN = ["hypothesis_families.yaml", "decision_thresholds.yaml", "tests.yaml"]
 
 
 def _git(args: list[str]) -> tuple[int, str]:
-    p = subprocess.run(["git", "-C", str(REPO), *args], capture_output=True, text=True)
+    # encoding pinned: the frozen files are UTF-8 (ε in hypothesis text); the
+    # locale default (cp1252 on Windows) would mangle `git show` output.
+    p = subprocess.run(
+        ["git", "-C", str(REPO), *args], capture_output=True, text=True, encoding="utf-8"
+    )
     return p.returncode, p.stdout.strip()
 
 
 def tag_exists() -> bool:
     code, _ = _git(["rev-parse", "-q", "--verify", f"refs/tags/{TAG}"])
     return code == 0
+
+
+def _normalized(text: str) -> str:
+    # `_git` strips stdout and subprocess text-mode translates newlines, so the
+    # tag side arrives LF-only without a trailing newline; give the working-tree
+    # side the identical treatment or every file compares unequal.
+    return text.replace("\r\n", "\n").strip()
 
 
 def diff() -> list[str]:
@@ -41,7 +52,7 @@ def diff() -> list[str]:
             changed.append(f"{rel}: absent at tag {TAG}")
             continue
         now = (REPO / rel).read_text(encoding="utf-8")
-        if now != at_tag:
+        if _normalized(now) != _normalized(at_tag):
             changed.append(f"{rel}: changed since {TAG} (use an append-only amendment)")
     return changed
 
