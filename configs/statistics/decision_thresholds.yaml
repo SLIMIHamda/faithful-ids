@@ -32,11 +32,37 @@ thresholds:
   detector_macro_f1_min:
     value: 0.9
     unit: f1
-    description: "Detector-competence gate: macro-F1 (benign vs attack) on the explained instances >= 0.90."
+    description: "Detector-competence gate: macro-F1 over the task's classes (K-way for multi-class
+      runs) evaluated on the held-out competence split — disjoint from the training set and from
+      the explained set; the explained set's class composition is reported alongside."
   detector_recall_floor:
     value: 0.8
     unit: proportion
-    description: "Detector-competence gate: per-attack-family detection recall >= 0.80 (except logged exemptions in the detector config)."
+    description: "Detector-competence gate: per-class detection recall of the RIGHT class >= 0.80,
+      evaluated on the held-out competence split (not the explained set). Exemptions must be
+      logged in the detector config; Tier-A requires recall_floor_exemptions to be EMPTY —
+      a failing class is handled by the class-handling contingency, never exempted."
+  detector_class_min_support:
+    value: 100
+    unit: instances
+    description: "Minimum per-class instance count in the competence split for the recall floor
+      to be evaluable (Wilson 95% CI half-width <= ~0.08 at p=0.8). A canonical class below
+      support is not certified and is routed through the class-handling contingency exactly as
+      a class failing its floor (see configs/statistics/amendments/)."
+  contingency_class_failure_fraction:
+    value: 0.5
+    unit: proportion
+    description: "Class-handling contingency trigger: class-counted, global, one-pass — evaluated
+      ONCE over all canonical attack classes after the smoke-stage competence gate. Below this
+      fraction failing, failing classes are resolved in one pass (merge to lineage parent where
+      one exists, else exclusion rung); at or above it, the design descends the enumerated
+      ladder. See configs/statistics/amendments/."
+  contingency_min_attack_classes:
+    value: 3
+    unit: classes
+    description: "The exclusion rung of the contingency ladder is admissible only while >= 3
+      attack classes survive; otherwise the design falls to the terminal binary rung, reported
+      as a negative finding."
   plausibility_judge_rho:
     value: 0.6
     unit: spearman_rho
@@ -45,3 +71,33 @@ thresholds:
     value: [0.3, 0.5, 0.7]
     unit: score
     description: "B4 verifier decision thresholds (dev-split tuned only); 3 levels for the sensitivity sweep."
+  rq0_op_arc:
+    value: 0.95
+    unit: score
+    description: "RQ0 calibrated operating point for arc (designated operator: rank_inversion;
+      corrupt if arc < tau). Deterministic ROC point from gate run
+      EXP-G-002__75a4933__2026-07-18T1311Z (sens=1.0, spec=1.0)."
+  rq0_op_dsa_asserted:
+    value: 0.9
+    unit: score
+    description: "RQ0 calibrated operating point for dsa_asserted (designated operator: sign_flip;
+      corrupt if dsa_asserted < tau). Deterministic ROC point from gate run
+      EXP-G-002__75a4933__2026-07-18T1311Z (sens=1.0, spec=1.0)."
+  rq0_op_hfr:
+    value: 0.08333333333333333
+    unit: rate
+    description: "RQ0 calibrated operating point for hfr, = 1/12 (designated operators:
+      fabricated_feature, vague_substitution; corrupt if hfr > tau — higher is corrupt).
+      Deterministic ROC point from gate run EXP-G-002__75a4933__2026-07-18T1311Z (sens=1.0, spec=1.0)."
+  rq0_op_mention_precision:
+    value: 0.9166666666666667
+    unit: score
+    description: "RQ0 calibrated operating point for mention_precision, = 11/12 (designated
+      operator: fabricated_feature; corrupt if mention_precision < tau). Deterministic ROC point
+      from gate run EXP-G-002__75a4933__2026-07-18T1311Z (sens=1.0, spec=1.0)."
+  rq0_op_mention_recall:
+    value: 0.9
+    unit: score
+    description: "RQ0 calibrated operating point for mention_recall (designated operators:
+      omission, vague_substitution; corrupt if mention_recall < tau). Deterministic ROC point
+      from gate run EXP-G-002__75a4933__2026-07-18T1311Z (sens=1.0, spec=1.0)."

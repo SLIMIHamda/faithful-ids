@@ -500,6 +500,25 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   long-standing gap where the multi-class orchestration only ever executed on
   Kaggle. Execution plan: wave 1 ≈ 43 GPU-hours (anchor 4 LLMs + CICIDS
   spoke), wave 2 adds the UNSW spokes.
+- **Pre-freeze prereg completion (2026-07-20) — final in-place edit of
+  `configs/statistics/decision_thresholds.yaml` before the `prereg-v1` tag.**
+  (a) The five designated RQ0 operating points from the PASSED
+  `EXP-G-002__75a4933__2026-07-18T1311Z` gate run are recorded as frozen
+  calibration values (`rq0_op_*`: arc 0.95, dsa_asserted 0.90, hfr 1/12
+  higher-is-corrupt, mention_precision 11/12, mention_recall 0.90) — no
+  post-hoc operating-point selection is possible after the tag. (b) The
+  detector-competence gate is registered as **decoupled**: macro-F1 and the
+  per-class recall floor are evaluated on the held-out competence split
+  (disjoint from train and from the explained set), whose per-class n supports
+  meaningful CIs, with the explained set's class composition reported
+  alongside; `detector_class_min_support` (K=100) makes sub-support classes
+  un-certifiable rather than silently passed; Tier-A requires empty
+  `recall_floor_exemptions`. (c) The class-handling contingency constants are
+  frozen (`contingency_class_failure_fraction` 0.5 — class-counted, global,
+  one-pass; `contingency_min_attack_classes` 3); the contingency *procedure*
+  (lineage parent map, enumerated ladder, gate-failure clause, sequencing)
+  arrives as append-only amendment 0001 immediately after the tag, before any
+  Tier-A data exists.
 
 ### Metric formula versions / schema
 
