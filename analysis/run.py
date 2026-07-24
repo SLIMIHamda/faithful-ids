@@ -24,7 +24,13 @@ from analysis.src.bootstrap_ci import bootstrap_mean_ci
 from analysis.src.coverage_risk import risk_coverage_curve
 from analysis.src.friedman_nemenyi import friedman_nemenyi
 from faithfulids.provenance import repo_root, sha256_json, sha256_text
-from faithfulids.results.api import ResultError, list_runs, load_metrics, load_run
+from faithfulids.results.api import (
+    ResultError,
+    list_runs,
+    load_metrics,
+    load_run,
+    run_extractor_version,
+)
 
 CONFIG_DIR = repo_root() / "analysis" / "configs"
 OUTPUT_DIR = repo_root() / "analysis" / "outputs"
@@ -48,6 +54,32 @@ def _resolve_run_ids(cfg: dict, runs_root) -> list[str]:
             raise ResultError(f"no runs available for {src['experiment']}")
         return [sorted(runs)[-1]]
     raise ValueError(f"analysis config {cfg.get('id')} must give run_ids or source.select")
+
+
+def assert_single_extractor_version(run_ids: list[str], runs_root=None) -> str | None:
+    """Refuse to aggregate runs whose claims came from different extractors.
+
+    Layer-1 metrics are computed over extracted claims, so a mean or a Friedman
+    across runs scored by different extractor versions compares instrument
+    behaviour and generator behaviour at once — exactly the confound the 1.1.0
+    and 1.2.0 re-scores existed to remove. This has been a matter of discipline
+    ("re-score everything before comparing"); making it a hard precondition means
+    a mixed set can no longer be aggregated by accident.
+
+    Returns the single version (or ``None`` if no run carries claims) so callers
+    can record it as provenance.
+    """
+    versions = {rid: run_extractor_version(rid, runs_root) for rid in run_ids}
+    distinct = set(versions.values())
+    if len(distinct) > 1:
+        detail = ", ".join(f"{rid}={v!r}" for rid, v in sorted(versions.items()))
+        raise ResultError(
+            "cross-run aggregation refused: the enumerated runs were scored by "
+            f"different extractor versions ({detail}). Layer-1 metrics are not "
+            "comparable across instruments — re-score every run under one "
+            "extractor version (tools/rescore_run.py) before aggregating."
+        )
+    return distinct.pop() if distinct else None
 
 
 def _instance_values(rows, metric, generator, *, gate_metric=None, gate_min=None):
@@ -127,6 +159,7 @@ def _layer1_matrix(rows, metric, generators):
 def build_result(name: str, runs_root=None) -> tuple[dict, list[str]]:
     cfg = load_config(name)
     run_ids = _resolve_run_ids(cfg, runs_root)
+    assert_single_extractor_version(run_ids, runs_root)
     rows: list[dict] = []
     for rid in run_ids:
         rows.extend(load_metrics(rid, runs_root))
@@ -212,6 +245,10 @@ def write_output(name: str, runs_root=None) -> Path:
     manifest = {
         "analysis": name,
         "run_ids": run_ids,
+        # the one instrument version every aggregated run shares (build_result
+        # refuses to proceed otherwise) — so a released analysis output says
+        # which extractor produced the claims behind it
+        "extractor_version": assert_single_extractor_version(run_ids, runs_root),
         "results_sha256": sha256_text(body),
         "config_sha256": sha256_json(load_config(name)),
         "generated_utc": datetime.now(timezone.utc).isoformat(),

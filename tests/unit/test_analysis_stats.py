@@ -122,3 +122,43 @@ def test_variance_shares_bounded():
     sh = variance_shares([1, 2, 3, 4, 5, 6], {"g": ["a", "a", "a", "b", "b", "b"]})
     assert 0.0 <= sh["g"] <= 1.0
     assert "residual" in sh
+
+
+def test_mixed_extractor_versions_cannot_be_aggregated(monkeypatch):
+    """Layer-1 metrics are computed over extracted claims, so aggregating runs
+    scored by different extractors compares instrument behaviour and generator
+    behaviour at once. Previously this was discipline ('re-score first'); it is
+    now a precondition that names both versions."""
+    from faithfulids.results.api import ResultError
+
+    import analysis.run as ar
+
+    versions = {"run-a": "1.4.0", "run-b": "1.2.0"}
+    monkeypatch.setattr(ar, "run_extractor_version", lambda rid, root=None: versions[rid])
+    with pytest.raises(ResultError) as exc:
+        ar.assert_single_extractor_version(["run-a", "run-b"])
+    assert "1.4.0" in str(exc.value) and "1.2.0" in str(exc.value)
+    assert "rescore_run" in str(exc.value)
+
+
+def test_matched_extractor_versions_aggregate_and_report_the_version(monkeypatch):
+    import analysis.run as ar
+
+    monkeypatch.setattr(ar, "run_extractor_version", lambda rid, root=None: "1.4.0")
+    assert ar.assert_single_extractor_version(["run-a", "run-b"]) == "1.4.0"
+    # a run set with no claims at all makes no version claim
+    monkeypatch.setattr(ar, "run_extractor_version", lambda rid, root=None: None)
+    assert ar.assert_single_extractor_version(["run-a"]) is None
+
+
+def test_an_unknown_version_beside_a_known_one_is_a_mismatch(monkeypatch):
+    """A run whose claims are missing cannot be certified as instrument-matched,
+    so it must not pass silently next to a run that is."""
+    from faithfulids.results.api import ResultError
+
+    import analysis.run as ar
+
+    versions = {"run-a": "1.4.0", "run-b": None}
+    monkeypatch.setattr(ar, "run_extractor_version", lambda rid, root=None: versions[rid])
+    with pytest.raises(ResultError):
+        ar.assert_single_extractor_version(["run-a", "run-b"])

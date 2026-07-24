@@ -564,6 +564,18 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `competence.json` and the manifest (amendment 0001, invariant 6), and a gate
   failure now names the prescribed rung and its rationale in the exception.
 
+- **Instrument-version equality is now enforced, not remembered (step E).**
+  `analysis.run.build_result` refuses to aggregate runs whose claims were scored
+  by different extractor versions, naming every run and its version and pointing
+  at `tools/rescore_run.py`. Layer-1 metrics are computed over extracted claims,
+  so a mean or a Friedman across mixed instruments compares instrument behaviour
+  and generator behaviour at once — the exact confound the 1.1.0/1.2.0/1.4.0
+  re-score waves existed to remove, previously held off by discipline alone. A
+  run with no claims counts as *unknown* and cannot pass beside a known one. The
+  version is read from the run's own claims via the read-only results API
+  (`run_extractor_version`), so the check works on artifacts written long before
+  it existed, and it is recorded in each analysis output's `MANIFEST.json`.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

@@ -14,6 +14,7 @@ from faithfulids.results.api import (
     list_runs,
     load_metrics,
     load_run,
+    run_extractor_version,
 )
 
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     "load_metrics",
     "list_runs",
     "is_complete_and_verified",
+    "run_extractor_version",
 ]

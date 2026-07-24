@@ -68,6 +68,26 @@ def load_metrics(run_id: str, runs_root: str | Path | None = None) -> list[dict]
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def run_extractor_version(run_id: str, runs_root: str | Path | None = None) -> str | None:
+    """The extractor instrument version a run's claims were produced with.
+
+    Read from the run's own claims (every ``ClaimSet`` stamps it), so it is
+    recoverable for runs written before any run-level record existed — which is
+    the point: cross-run aggregation has to be checkable on the artifacts that
+    already exist, not only on ones produced after the check was added.
+    ``None`` when the run has no claims.
+    """
+    handle = load_run(run_id, runs_root)
+    path = handle.run_dir / "artifacts" / "claims.jsonl"
+    if not path.is_file():
+        return None
+    with open(path, "r", encoding="utf-8") as fh:
+        for line in fh:  # first record only — the version is constant within a run
+            if line.strip():
+                return json.loads(line).get("extractor_version")
+    return None
+
+
 def list_runs(experiment_id: str, runs_root: str | Path | None = None) -> list[str]:
     root = Path(runs_root) if runs_root is not None else default_runs_root()
     d = root / experiment_id
