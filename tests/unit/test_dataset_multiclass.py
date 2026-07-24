@@ -78,6 +78,80 @@ def test_loader_and_validate_configs_normalisers_agree():
         assert _norm(s) == _norm_label(s)
 
 
+# --------------------------------------------------------------------------- #
+# Lineage-derived merge map (prereg amendment 0001).
+# --------------------------------------------------------------------------- #
+def test_committed_parent_map_offers_only_the_brute_force_fold():
+    """The ONLY contingency merge available on the real taxonomy. DoS/DDoS must
+    stay separate — merging them is detector-derived, not lineage-derived, and was
+    withdrawn in the amendment."""
+    from faithfulids.datasets.loaders.cicids2017 import parent_of
+
+    assert parent_of("FTP-Patator") == parent_of("SSH-Patator") == "Brute Force"
+    for cls in ("BENIGN", "DoS", "DDoS", "PortScan", "Web Attack", "Bot"):
+        assert parent_of(cls) == cls, f"{cls} must have no lineage sibling"
+
+
+def test_parent_of_refuses_an_unknown_class():
+    import pytest
+
+    from faithfulids.datasets.loaders.cicids2017 import parent_of
+
+    with pytest.raises(KeyError, match="not a canonical class"):
+        parent_of("Volumetric Flood")
+
+
+def test_merged_taxonomy_yields_the_rung_two_vocabulary():
+    from faithfulids.datasets.loaders.cicids2017 import merged_taxonomy
+
+    merged = merged_taxonomy()
+    assert merged["canonical_classes"] == [
+        "BENIGN", "DoS", "DDoS", "PortScan", "Brute Force", "Web Attack", "Bot",
+    ]
+    # raw labels retarget through the merge; exclusions stay excluded
+    assert merged["label_map"]["ftp patator"] == "Brute Force"
+    assert merged["label_map"]["ssh patator"] == "Brute Force"
+    assert merged["label_map"]["dos hulk"] == "DoS"
+    assert merged["label_map"]["heartbleed"] == "excluded"
+    # merging is idempotent: the result is a valid taxonomy with identity parents
+    assert merged["parents"] == {c: c for c in merged["canonical_classes"]}
+    assert merged_taxonomy(merged)["canonical_classes"] == merged["canonical_classes"]
+
+
+def test_parent_map_guard_rejects_partial_reassigned_and_benign_merges():
+    """The structural rules validate-configs enforces, exercised on mutated copies
+    of the REAL taxonomy (lineage itself is not machine-checkable; these rules stop
+    the map expressing anything but a visible merge)."""
+    from faithfulids.orchestration.validate_configs import _parent_map_errors
+
+    tax = load_taxonomy("cicids2017")
+    canon = set(tax["canonical_classes"])
+    assert _parent_map_errors(tax, canon, "ok") == []
+
+    def mutated(**changes):
+        c = dict(tax)
+        c["parents"] = {**tax["parents"], **changes}
+        return c
+
+    partial = dict(tax)
+    partial["parents"] = {k: v for k, v in tax["parents"].items() if k != "Bot"}
+    assert any("not total" in e for e in _parent_map_errors(partial, canon, "w"))
+
+    extra = mutated(**{"Infiltration": "Infiltration"})
+    assert any("not total" in e for e in _parent_map_errors(extra, canon, "w"))
+
+    # reassigning a leaf under another leaf (the withdrawn DoS -> DDoS shape)
+    reassigned = mutated(DoS="DDoS")
+    assert any("NEW parent name" in e for e in _parent_map_errors(reassigned, canon, "w"))
+
+    # a new name with a single child is a rename, not a merge
+    renamed = mutated(Bot="Botnet")
+    assert any("rename, not a merge" in e for e in _parent_map_errors(renamed, canon, "w"))
+
+    benign_merged = mutated(BENIGN="Normal-ish", PortScan="Normal-ish")
+    assert any("never merged" in e for e in _parent_map_errors(benign_merged, canon, "w"))
+
+
 def _frame():
     return pd.DataFrame({
         "Flow Duration": [1.0, 2.0, 3.0, 4.0, 5.0],

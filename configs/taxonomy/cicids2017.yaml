@@ -2,7 +2,7 @@ id: cicids2017
 schema_version: v1
 kind: class_taxonomy
 dataset: cicids2017
-version: 1.0.0
+version: 1.1.0
 # SINGLE SOURCE OF TRUTH for the multi-class target (queue #5.1b). Both the
 # dataset loader (raw Label -> canonical) and the attack-class KB read/validate
 # against this file, so the two taxonomies cannot drift silently. validate-configs
@@ -35,3 +35,29 @@ label_map:
   web attack sql injection: Web Attack
   infiltration: excluded
   heartbleed: excluded
+# LINEAGE-DERIVED MERGE MAP — the only class merges the pre-registered contingency
+# may perform (configs/statistics/amendments/0001-multiclass-class-handling-contingency.md).
+# A parent assignment must derive from the dataset's PUBLISHED CAPTURE LINEAGE
+# (capture day, scenario, tooling), never from detector confusability — reasoning
+# from what the detector confuses would let detector performance define the label
+# space the detector is then graded on. FTP-Patator and SSH-Patator are the same
+# documented Tuesday brute-force scenario (patator tooling) and are the ONLY pair
+# with a published-lineage sibling. `DoS + DDoS -> Volumetric Flood` was considered
+# and WITHDRAWN: CICIDS2017 documents them as distinct captures on different days
+# with different tooling (LOIC), so a merge there is detector-derived, not lineage-
+# derived. DoS variants and the three Web Attack variants are already folded at the
+# label_map (leaf) level above.
+# validate-configs enforces: total (exactly the canonical classes as keys), and
+# merge-only — a parent is either the class ITSELF or a NEW name that is not a
+# canonical class and groups >= 2 classes. A leaf can never be reassigned under
+# another leaf (that would silently redefine a surviving class's meaning while
+# keeping its name), and chains are impossible. BENIGN is never merged.
+parents:
+  BENIGN: BENIGN
+  DoS: DoS
+  DDoS: DDoS
+  PortScan: PortScan
+  FTP-Patator: Brute Force
+  SSH-Patator: Brute Force
+  Web Attack: Web Attack
+  Bot: Bot

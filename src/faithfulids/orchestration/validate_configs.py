@@ -39,6 +39,53 @@ from faithfulids.orchestration.references import (
 )
 from faithfulids.orchestration.registry import load_all_experiments
 
+# The class that may never be merged or excluded — invariant 1 of prereg amendment
+# 0001 (configs/statistics/amendments/). Merging BENIGN would make "attack vs not"
+# unrecoverable from the target, which every downstream per-class metric assumes.
+_UNMERGEABLE = "BENIGN"
+
+
+def _parent_map_errors(config: dict, canon: set[str], where: str) -> list[str]:
+    """Structural rules for the lineage-derived merge map (prereg amendment 0001).
+
+    TOTAL: exactly the canonical classes appear as keys — one parent each, no
+    extras. MERGE-ONLY: a parent is either the class ITSELF or a NEW name that is
+    not a canonical class and groups >= 2 classes. Reassigning a leaf under
+    another leaf is refused: it would silently redefine a surviving class's
+    meaning while keeping its name, and a new grouping name makes every rung-2
+    vocabulary self-documenting. Chains are impossible under these two rules.
+    Lineage itself is NOT machine-checkable — the amendment carries that argument;
+    these rules stop the map from expressing anything but a visible merge.
+    """
+    errors: list[str] = []
+    parents = config["parents"]
+    for cls in sorted(canon - set(parents)):
+        errors.append(f"{where}: canonical class {cls!r} has no entry in parents (map is not total)")
+    for cls in sorted(set(parents) - canon):
+        errors.append(f"{where}: parents[{cls!r}] is not a canonical class (map is not total)")
+
+    children: dict[str, list[str]] = {}
+    for cls, parent in parents.items():
+        children.setdefault(parent, []).append(cls)
+    for parent, kids in sorted(children.items()):
+        if parent in canon and kids != [parent]:
+            errors.append(
+                f"{where}: parents maps {sorted(k for k in kids if k != parent)} onto the existing "
+                f"canonical class {parent!r} — merges must introduce a NEW parent name, never "
+                f"reassign a class under another class"
+            )
+        elif parent not in canon and len(kids) < 2:
+            errors.append(
+                f"{where}: parent {parent!r} groups only {kids} — a new parent name must merge "
+                f">= 2 canonical classes (a single child is a rename, not a merge)"
+            )
+    if parents.get(_UNMERGEABLE, _UNMERGEABLE) != _UNMERGEABLE:
+        errors.append(
+            f"{where}: parents[{_UNMERGEABLE!r}] = {parents[_UNMERGEABLE]!r} — "
+            f"{_UNMERGEABLE} is never merged (prereg amendment 0001, invariant 1)"
+        )
+    return errors
+
 
 def _check_references(config: dict, errors: list[str], where: str) -> None:
     kind = config.get("kind")
@@ -84,6 +131,7 @@ def _check_references(config: dict, errors: list[str], where: str) -> None:
                         f"{where}: canonical class {cls!r} has no raw label mapped to it "
                         f"(orphan class — map a label or drop the class)"
                     )
+            errors.extend(_parent_map_errors(config, canon, where))
         elif kind in ("kb_feature_dictionary", "kb_attack_classes"):
             names = _kb_versions()
             ds, ver = config["dataset"], config["version"]

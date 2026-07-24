@@ -77,6 +77,46 @@ def class_index_map(taxonomy: dict | None = None) -> dict[str, int]:
     return {name: i for i, name in enumerate(canonical_classes(taxonomy))}
 
 
+def parent_of(cls: str, taxonomy: dict | None = None) -> str:
+    """The lineage parent of a canonical class — itself when it has no published-
+    lineage sibling. The merge map is structurally constrained by validate-configs
+    (total, merge-only); this accessor never invents a parent for an unknown class."""
+    tax = taxonomy or load_taxonomy()
+    try:
+        return tax["parents"][cls]
+    except KeyError:
+        raise KeyError(
+            f"{cls!r} is not a canonical class of taxonomy {tax['id']} v{tax['version']}"
+        ) from None
+
+
+def merged_taxonomy(taxonomy: dict | None = None) -> dict:
+    """The parent-merged (rung-2) taxonomy: canonical classes replaced by their
+    distinct parents, in canonical order, with ``label_map`` retargeted through the
+    merge map. ``parents`` becomes the identity on the merged vocabulary, so the
+    result is itself a valid taxonomy and merging is idempotent.
+
+    This materialises the vocabulary the pre-registered contingency's rung 2 uses
+    (configs/statistics/amendments/0001). It does NOT write a config or retrain
+    anything — resolution is a retrain + re-attribution gate, never a relabelling.
+    """
+    tax = taxonomy or load_taxonomy()
+    parents = tax["parents"]
+    merged_classes: list[str] = []
+    for cls in tax["canonical_classes"]:
+        p = parents[cls]
+        if p not in merged_classes:
+            merged_classes.append(p)
+    out = dict(tax)
+    out["canonical_classes"] = merged_classes
+    out["label_map"] = {
+        raw: (parents.get(v, v) if v != "excluded" else "excluded")
+        for raw, v in tax["label_map"].items()
+    }
+    out["parents"] = {c: c for c in merged_classes}
+    return out
+
+
 def _strip_columns(df: pd.DataFrame) -> pd.DataFrame:
     df.columns = [str(c).strip() for c in df.columns]
     return df

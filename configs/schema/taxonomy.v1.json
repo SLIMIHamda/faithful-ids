@@ -4,7 +4,7 @@
   "title": "Multi-class target taxonomy (single source of truth for class labels)",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "schema_version", "kind", "dataset", "version", "canonical_classes", "label_map"],
+  "required": ["id", "schema_version", "kind", "dataset", "version", "canonical_classes", "label_map", "parents"],
   "properties": {
     "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
     "schema_version": {"const": "v1"},
@@ -16,6 +16,11 @@
     },
     "label_map": {
       "type": "object", "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "parents": {
+      "description": "Lineage-derived merge map: canonical class -> its parent (itself when the class has no published-lineage sibling). Consumed by the pre-registered class-handling contingency (configs/statistics/amendments/0001). Structural rules are enforced by validate-configs.",
+      "type": "object", "minProperties": 2,
       "additionalProperties": {"type": "string", "minLength": 1}
     }
   }
