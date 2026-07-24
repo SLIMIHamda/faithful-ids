@@ -269,3 +269,17 @@ def test_pilot_multiclass_end_to_end_on_random_forest(tmp_path):
     fams = set(cfg["detector_competence"]["per_family_recall"])
     assert {"BENIGN", "DoS", "DDoS", "PortScan"} <= fams
     assert cfg["detector_competence"]["gate_passed"] is True
+
+    # amendment 0001 invariant 6: the contingency's verdict is recorded on the
+    # run, including the rung-1 "vocabulary stands" case — the record must show
+    # the rule was EVALUATED, not merely that nothing happened.
+    cont = cfg["detector_competence"]["contingency"]
+    assert cont["rung"] == 1 and cont["rung_name"] == "leaf"
+    assert cont["changed"] is False and cont["failing"] == []
+    assert cont["trigger_stats"]["n_attack_classes"] == 3  # DoS, DDoS, PortScan
+    comp_json = _json.loads(
+        (tmp_path / "runs" / "_pilot_models" / "random_forest__cicids2017_corrected"
+         / "competence.json").read_text(encoding="utf-8")
+    )
+    assert comp_json["contingency"]["rung"] == 1
+    assert comp_json["evaluation_set"] == "competence_holdout"

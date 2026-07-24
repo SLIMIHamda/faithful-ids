@@ -340,6 +340,34 @@ def run_pilot(
         "per_class_n": {f: family_support(r) for f, r in explained_table["per_family"].items()},
         "table": explained_table,
     }
+    # The pre-registered contingency's verdict on this table (amendment 0001,
+    # invariant 6: the decision is recorded in competence.json + the manifest).
+    # Computing it always — including the rung-1 "vocabulary stands" case — means
+    # the record shows the rule was evaluated, not merely that nothing happened.
+    # K-way only: the binary table's families are raw labels ("DoS Hulk"), not the
+    # canonical classes the ladder is defined over.
+    decision = None
+    if _kway:
+        from faithfulids.datasets.loaders.cicids2017 import load_taxonomy
+        from faithfulids.detectors.contingency import resolve as resolve_contingency
+
+        # no-arg load_taxonomy() — the SAME taxonomy the loader derived
+        # target_class from, so the ladder is defined over the labels in hand.
+        decision = resolve_contingency(
+            comp_table, load_taxonomy(), {
+                "recall_floor": recall_floor, "min_support": min_support,
+                "macro_f1_min": macro_f1_min,
+                "class_failure_fraction": float(resolve_reference(
+                    "statistics:decision_thresholds:contingency_class_failure_fraction")["value"]),
+                "min_attack_classes": int(resolve_reference(
+                    "statistics:decision_thresholds:contingency_min_attack_classes")["value"]),
+            },
+            # certify the vocabulary the detector was actually FITTED on; any
+            # canonical class the data never covered is reported as absent rather
+            # than dropping out of both sides of the trigger fraction
+            vocabulary=tuple(detector.class_names),
+        )
+        comp_table["contingency"] = decision.as_record()
     (model_dir / "competence.json").write_text(
         json.dumps(comp_table, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -351,8 +379,12 @@ def run_pilot(
             f"{recall_floor}: {[f for f, _ in comp.failures]}; below min support "
             f"{min_support}: {[f for f, _ in comp.under_support]}; "
             f"exemptions={list(comp.exemptions)}. Faithfulness on an incompetent "
-            f"detector is meaningless — fix the detector, or resolve the failing "
-            f"classes through the pre-registered contingency (amendment 0001)."
+            f"detector is meaningless."
+            + (f"\nPRE-REGISTERED CONTINGENCY (amendment 0001) prescribes rung "
+               f"{decision.rung} ({decision.rung_name}): {decision.rationale}\n"
+               f"Resolution is a retrain + re-attribution gate, not a relabelling: "
+               f"apply the decision to the taxonomy config, refit, and re-gate."
+               if decision is not None and decision.changed else "")
         )
 
     # -- LLM client (ONE model) + generators -------------------------------- #
@@ -462,6 +494,7 @@ def run_pilot(
             "under_support": [f for f, _ in comp.under_support],
             "explained_per_class_n": comp_table["explained_set"]["per_class_n"],
             "exemptions": list(comp.exemptions),
+            "contingency": decision.as_record() if decision is not None else None,
         },
         "pilot_note": "pilot-grade cleaning + rule-assisted extractor/verifier; NON-CITABLE",
     }

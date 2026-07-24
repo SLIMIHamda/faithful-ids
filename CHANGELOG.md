@@ -544,6 +544,26 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   N=150 over ~7 classes the explained-set interval (±0.14 at p=0.8) could not
   separate 0.80 from 0.67.
 
+- **Contingency engine (step D) — the ladder as a pure function.**
+  `faithfulids.detectors.contingency.resolve(competence_table, taxonomy,
+  thresholds) → Decision{rung, merges, exclusions, failing, trigger_stats,
+  rationale}`: deterministic, side-effect free, importing nothing heavier than
+  the stdlib so the registered rule is fully unit-testable offline. It descends
+  **at most one rung per call** (it cannot decide a rung whose detector has not
+  been fitted and gated), resolves in **one pass**, counts **classes not
+  errors**, refuses to fire below rung 4 (`ContingencyExhausted`), and treats
+  BENIGN as untouchable. Two properties worth naming: a failing class folds
+  **together with its whole lineage group** (a parent holding one child is a
+  rename, not a merge), and a class **absent from the competence split is not
+  certified** rather than invisible — iterating the table's own keys would have
+  let it drop out of both sides of the trigger fraction. A macro-F1 failure with
+  every class certified is reported as a **detector defect that licenses no
+  merge**, so the contingency cannot launder a weak model into a smaller task.
+  `run_pilot` records the verdict on every K-way run — including the rung-1
+  "vocabulary stands" case, so the record shows the rule was evaluated — in
+  `competence.json` and the manifest (amendment 0001, invariant 6), and a gate
+  failure now names the prescribed rung and its rationale in the exception.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
