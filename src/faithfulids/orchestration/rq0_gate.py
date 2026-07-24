@@ -198,7 +198,9 @@ def run_rq0_gate(
     family = detector_family or detcfg["family"]
     multiclass = (str(hyper.get("objective", "")).startswith("multi:")
                   or detcfg.get("task") == "multiclass")
-    train_df, explain_df = stratified_explanation_sample(
+    # The RQ0 gate calibrates METRICS against known corruptions; it does not
+    # evaluate detector competence, so the competence remainder is unused here.
+    train_df, explain_df, _ = stratified_explanation_sample(
         df, n_explain=n_instances, seed=seed,
         stratify="target_class" if multiclass else "attack_class",
         truncation="round_robin" if multiclass else "index",

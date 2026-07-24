@@ -20,6 +20,12 @@ from faithfulids.results import is_complete_and_verified, load_metrics
 
 CV = CodeVersion("0" * 40, dirty=False)
 
+#: Synthetic rows per smoke fixture. The competence gate is evaluated on the
+#: held-out remainder (~28% of these), and the prereg's per-class minimum
+#: support (detector_class_min_support) must be clearable there — otherwise the
+#: smoke tests would have to disable the gate they exist to exercise.
+_SMOKE_N = 2000
+
 
 class StubAttributor:
     """Deterministic stand-in for TreeSHAP (uses RF feature importances)."""
@@ -53,7 +59,7 @@ def _synthetic_cicids(path, n=400, seed=0):
 def test_pilot_execute_end_to_end(tmp_path):
     data_dir = tmp_path / "data"
     data_dir.mkdir()
-    _synthetic_cicids(data_dir / "day1.csv", n=400)
+    _synthetic_cicids(data_dir / "day1.csv", n=_SMOKE_N)
 
     run_dir = run_pilot(
         "EXP-PILOT-001",
@@ -109,13 +115,22 @@ def test_pilot_execute_end_to_end(tmp_path):
     spaces = {r.get("delta_space") for r in rows if r["layer"] == "layer2"}
     assert spaces == {"prob", "margin"}
 
-    # detector competence gate ran on the held-out explanation set and passed
+    # detector competence gate ran on the held-out COMPETENCE split and passed
     resolved = yaml.safe_load((run_dir / "config.resolved.yaml").read_text(encoding="utf-8"))
     assert resolved["llm"] == "mistral_7b_instruct"  # llm_id_override honored
     comp = resolved["detector_competence"]
     assert comp["gate_passed"] is True
     assert comp["macro_f1"] >= comp["macro_f1_min"]
     assert set(comp["per_family_recall"]) >= {"BENIGN", "DoS Hulk"}
+    # amendment 0001: the verdict comes from the competence split, not the ~40
+    # explained instances, and every gated class clears the minimum support
+    assert comp["evaluation_set"] == "competence_holdout"
+    assert comp["n_competence"] > resolved["n_explain"]
+    assert comp["under_support"] == []
+    assert comp["per_family_n"]["DoS Hulk"] >= comp["min_support"]
+    # the explained set is REPORTED beside the gate, never gated on
+    assert set(comp["explained_per_class_n"]) >= {"BENIGN", "DoS Hulk"}
+    assert sum(comp["explained_per_class_n"].values()) == resolved["n_explain"]
 
 
 def test_pilot_replay_rescore_reproduces_metrics_without_provider(tmp_path):
@@ -124,7 +139,7 @@ def test_pilot_replay_rescore_reproduces_metrics_without_provider(tmp_path):
     (this is the mechanism tools/rescore_run.py uses to re-score after Pass B)."""
     data_dir = tmp_path / "data"
     data_dir.mkdir()
-    _synthetic_cicids(data_dir / "day1.csv", n=400)
+    _synthetic_cicids(data_dir / "day1.csv", n=_SMOKE_N)
 
     common = dict(
         data_dir=data_dir, seed=8005, n_explain=40, code_version=CV,
@@ -186,7 +201,7 @@ def test_multiclass_run_refuses_to_degenerate_below_three_classes(tmp_path):
     assert "BENIGN" in str(exc.value) and "DoS" in str(exc.value)
 
 
-def _synthetic_multiclass_cicids(path, n=1200, seed=0):
+def _synthetic_multiclass_cicids(path, n=_SMOKE_N, seed=0):
     """Four canonical classes with cleanly separated feature bands, so the K-way
     RF is genuinely competent and the full multi-class orchestration exercises
     deterministically."""
@@ -210,7 +225,7 @@ def test_pilot_multiclass_end_to_end_on_random_forest(tmp_path):
     exact driver path Tier-A spoke EXP-A-002 uses on Kaggle."""
     data_dir = tmp_path / "data"
     data_dir.mkdir()
-    _synthetic_multiclass_cicids(data_dir / "day1.csv", n=1200)
+    _synthetic_multiclass_cicids(data_dir / "day1.csv", n=_SMOKE_N)
 
     run_dir = run_pilot(
         "EXP-PILOT-001",

@@ -69,7 +69,7 @@ def main() -> int:
     # Re-derive the identical explanation set from the source run's config + seeds.
     df = load_cicids2017(args.data_dir)
     feat_cols = feature_columns(df)
-    _train_df, explain_df = stratified_explanation_sample(
+    _train_df, explain_df, _competence_df = stratified_explanation_sample(
         df,
         n_explain=int(resolved["n_explain"]),
         seed=int(seeds["split"]),

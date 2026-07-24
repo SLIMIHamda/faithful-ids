@@ -72,6 +72,35 @@ def _prediction_view(detector, instances):
 
 _LAYER2_K = [1, 3, 5]
 
+#: Rows per prediction batch on the competence split. That split is the whole
+#: held-out remainder (~100k rows at Tier-A scale) and ``predict_proba`` builds a
+#: dense list-of-lists, so it is consumed in chunks to bound peak memory. Purely
+#: an execution detail — chunking changes no statistic.
+_COMPETENCE_CHUNK = 20_000
+
+
+def _competence_view(
+    detector, df, feature_names: list[str], multiclass: bool
+) -> tuple[list[str] | None, list[float] | None]:
+    """Predictions over the competence split, in chunks.
+
+    Returns ``(predicted_class_names, None)`` for a K-way detector and
+    ``(None, attack_probabilities)`` for a binary one — each gate table needs
+    exactly one of the two, and computing both would double the work on the
+    largest frame in the run.
+    """
+    names: list[str] = []
+    probs: list[float] = []
+    for start in range(0, len(df), _COMPETENCE_CHUNK):
+        chunk = df.iloc[start:start + _COMPETENCE_CHUNK]
+        rows = [{f: float(r[f]) for f in feature_names}
+                for r in chunk[feature_names].to_dict("records")]
+        if multiclass:
+            names.extend(detector.predicted_class(rows))
+        else:
+            probs.extend(float(p) for p in attack_probability(detector, rows))
+    return (names, None) if multiclass else (None, probs)
+
 
 def _class_semantics(kb_name: str) -> dict[str, str]:
     """{canonical class -> KB profile} for B5's class grounding.
@@ -178,7 +207,7 @@ def run_pilot(
     _mc = (str((detector_hyperparameters or detcfg["hyperparameters"]).get("objective", "")
                ).startswith("multi:")
            or detcfg.get("task") == "multiclass")
-    train_df, explain_df = stratified_explanation_sample(
+    train_df, explain_df, competence_df = stratified_explanation_sample(
         df, n_explain=n_explain, seed=split_seed,
         minority_floor=int(sampcfg["minority_floor"]),
         # stratify on the K-way target so every canonical class is represented in the
@@ -204,6 +233,7 @@ def run_pilot(
     if multiclass:
         train_mc, class_idx = multiclass_frame(train_df)
         explain_df, _ = multiclass_frame(explain_df)
+        competence_df, _ = multiclass_frame(competence_df)
         class_names = [c for c, _ in sorted(class_idx.items(), key=lambda kv: kv[1])]
         if len(class_names) < 3:
             # A K<3 "multi-class" run silently re-creates the trivially separable
@@ -254,46 +284,75 @@ def run_pilot(
     ]
 
     # -- detector competence gate (imbalance-aware; before any tokens) ------ #
-    # Evaluated on the held-out explanation set (unseen by the detector) — the
-    # very instances whose explanations we score. Gated on macro-F1 AND a
-    # per-attack-family detection-recall floor: faithfulness on instances the
-    # model gets right by luck is noise. Exemptions are logged in the detector
-    # config; the full per-family table -> competence.json + the run manifest.
+    # Evaluated on the held-out COMPETENCE split — disjoint from the training
+    # frame and from the explained set (prereg amendment 0001). Competence is a
+    # property of the detector, and ~21 explained instances per class cannot
+    # support a per-class recall floor (Wilson 95% half-width ≈ ±0.14 at p=0.8);
+    # the competence split carries thousands per class at the natural prior. The
+    # explained set's composition is reported alongside, never gated on.
+    # Gated on macro-F1 AND the per-class recall floor AND per-class minimum
+    # support: faithfulness on instances the model gets right by luck is noise.
     from faithfulids.detectors.competence import (
         DetectorNotCompetent, classification_table, evaluate_competence,
-        multiclass_classification_table,
+        family_support, multiclass_classification_table,
     )
 
-    if len(detector.class_names) > 2:
+    _kway = len(detector.class_names) > 2
+    comp_names, comp_probs = _competence_view(detector, competence_df, feature_names, _kway)
+    if _kway:
         # K-way: gate on "was it classified as the RIGHT family", not merely "as
         # some attack" — an explanation of a misattributed class explains the wrong
         # decision (queue #5.5).
         comp_table = multiclass_classification_table(
+            [str(v) for v in competence_df["target_class"].tolist()], comp_names
+        )
+        explained_table = multiclass_classification_table(
             [str(v) for v in explain_df["target_class"].tolist()], pred_classes
         )
     else:
         comp_table = classification_table(
+            [int(v) for v in competence_df["label"].tolist()],
+            [1 if p >= 0.5 else 0 for p in comp_probs],
+            [str(v) for v in competence_df["attack_class"].tolist()],
+            y_score=comp_probs,
+        )
+        explained_table = classification_table(
             [int(v) for v in explain_df["label"].tolist()],
             [1 if p >= 0.5 else 0 for p in preds],
             [str(v) for v in explain_df["attack_class"].tolist()],
             y_score=preds,
         )
+    macro_f1_min = float(resolve_reference("statistics:decision_thresholds:detector_macro_f1_min")["value"])
+    recall_floor = float(resolve_reference("statistics:decision_thresholds:detector_recall_floor")["value"])
+    min_support = int(resolve_reference("statistics:decision_thresholds:detector_class_min_support")["value"])
+    exemptions = (detcfg.get("competence_gate") or {}).get("recall_floor_exemptions", [])
+    comp = evaluate_competence(
+        comp_table, macro_f1_min=macro_f1_min, recall_floor=recall_floor,
+        exemptions=exemptions, min_support=min_support,
+    )
+    # competence.json keeps the GATE table at the top level (what the floor was
+    # read from) and carries the explained set beside it, so a reader can never
+    # mistake which set produced the verdict.
+    comp_table["evaluation_set"] = "competence_holdout"
+    comp_table["min_support"] = min_support
+    comp_table["explained_set"] = {
+        "n": int(len(explain_df)),
+        "per_class_n": {f: family_support(r) for f, r in explained_table["per_family"].items()},
+        "table": explained_table,
+    }
     (model_dir / "competence.json").write_text(
         json.dumps(comp_table, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    macro_f1_min = float(resolve_reference("statistics:decision_thresholds:detector_macro_f1_min")["value"])
-    recall_floor = float(resolve_reference("statistics:decision_thresholds:detector_recall_floor")["value"])
-    exemptions = (detcfg.get("competence_gate") or {}).get("recall_floor_exemptions", [])
-    comp = evaluate_competence(
-        comp_table, macro_f1_min=macro_f1_min, recall_floor=recall_floor, exemptions=exemptions,
-    )
     if enforce_competence and not comp.passed:
         raise DetectorNotCompetent(
-            f"detector fails competence gate: macro_f1={comp.macro_f1:.3f} "
-            f"(min {macro_f1_min}); AUC={comp_table['auc']}; attack families below "
-            f"recall floor {recall_floor}: {[f for f, _ in comp.failures]}; "
+            f"detector fails competence gate on the held-out competence split "
+            f"(n={comp_table['n']}): macro_f1={comp.macro_f1:.3f} (min {macro_f1_min}); "
+            f"AUC={comp_table['auc']}; attack families below recall floor "
+            f"{recall_floor}: {[f for f, _ in comp.failures]}; below min support "
+            f"{min_support}: {[f for f, _ in comp.under_support]}; "
             f"exemptions={list(comp.exemptions)}. Faithfulness on an incompetent "
-            f"detector is meaningless — fix the detector or log an exemption."
+            f"detector is meaningless — fix the detector, or resolve the failing "
+            f"classes through the pre-registered contingency (amendment 0001)."
         )
 
     # -- LLM client (ONE model) + generators -------------------------------- #
@@ -392,10 +451,16 @@ def run_pilot(
         "layer1_top_k": top_k, "layer2_k_values": _LAYER2_K, "seed": gen_seed,
         "extractor": "rule_assisted", "verifier": "rule_verifier", "llm_mode": llm_mode,
         "detector_competence": {
+            "evaluation_set": "competence_holdout",  # NOT the explained set (amendment 0001)
+            "n_competence": int(len(competence_df)),
             "macro_f1": comp_table["macro_f1"], "auc": comp_table["auc"],
             "macro_f1_min": macro_f1_min, "recall_floor": recall_floor,
+            "min_support": min_support,
             "gate_passed": comp.passed,
             "per_family_recall": {f: r["detection_recall"] for f, r in comp_table["per_family"].items()},
+            "per_family_n": {f: family_support(r) for f, r in comp_table["per_family"].items()},
+            "under_support": [f for f, _ in comp.under_support],
+            "explained_per_class_n": comp_table["explained_set"]["per_class_n"],
             "exemptions": list(comp.exemptions),
         },
         "pilot_note": "pilot-grade cleaning + rule-assisted extractor/verifier; NON-CITABLE",

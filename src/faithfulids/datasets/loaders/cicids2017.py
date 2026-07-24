@@ -210,14 +210,24 @@ def stratified_explanation_sample(
     minority_floor: int = 30,
     train_frac: float = 0.7,
     truncation: str = "index",
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Deterministic train / explanation-set split.
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Deterministic train / explanation-set / competence-set split.
 
     The training frame trains the detector; the explanation frame (``n_explain``
     rows, stratified by ``stratify`` with a per-class minority floor) is what gets
-    explained. Same seed ⇒ same split. Rows whose ``stratify`` value is NA (e.g.
-    excluded-family ``target_class``) are never explained and do not count as a
-    stratum.
+    explained; the **competence frame** is the rest of the held-out pool — every
+    row the detector never saw and that no explanation covers. Same seed ⇒ same
+    split. Rows whose ``stratify`` value is NA (e.g. excluded-family
+    ``target_class``) are never explained and do not count as a stratum.
+
+    The competence frame exists because the pre-registered per-class recall floor
+    is a claim about the DETECTOR, and the explained set is far too small to
+    support it: at N=150 over ~7 classes (~21 each) a Wilson 95% interval at
+    p=0.8 is ≈ ±0.14 — it cannot separate 0.80 from 0.67. The competence frame
+    carries thousands of rows per class at the natural class prior, so the floor
+    is estimated where it is meaningful and reported against the explained set's
+    composition (prereg amendment 0001; ``detector_class_min_support``). It is
+    disjoint from BOTH the training frame and the explanation frame.
 
     ``truncation`` decides which picks survive when the per-class quotas overshoot
     ``n_explain``. ``"index"`` (legacy) keeps the lowest pool indices — BIASED for
@@ -263,4 +273,5 @@ def stratified_explanation_sample(
     else:
         picks = sorted(set(picks))
     explain_df = pool.iloc[picks].reset_index(drop=True)
-    return train_df, explain_df
+    competence_df = pool.drop(index=picks).reset_index(drop=True)
+    return train_df, explain_df, competence_df

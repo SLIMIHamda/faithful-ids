@@ -520,6 +520,30 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   arrives as append-only amendment 0001 immediately after the tag, before any
   Tier-A data exists.
 
+- **Class-handling contingency, build steps A–C (post-freeze, amendment-governed).**
+  (A) Prereg **amendment 0001** registers the rule itself
+  (`configs/statistics/amendments/`, ADR-0002): a **lineage-derived** parent map,
+  the decoupled gate set, a class-counted global one-pass trigger, a 4-rung
+  enumerated ladder, and the gate-failure clause (instrument iterates, annotation
+  is fixed, every attempt logged). (B) `configs/taxonomy/cicids2017.yaml` → **1.1.0**
+  gains the required `parents` map — the only available merge is
+  **FTP-Patator + SSH-Patator → Brute Force**; validate-configs enforces it is
+  TOTAL and MERGE-ONLY (a parent is the class itself or a NEW name grouping ≥2
+  classes, so no leaf is ever reassigned under another leaf and chains cannot be
+  expressed), with BENIGN structurally unmergeable; loader gains `parent_of()` and
+  `merged_taxonomy()` (the idempotent rung-2 vocabulary). (C) **The competence gate
+  is decoupled from the explained set**: `stratified_explanation_sample` now returns
+  a third frame — the held-out competence split, disjoint from train and from the
+  explained instances — and `execute.py` evaluates macro-F1, the per-class recall
+  floor, and the new per-class **minimum-support** clause on it (chunked prediction;
+  the split is the whole remainder at the natural class prior). The explained set's
+  per-class composition is recorded beside the verdict in `competence.json` and the
+  manifest, never gated on. A class below `detector_class_min_support` is *not
+  certified* rather than passed — it fails the gate as a class below the floor does,
+  and is routed to the contingency. This is what makes the floor a real test: at
+  N=150 over ~7 classes the explained-set interval (±0.14 at p=0.8) could not
+  separate 0.80 from 0.67.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

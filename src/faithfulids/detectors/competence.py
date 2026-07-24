@@ -3,11 +3,15 @@
 A near-perfect *aggregate* F1 on CICIDS2017 can hide a detector that is blind on a
 rare attack family (e.g. Infiltration). Faithfulness measured on instances the
 model classifies by luck is noise, so a run is gated on **macro-F1** AND a
-**per-(attack-)family detection-recall floor** — evaluated on the very (held-out,
-stratified) instances whose explanations will be scored. An explicit, logged
-**exemption list** (in the detector config) covers families untrainable at pilot
-scale. The full per-family table is emitted so the Tier-A stratification decision
-has data behind it.
+**per-(attack-)family detection-recall floor**.
+
+The gate is evaluated on the **held-out competence split** — disjoint from the
+training frame AND from the explained set — because competence is a property of
+the detector, and the explained set (~21 instances per class at N=150) gives a
+recall interval far too wide to separate passing from failing. The explained
+set's per-class composition is reported alongside (prereg amendment 0001). An
+explicit, logged **exemption list** (in the detector config) covers families
+untrainable at pilot scale; Tier-A requires it to be empty.
 
 Two table builders share the gate: ``classification_table`` for the binary
 detector (``families`` carries the original ``attack_class`` so recall is
@@ -123,6 +127,13 @@ class DetectorNotCompetent(RuntimeError):
     """Raised when a trained detector fails the pre-registered competence gate."""
 
 
+def family_support(row: Mapping[str, Any]) -> int:
+    """Per-class instance count, whichever table built the row (the binary table
+    names it ``support``, the K-way one ``n``)."""
+    n = row.get("support", row.get("n"))
+    return int(n or 0)
+
+
 @dataclass(frozen=True)
 class CompetenceResult:
     passed: bool
@@ -131,6 +142,8 @@ class CompetenceResult:
     recall_floor: float
     failures: tuple[tuple[str, float], ...]  # (attack family, recall) below floor, not exempted
     exemptions: tuple[str, ...]
+    min_support: int = 0
+    under_support: tuple[tuple[str, int], ...] = ()  # (attack family, n) below min_support
 
 
 def evaluate_competence(
@@ -139,23 +152,37 @@ def evaluate_competence(
     macro_f1_min: float,
     recall_floor: float,
     exemptions: Sequence[str] = (),
+    min_support: int = 0,
 ) -> CompetenceResult:
     """Apply the pre-registered gate to a ``classification_table`` result.
 
     A ``detection_recall`` of ``None`` (a class the detector PREDICTED but that has
-    zero true instances in the evaluation set — possible on a small explained
-    sample) cannot demonstrate the floor, so it FAILS the gate, recorded as NaN.
-    The remedy is representation, not exemption: raise N or fix the sampling so
-    the class has support.
+    zero true instances in the evaluation set) cannot demonstrate the floor, so it
+    FAILS the gate, recorded as NaN. The remedy is representation, not exemption.
+
+    ``min_support`` (prereg ``detector_class_min_support``) is the same principle
+    with a number on it: below it, a per-class recall carries a confidence interval
+    too wide to separate passing from failing, so the class is **not certified**
+    and fails the gate exactly as a class below the floor does. An under-supported
+    class is not a detector defect — it is routed through the pre-registered
+    class-handling contingency (amendment 0001), which is why it must be visible
+    rather than silently averaged into macro-F1.
     """
     ex = {str(e).strip() for e in exemptions}
+    attack_rows = {
+        fam: row for fam, row in table["per_family"].items()
+        if row["is_attack"] and fam not in ex
+    }
     failures = [
         (fam, float("nan") if row["detection_recall"] is None else float(row["detection_recall"]))
-        for fam, row in table["per_family"].items()
-        if row["is_attack"] and fam not in ex
-        and (row["detection_recall"] is None or row["detection_recall"] < recall_floor)
+        for fam, row in attack_rows.items()
+        if row["detection_recall"] is None or row["detection_recall"] < recall_floor
     ]
-    passed = (float(table["macro_f1"]) >= macro_f1_min) and not failures
+    under = [
+        (fam, family_support(row)) for fam, row in attack_rows.items()
+        if family_support(row) < min_support
+    ]
+    passed = (float(table["macro_f1"]) >= macro_f1_min) and not failures and not under
     return CompetenceResult(
         passed=passed,
         macro_f1=float(table["macro_f1"]),
@@ -163,4 +190,6 @@ def evaluate_competence(
         recall_floor=recall_floor,
         failures=tuple(sorted(failures)),
         exemptions=tuple(sorted(ex)),
+        min_support=int(min_support),
+        under_support=tuple(sorted(under)),
     )

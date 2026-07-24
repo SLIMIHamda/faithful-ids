@@ -236,13 +236,13 @@ def test_index_truncation_bias_erases_late_blocks_and_round_robin_does_not():
     # legacy "index" truncation keeps the lowest pool indices: with contiguous
     # blocks the first class's quota alone fills n_explain (the documented bias —
     # frozen because every cached binary run used it).
-    _, legacy = stratified_explanation_sample(
+    _, legacy, _ = stratified_explanation_sample(
         df, n_explain=24, seed=7, stratify="target_class", truncation="index"
     )
     assert set(legacy["target_class"]) == {"DDoS"}
     # round_robin drops over-quota picks one-per-class-per-round: every stratum
     # keeps n/K rows — what the per-class competence gate measures.
-    _, rr = stratified_explanation_sample(
+    _, rr, _ = stratified_explanation_sample(
         df, n_explain=24, seed=7, stratify="target_class", truncation="round_robin"
     )
     counts = rr["target_class"].value_counts()
@@ -257,10 +257,40 @@ def test_na_strata_are_never_explained_and_do_not_take_quota():
 
     df = _blocked_pool_frame()
     df.loc[df.index[-200:], "target_class"] = None  # excluded tail (e.g. Infiltration)
-    _, explain = stratified_explanation_sample(
+    _, explain, _ = stratified_explanation_sample(
         df, n_explain=24, seed=7, stratify="target_class", truncation="round_robin"
     )
     assert explain["target_class"].notna().all()
+
+
+def test_competence_split_is_disjoint_from_train_and_explained():
+    """Prereg amendment 0001: the gate set is held out from BOTH the detector's
+    training frame and the explained instances, and it keeps the rest of the pool
+    (not a sample of it) so per-class support is large enough to certify."""
+    from faithfulids.datasets.loaders.cicids2017 import stratified_explanation_sample
+
+    df = _blocked_pool_frame()
+    df["row_id"] = range(len(df))
+    train, explain, competence = stratified_explanation_sample(
+        df, n_explain=24, seed=7, stratify="target_class", truncation="round_robin"
+    )
+    t, e, c = (set(f["row_id"]) for f in (train, explain, competence))
+    assert not (t & e) and not (t & c) and not (e & c)
+    assert t | e | c == set(df["row_id"])  # nothing is discarded
+    # the gate set is the whole held-out remainder — orders of magnitude more
+    # per-class support than the explained set it replaces
+    assert len(competence) == len(df) - len(train) - len(explain)
+    assert len(competence) > len(explain)
+
+
+def test_competence_split_carries_every_explained_class():
+    from faithfulids.datasets.loaders.cicids2017 import stratified_explanation_sample
+
+    _, explain, competence = stratified_explanation_sample(
+        _blocked_pool_frame(), n_explain=24, seed=7,
+        stratify="target_class", truncation="round_robin",
+    )
+    assert set(explain["target_class"]) <= set(competence["target_class"])
 
 
 def test_unknown_truncation_fails_loudly():
