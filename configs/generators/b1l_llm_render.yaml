@@ -1,0 +1,28 @@
+id: b1l_llm_render
+schema_version: v1
+kind: generator
+code: b1l_llm_render
+llm_dependent: true
+params:
+  top_k: 5
+  temperature: 0
+# CEILING generator (prereg amendment 0002): "B1 with an LLM as the renderer".
+# It carries the transcription-style prompt that formerly served as b3's K-way
+# variant (b3_dte_style 1.1.0) — "proceed down the list, reference only the
+# factors provided", which pins precision/recall/rank/direction at ceiling by
+# construction. Treated like B0/B1: anchor-LLM only, excluded from the
+# confirmatory generator ranking; it exists to prove the extractor is not the
+# bottleneck at the anchor LLM. It renders SHAP only, no KB snippets (no kb_ref).
+#
+# B1ℓ only ever runs K-way (its EXP-A-005 cell is xgboost_multiclass), so
+# prompt_multiclass is what executes; `prompt` is required by load_prompt_pair
+# and points at the SAME transcription prompt (never selected — score_label is a
+# class name, never "attack").
+prompt:
+  name: b3_dte_style
+  version: 1.1.0
+  sha256: 3d60aa487f5e413a33f82c649d86778b02df53da1f42f8a1929659369285f3d5
+prompt_multiclass:
+  name: b3_dte_style
+  version: 1.1.0
+  sha256: 3d60aa487f5e413a33f82c649d86778b02df53da1f42f8a1929659369285f3d5

@@ -430,6 +430,12 @@ def run_pilot(
                 kb_class_semantics=_class_semantics(kb_name),
                 verifier=RuleVerifier(),
             )))
+        elif gcfg["code"] == "b3_dte_style":
+            # B3 (grounded-natural) drafts from the SAME evidence as B4 — the ranked
+            # list AND the KB snippets — so the B3<->B4 comparison isolates the verifier.
+            generators.append((gid, get_generator(
+                gcfg, llm_client=client, model_config=llmcfg, kb_feature_semantics=kb,
+            )))
         else:
             generators.append((gid, get_generator(gcfg, llm_client=client, model_config=llmcfg)))
 

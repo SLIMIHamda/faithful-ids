@@ -160,17 +160,113 @@ def test_select_template_picks_by_score_label_and_fails_loudly():
         select_template("bin", None, "DoS")
 
 
+_KB_SEMANTICS = {
+    "Flow Duration": "Total flow lifetime in microseconds.",
+    "SYN Flag Count": "Count of TCP SYN flags in the flow.",
+    "Flow Bytes/s": "Byte throughput of the flow.",
+}
+
+
+def _b3(client):
+    return get_generator(
+        load_config("generator", "b3_dte_style"),
+        llm_client=client, model_config=MODEL, kb_feature_semantics=_KB_SEMANTICS,
+    )
+
+
 def test_b3_selects_the_multiclass_prompt_variant():
     client = _CapturingClient()
-    gen = get_generator(load_config("generator", "b3_dte_style"), llm_client=client, model_config=MODEL)
-    gen.generate(_ctx())      # binary context -> v1.0.0 wording
-    gen.generate(_mc_ctx())   # K-way context -> v1.1.0 wording
+    gen = _b3(client)
+    gen.generate(_ctx())      # binary context -> frozen v1.0.0 wording (replay)
+    gen.generate(_mc_ctx())   # K-way context -> v1.2.0 grounded-natural wording
     binary_prompt, mc_prompt = client.prompts
+    # binary path is UNCHANGED (frozen for replay) and carries no KB section
     assert "likelihood of an attack" in binary_prompt
     assert "increases attack score" in binary_prompt
+    assert "Feature meanings" not in binary_prompt
+    # K-way path is the grounded-natural (b4-draft-minus-verifier) prompt:
     assert "likelihood of an attack" not in mc_prompt
-    assert "decreased the BENIGN score" in mc_prompt   # instruction line
-    assert "(increases BENIGN score" in mc_prompt      # evidence list
+    assert "(increases BENIGN score" in mc_prompt              # same evidence list as B4
+    assert "Feature meanings (from the knowledge base):" in mc_prompt
+    assert "Flow Duration: Total flow lifetime" in mc_prompt   # KB snippet rendered
+    # verification framing must be ABSENT — this is the "grounding without enforcement" baseline
+    assert "You will later be checked" not in mc_prompt
+
+
+def test_b3_grounded_natural_prompt_has_no_verifier_priming():
+    """B3 1.2.0 = b4's draft prompt minus the verifier and its priming sentence.
+    If either the verifier-priming line or a draft/verify framing leaks in, the
+    B3<->B4 comparison stops isolating verification."""
+    client = _CapturingClient()
+    _b3(client).generate(_mc_ctx())
+    prompt = client.prompts[0]
+    assert "You will later be checked for grounding" not in prompt
+    assert "Draft an explanation" not in prompt
+    assert "Write an explanation that:" in prompt
+
+
+def test_b1l_ceiling_renders_the_transcription_prompt_without_kb():
+    """B1ℓ carries the former b3 1.1.0 transcription prompt and renders SHAP only
+    (no KB) — the instrument-ceiling generator."""
+    client = _CapturingClient()
+    gen = get_generator(load_config("generator", "b1l_llm_render"),
+                        llm_client=client, model_config=MODEL)
+    gen.generate(_mc_ctx())
+    prompt = client.prompts[0]
+    assert "(increases BENIGN score" in prompt          # renders the ranked SHAP list
+    assert "Feature meanings" not in prompt              # no KB grounding
+    assert "reference only the factors provided" in prompt.lower() \
+        or "reference only the factors" in prompt.lower()  # the transcription instruction
+
+
+import re as _re
+
+
+def _render_llm_generator(code: str, client) -> str:
+    """Build an LLM-dependent generator with the deps execute() injects and
+    return the (draft) prompt it sends for the K-way context."""
+    from faithfulids.generation.b4_vte.verifier import RuleVerifier
+
+    cfg = load_config("generator", code)
+    deps = {"llm_client": client, "model_config": MODEL}
+    if code in ("b3_dte_style", "b4_vte", "b5_narrative_vte"):
+        deps["kb_feature_semantics"] = _KB_SEMANTICS
+    if code == "b5_narrative_vte":
+        deps["kb_class_semantics"] = {"BENIGN": "Normal background traffic."}
+    if code in ("b4_vte", "b5_narrative_vte"):
+        deps["verifier"] = RuleVerifier()
+    get_generator(cfg, **deps).generate(_mc_ctx())
+    return client.prompts[0]
+
+
+def test_no_placeholder_leaks_into_any_rendered_prompt():
+    """PROMPT-RENDER CONTRACT: every {{placeholder}} in a generator prompt BODY
+    must be substituted before the prompt is sent. (The <!-- header --> may
+    mention {{...}} illustratively, so it is stripped before the check.) This is
+    the guard that would have caught b3 rendering a v1.2.0 prompt with an
+    unsubstituted {{kb_feature_snippets}} — the exact bug this rewire fixes."""
+    for code in ("b2_zeroshot", "b3_dte_style", "b1l_llm_render", "b4_vte", "b5_narrative_vte"):
+        prompt = _render_llm_generator(code, _CapturingClient())
+        body = _re.sub(r"<!--.*?-->", "", prompt, flags=_re.DOTALL)
+        leaked = _re.findall(r"\{\{[^}]+\}\}", body)
+        assert not leaked, f"{code} leaked unsubstituted placeholders: {leaked}"
+
+
+def test_b3_and_b4_draft_from_identical_evidence():
+    """The B3<->B4 ablation is only clean if B3 sees EXACTLY the evidence B4 does.
+    Same ranked_feature_list (top_k=5) and same KB snippets, or evidence is
+    confounded with enforcement."""
+    from faithfulids.generation.base import ranked_feature_list, ranked_topk
+
+    rows = ranked_topk(_mc_ctx().attribution, 5)
+    evidence = ranked_feature_list(rows, "BENIGN")
+    kb_line = "Flow Duration: Total flow lifetime in microseconds."
+
+    b3_prompt = _render_llm_generator("b3_dte_style", _CapturingClient())
+    b4_prompt = _render_llm_generator("b4_vte", _CapturingClient())
+    for block in (evidence, kb_line):
+        assert block in b3_prompt, f"missing from B3: {block!r}"
+        assert block in b4_prompt, f"missing from B4: {block!r}"
 
 
 def test_b4_multiclass_evidence_still_parses_in_the_rule_verifier():

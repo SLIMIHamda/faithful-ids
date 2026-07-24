@@ -20,6 +20,7 @@ GENERATOR_MODULES: dict[str, str] = {
     "b1_template": "faithfulids.generation.b1_template",
     "b2_zeroshot": "faithfulids.generation.b2_zeroshot",
     "b3_dte_style": "faithfulids.generation.b3_dte_style",
+    "b1l_llm_render": "faithfulids.generation.b1l_llm_render",
     "b4_vte": "faithfulids.generation.b4_vte",
     "b5_narrative_vte": "faithfulids.generation.b5_narrative_vte",
 }

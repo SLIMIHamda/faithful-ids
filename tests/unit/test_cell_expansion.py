@@ -43,9 +43,16 @@ def test_each_spoke_expands_to_6_cells_and_the_square_closes():
     }
 
 
-def test_tier_a_total_is_36_cells():
-    total = sum(len(expand_cells(load_experiment(e))) for e in ("EXP-A-001", *SPOKES))
-    assert total == 36
+def test_tier_a_total_is_36_confirmatory_cells_plus_one_ceiling():
+    """36 confirmatory cells (anchor + spokes) drive the generator ranking; the
+    B1ℓ instrument ceiling (EXP-A-005) is one extra cell, anchor-LLM only and
+    headline-ineligible, so it is counted separately — 37 executable in all."""
+    confirmatory = sum(len(expand_cells(load_experiment(e))) for e in ("EXP-A-001", *SPOKES))
+    assert confirmatory == 36
+    ceiling = expand_cells(load_experiment("EXP-A-005"))
+    assert len(ceiling) == 1
+    assert ceiling[0].llm == "qwen3_8b_4bit"  # anchor LLM only
+    assert load_experiment("EXP-A-005")["flags"]["headline_eligible"] is False
 
 
 def test_llm_independent_generators_have_no_llm():

@@ -1,0 +1,35 @@
+id: EXP-A-005
+schema_version: v1
+kind: experiment
+tier: tier_a
+title: Instrument ceiling — B1ℓ (LLM-rendered top-k SHAP) at the anchor
+research_question: >-
+  Is the evaluation instrument (extractor + Layer-1 metrics) at ceiling when an
+  LLM is asked merely to recite the ranked attribution? B1ℓ carries the
+  transcription-style prompt that pins precision/recall/rank/direction by
+  construction; if it scores ~1.000 at the anchor LLM, the extractor is not the
+  bottleneck there, so any B4/B5 shortfall cannot be attributed to measurement.
+  A CEILING, not a baseline: anchor-LLM only, headline-ineligible, excluded from
+  the confirmatory generator ranking (like B0/B1). Registered with prereg
+  amendment 0002, which also relabels the former b3 1.1.0 transcription prompt.
+hypothesis_family: [H0]
+design:
+  mode: factorial
+  axes:
+    # Sampling and regime are pinned to the anchor (EXP-A-001): same dataset,
+    # same K-way detector, same anchor LLM, same n400_stratified split — so the
+    # ceiling is measured on the anchor's own instances, not a different sample.
+    datasets: [cicids2017_corrected]
+    detectors: [xgboost_multiclass]
+    llms: [qwen3_8b_4bit]
+    generators: [b1l_llm_render]
+sampling_refs: [sampling:n400_stratified]
+seed_ref: seeds:tier_a
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: false
+  headline_eligible: false
+status: registered
