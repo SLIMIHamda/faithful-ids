@@ -1,0 +1,43 @@
+id: EXP-G-003
+schema_version: v1
+kind: experiment
+tier: gate
+title: Tier-A class-handling contingency smoke (detector-only, zero tokens)
+research_question: >-
+  Does the Tier-A K-way detector certify every canonical attack class on the
+  held-out competence split, and if not, which rung of the pre-registered
+  contingency ladder does the design occupy? This gate fits the anchor detector,
+  evaluates macro-F1 + the per-class recall floor + per-class minimum support on
+  the competence split (disjoint from training and from the explained set), and
+  records the contingency Decision. It calls NO LLM and generates no
+  explanations, so the class vocabulary is settled before a single token is
+  spent - which is the whole point of running it first.
+hypothesis_family: [H0]
+design:
+  mode: single
+  # llm: null is the load-bearing part — this gate settles the class vocabulary
+  # with no generator in the loop, so it cannot cost tokens.
+  cell:
+    dataset: cicids2017_corrected
+    detector: xgboost_multiclass
+    llm: null
+sampling_refs: [sampling:n400_stratified]
+seed_ref: seeds:gates
+metric_refs: []
+config_refs:
+  taxonomy: taxonomy:cicids2017
+gate:
+  criterion: detector_competence
+  threshold_ref: statistics:decision_thresholds:detector_recall_floor
+  annotation:
+    ground_truth: competence_holdout_labels
+    also_threshold_ref: statistics:decision_thresholds:detector_macro_f1_min
+    min_support_ref: statistics:decision_thresholds:detector_class_min_support
+    contingency_amendment: configs/statistics/amendments/0001-multiclass-class-handling-contingency.md
+    # PASSED  -> the registered leaf vocabulary stands; Tier-A generation proceeds.
+    # FAILED  -> the recorded Decision names the rung. Resolution is a retrain +
+    #            re-attribution gate (bump the taxonomy config, refit, re-run THIS
+    #            gate at the new rung), never a relabelling of existing artifacts.
+flags:
+  exploratory: false
+status: registered

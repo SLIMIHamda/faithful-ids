@@ -576,6 +576,21 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   (`run_extractor_version`), so the check works on artifacts written long before
   it existed, and it is recorded in each analysis output's `MANIFEST.json`.
 
+- **`EXP-G-003` — the contingency smoke, registered (step F).** A detector-only
+  gate that fits the anchor K-way detector, evaluates the competence split, and
+  records the contingency Decision **with `llm: null`** so the class vocabulary
+  is settled before a single token is spent — the sequencing amendment 0001
+  requires (smoke → contingency → config regeneration → primary). New gate
+  criterion `detector_competence`. The τ sweep was already registered
+  (`EXP-B-004`, `verifier_threshold_ref`) and now inherits the K-way anchor.
+- **`REGISTRY.md` is now verified against the registered files.** The index
+  claims the paper's appendix is generated from it "so nothing can be silently
+  omitted", but nothing checked it — and it had in fact omitted the three Tier-A
+  spokes (`EXP-A-002..004`) and `EXP-PILOT-001`, the experiment every pilot
+  result to date came from, while still describing `EXP-A-001` as the superseded
+  44-cell factorial. All four rows added, the stale one corrected, and a test now
+  asserts the row set and the registered id set are equal in both directions.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model

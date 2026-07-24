@@ -69,3 +69,32 @@ def test_resolve_experiment_verifies_prompts_and_expands():
     # b2/b3/b4/b5 generator prompts (+multiclass variants) + extractor + judge
     assert len(resolved.verified_prompt_hashes) >= 5
     assert resolved.seeds["generation"] == 1002
+
+
+def test_registry_index_lists_every_registered_experiment():
+    """REGISTRY.md is described as the append-only index the paper's appendix is
+    generated from, "so nothing can be silently omitted" — but nothing checked it
+    against the registered files, and three Tier-A spokes had in fact gone
+    unlisted. This is that check."""
+    import re
+
+    from faithfulids.orchestration.registry import experiments_root, load_all_experiments
+
+    table = (experiments_root() / "REGISTRY.md").read_text(encoding="utf-8")
+    listed = set(re.findall(r"^\|\s*(EXP-[A-Z0-9-]+|ANCHOR)\s*\|", table, re.MULTILINE))
+    registered = set(load_all_experiments())
+
+    assert not (registered - listed), f"registered but not in REGISTRY.md: {registered - listed}"
+    assert not (listed - registered), f"in REGISTRY.md but not registered: {listed - registered}"
+
+
+def test_the_contingency_smoke_gate_cannot_spend_tokens():
+    """EXP-G-003 settles the class vocabulary BEFORE generation (amendment 0001
+    sequencing). A registered LLM on it would defeat the purpose, so the null is
+    pinned here rather than left to the driver."""
+    exp = load_experiment("EXP-G-003")
+    assert exp["design"]["mode"] == "single"
+    assert exp["design"]["cell"]["llm"] is None
+    assert exp["design"]["cell"]["detector"] == "xgboost_multiclass"
+    assert exp["gate"]["criterion"] == "detector_competence"
+    assert exp["metric_refs"] == []  # no explanation metrics: nothing is explained

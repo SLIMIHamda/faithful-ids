@@ -54,7 +54,7 @@
       "additionalProperties": false,
       "required": ["criterion", "threshold_ref"],
       "properties": {
-        "criterion": {"enum": ["extractor_f1", "per_metric_sensitivity_specificity"]},
+        "criterion": {"enum": ["extractor_f1", "per_metric_sensitivity_specificity", "detector_competence"]},
         "threshold_ref": {"type": "string", "pattern": "^statistics:decision_thresholds:[a-z0-9_]+$"},
         "annotation": {"type": "object"}
       }
