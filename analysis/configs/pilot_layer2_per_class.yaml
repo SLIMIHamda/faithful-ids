@@ -1,0 +1,16 @@
+id: pilot_layer2_per_class
+hypothesis: null
+description: >-
+  NON-CITABLE pilot analysis. MANDATORY per-class Layer-2 breakdown (prereg
+  amendment 0002): eps_att comprehensiveness@3 by predicted class, in BOTH prob
+  and margin space. The aggregate is uninformative on a confident detector
+  (prob-space erasure is ~0 on easy classes, non-zero only on hard ones), so no
+  aggregate Layer-2 number is reported without this table beside it.
+source:
+  experiment: EXP-PILOT-001
+  select: latest
+test: layer2_per_class
+metric: comprehensiveness
+component: eps_att
+k: 3
+delta_spaces: [prob, margin]

@@ -114,6 +114,10 @@ def test_pilot_execute_end_to_end(tmp_path):
     # both prob and margin deltas are emitted (folds the saturation diagnostic in)
     spaces = {r.get("delta_space") for r in rows if r["layer"] == "layer2"}
     assert spaces == {"prob", "margin"}
+    # binary Layer-2 rows carry NO predicted_class — the per-class stamp is K-way
+    # only, so binary/toy metric rows stay byte-identical (determinism + replay)
+    assert not any("predicted_class" in r["grouping"]
+                   for r in rows if r["layer"] == "layer2")
 
     # detector competence gate ran on the held-out COMPETENCE split and passed
     resolved = yaml.safe_load((run_dir / "config.resolved.yaml").read_text(encoding="utf-8"))
@@ -248,6 +252,13 @@ def test_pilot_multiclass_end_to_end_on_random_forest(tmp_path):
             "b5_narrative_vte"} <= gens
     # margin-space Layer-2 exists (RF's native log-prob margin carried it)
     assert any(r["layer"] == "layer2" and r.get("delta_space") == "margin" for r in rows)
+
+    # amendment 0002: K-way Layer-2 rows carry predicted_class so the mandatory
+    # per-class breakdown is computable from the artifacts (both eps components)
+    l2 = [r for r in rows if r["layer"] == "layer2"]
+    assert l2 and all("predicted_class" in r["grouping"] for r in l2)
+    assert {r["grouping"]["predicted_class"] for r in l2} <= {
+        "BENIGN", "DoS", "DDoS", "PortScan"}
 
     # K-way wording end to end: B1 renders the PREDICTED class's score label
     import json as _json

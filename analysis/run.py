@@ -203,6 +203,34 @@ def build_result(name: str, runs_root=None) -> tuple[dict, list[str]]:
                           if r["layer"] == "cost" and r["metric"] == "abstention_rate"), {})
             per_run[rid] = {"cost": cost, "abstention_scope": scope}
         result = {"per_run": per_run}
+    elif test == "layer2_per_class":
+        # MANDATORY per-class Layer-2 breakdown (prereg amendment 0002): the
+        # aggregate is uninformative on a confident detector, where prob-space
+        # erasure is ~0 on the easy classes and non-zero only on the hard ones.
+        # Groups the erasure metric by grouping.predicted_class (stamped on K-way
+        # rows by the runner) for each requested delta_space.
+        metric, component = cfg["metric"], cfg.get("component", "eps_att")
+        by_space: dict = {}
+        for space in cfg.get("delta_spaces", ["prob", "margin"]):
+            per_class: dict = {}
+            sel = [
+                r for r in rows
+                if r["layer"] == "layer2" and r["metric"] == metric
+                and r.get("component") == component and r.get("delta_space") == space
+                and r.get("k") == cfg.get("k")
+            ]
+            for r in sel:
+                cls = r["grouping"].get("predicted_class")
+                if cls is None:
+                    continue  # binary run has no per-class breakdown
+                per_class.setdefault(cls, []).append(r["value"])
+            by_space[space] = {
+                "per_class": {c: _mean(v) for c, v in sorted(per_class.items())},
+                "n_per_class": {c: len(v) for c, v in sorted(per_class.items())},
+                "aggregate": _mean([v for vs in per_class.values() for v in vs]),
+            }
+        result = {"metric": metric, "component": component, "k": cfg.get("k"),
+                  "by_delta_space": by_space}
     elif test == "capability_scaling":
         anchor = yaml.safe_load((repo_root() / cfg["anchor"]).read_text(encoding="utf-8"))
         gens = cfg["generators"]

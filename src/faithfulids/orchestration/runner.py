@@ -99,6 +99,22 @@ def run_cells(
     """
     art = CellArtifacts()
 
+    # K-way runs stamp the PREDICTED class onto every Layer-2 row's grouping so the
+    # per-class breakdown (mandatory under prereg amendment 0002 — aggregate Layer-2
+    # is uninformative on a confident detector) is computed from the artifacts, not
+    # re-derived. It is a property of the instance/detector, NOT the generator, so it
+    # is firewall-safe. Binary runs omit it: the toy/binary metric rows stay
+    # byte-identical for the determinism gate and cached-run replay.
+    binary = len(tuple(components.detector.class_names)) == 2
+
+    def _l2_grouping(case, *, generator_id: str | None = None) -> dict:
+        g: dict = {"instance_id": case.instance_id}
+        if generator_id is not None:
+            g["generator_id"] = generator_id
+        if not binary:
+            g["predicted_class"] = case.predicted_class
+        return g
+
     # Layer-2 ε_att (attribution-driven, claim-free): generator-blind, once per
     # instance — probes whether φ picks the features the model uses (φ ↔ f).
     for case in cases:
@@ -110,14 +126,13 @@ def run_cells(
                     art.metric_rows.append({
                         "instance_id": case.instance_id, "layer": "layer2", "metric": name,
                         "k": k, "value": value, "component": "eps_att", "delta_space": space,
-                        "grouping": {"instance_id": case.instance_id},  # NO generator identity
+                        "grouping": _l2_grouping(case),  # NO generator identity
                     })
 
     # Generation → extraction → Layer-1 per (instance, generator).
     # Binary detectors keep the frozen literal "attack" score label (request-hash
     # continuity); a K-way detector's attribution explains the PREDICTED class,
     # so that is the score the rendered directions are about (#5.3 semantics).
-    binary = len(tuple(components.detector.class_names)) == 2
     total = len(generators) * len(cases)
     done = 0
     for gen_id, generator in generators:
@@ -157,7 +172,7 @@ def run_cells(
                         art.metric_rows.append({
                             "instance_id": case.instance_id, "layer": "layer2", "metric": name,
                             "k": k, "value": value, "component": "eps_model", "delta_space": space,
-                            "grouping": {"instance_id": case.instance_id, "generator_id": gen_id},
+                            "grouping": _l2_grouping(case, generator_id=gen_id),
                         })
             done += 1
             if done == 1 or done % 5 == 0 or done == total:

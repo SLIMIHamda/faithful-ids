@@ -1,0 +1,13 @@
+id: pilot_mention_precision
+hypothesis: null
+description: >-
+  NON-CITABLE pilot analysis. Per-generator mean + bootstrap CI of Layer-1
+  mention_precision, the headline Layer-1 pair that replaces mention_f1 (prereg amendment
+  0002): F1 penalises principled pruning, so precision and recall are reported
+  separately. B0/B1/B1ℓ are ceilings; B2/B3 baselines; B4/B5 interventions.
+source:
+  experiment: EXP-PILOT-001
+  select: latest
+test: mean_ci
+metric: mention_precision
+generators: [b0_raw_shap, b1_template, b1l_llm_render, b2_zeroshot, b3_dte_style, b4_vte, b5_narrative_vte]

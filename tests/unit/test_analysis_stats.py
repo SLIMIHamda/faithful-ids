@@ -162,3 +162,39 @@ def test_an_unknown_version_beside_a_known_one_is_a_mismatch(monkeypatch):
     monkeypatch.setattr(ar, "run_extractor_version", lambda rid, root=None: versions[rid])
     with pytest.raises(ResultError):
         ar.assert_single_extractor_version(["run-a", "run-b"])
+
+
+def test_layer2_per_class_groups_by_predicted_class_in_both_spaces(tmp_path, monkeypatch):
+    """Per-class Layer-2 breakdown (amendment 0002): eps_att comprehensiveness@3
+    split by grouping.predicted_class, prob AND margin. Binary rows (no
+    predicted_class) contribute nothing."""
+    import analysis.run as ar
+
+    rows = []
+    def add(space, cls, val):
+        rows.append({"layer": "layer2", "metric": "comprehensiveness",
+                     "component": "eps_att", "delta_space": space, "k": 3,
+                     "value": val, "instance_id": "i",
+                     "grouping": ({"predicted_class": cls} if cls else {})})
+    # DDoS saturated in prob (0.0), signal in margin; Bot the opposite
+    add("prob", "DDoS", 0.0); add("prob", "DDoS", 0.0); add("prob", "Bot", 0.8)
+    add("margin", "DDoS", 3.0); add("margin", "Bot", 9.0)
+    add("prob", None, 0.5)  # a binary row -> excluded from per-class
+
+    monkeypatch.setattr(ar, "load_config", lambda name: {
+        "id": "t", "test": "layer2_per_class", "metric": "comprehensiveness",
+        "component": "eps_att", "k": 3, "delta_spaces": ["prob", "margin"],
+        "run_ids": ["r"],
+    })
+    monkeypatch.setattr(ar, "load_metrics", lambda rid, root=None: rows)
+    monkeypatch.setattr(ar, "run_extractor_version", lambda rid, root=None: "1.4.0")
+
+    payload, _ = ar.build_result("t")
+    res = payload["result"]["by_delta_space"]
+    assert res["prob"]["per_class"]["DDoS"] == 0.0
+    assert res["prob"]["per_class"]["Bot"] == 0.8
+    assert res["prob"]["n_per_class"] == {"Bot": 1, "DDoS": 2}
+    assert "None" not in res["prob"]["per_class"] and None not in res["prob"]["per_class"]
+    assert res["margin"]["per_class"]["Bot"] == 9.0
+    # the aggregate the breakdown exists to caveat
+    assert res["prob"]["aggregate"] == (0.0 + 0.0 + 0.8) / 3

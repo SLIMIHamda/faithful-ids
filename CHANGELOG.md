@@ -591,6 +591,32 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   44-cell factorial. All four rows added, the stale one corrected, and a test now
   asserts the row set and the registered id set are equal in both directions.
 
+- **Post-smoke redesign (amendment 0002) — H2 as an ablation, margin the headline
+  Layer-2 space.** The K-way contingency smoke exposed b3's prompt as a
+  transcription task (mention P/R/rank/direction pinned at 1.000 by construction),
+  which invalidated it as "the strongest honest baseline" and left no headroom for
+  B4/B5. Fixes, all pre-Tier-A-data: **(1)** b3 becomes the grounded-natural
+  baseline (prompt 1.2.0 = b4's drafting prompt minus the verifier and its priming
+  sentence; b3's generator now renders the KB snippets it never did before); the
+  transcription prompt is relabeled as the **B1ℓ** ceiling (`b1l_llm_render`,
+  EXP-A-005, anchor-LLM only, headline-ineligible). So the B3↔B4 delta isolates
+  verification (C2 identification) and B1ℓ↔B3-natural isolates narrative freedom
+  with attribution access held constant (the clean H2). **(2)** `mention_f1` is
+  demoted from the H2 headline to precision and recall reported separately plus a
+  coverage–risk curve — F1 penalizes principled pruning (B4/B5 precision
+  0.99 at recall ~0.6). **(3)** `margin` is the pre-registered headline Layer-2
+  space; probability space is reported as a **finding** (erasure is unreliable on a
+  near-certain detector — 0.000 on BENIGN/DDoS/PortScan in the smoke), and the
+  **per-class Layer-2 breakdown is mandatory** — no aggregate Layer-2 number
+  without its per-class table. The runner stamps `predicted_class` onto K-way
+  Layer-2 rows (binary/toy unchanged → determinism-safe) so the breakdown is
+  computed from artifacts; new `layer2_per_class` analysis test + `pilot_mention_precision`
+  / `pilot_mention_recall` / `pilot_layer2_per_class` configs. A prompt-render
+  contract test (no `{{placeholder}}` survives into a rendered prompt body) and a
+  B3/B4 evidence-parity test guard the rewire. The amendment records the sequencing
+  retrospective for the methods section: the freeze preceded the design shakedown,
+  so the honest ordering is G-001 → shakedown smoke → freeze.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
