@@ -204,3 +204,35 @@ def test_margin_space_requires_predict_margin():
     )
     with pytest.raises(ValueError, match="predict_margin"):
         comprehensiveness(attr, det, _INSTANCE, _BG, k=1, delta_space="margin")
+
+
+def test_background_operator_severs_the_correlated_neighbour_pathway():
+    """Removal semantics are a reported parameter, not an implementation detail.
+
+    With correlated features, conditional-expectation imputation can restore an
+    erased feature's signal from its neighbours — so a near-zero comprehensiveness
+    may mean REDUNDANCY, not irrelevance. The blunt background operator severs
+    that pathway, which is what makes the two-operator invariance check
+    informative. Here x1 == x0 exactly (perfectly redundant): the conditional
+    imputer recovers the erased value from its neighbour, the background operator
+    does not.
+    """
+    import numpy as np
+
+    from faithfulids.metrics.layer2 import ConditionalExpectationImputer, SimpleBackgroundErasure
+
+    rng = np.random.RandomState(0)
+    x0 = rng.uniform(0.0, 1.0, 200)
+    X = np.column_stack([x0, x0])  # x1 is a perfect correlated substitute for x0
+    names = ["x0", "x1"]
+    inst = {"x0": 0.9, "x1": 0.9}
+
+    cond = ConditionalExpectationImputer(k=3).fit(X, names).erase(inst, ["x0"])
+    bg = SimpleBackgroundErasure({f: float(X[:, i].mean()) for i, f in enumerate(names)}).erase(
+        inst, ["x0"]
+    )
+    # conditional: x0 reconstructed from its retained twin -> erasure barely bites
+    assert abs(cond["x0"] - 0.9) < 0.05
+    # background: x0 replaced by the training mean -> the signal is genuinely gone
+    assert abs(bg["x0"] - float(x0.mean())) < 1e-9
+    assert abs(bg["x0"] - 0.9) > 0.3

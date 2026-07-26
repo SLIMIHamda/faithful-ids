@@ -16,6 +16,8 @@ original run's instances byte-for-byte:
     FAITHFULIDS_MAX_ROWS    the same row cap (binary runs; unset for K-way)
     FAITHFULIDS_ROWS_PER_FILE  the same per-file cap (K-way runs, e.g. 50000)
     FAITHFULIDS_PILOT_DETECTOR the same detector config id if overridden
+    FAITHFULIDS_ERASURE_OPERATOR  'conditional' (default) or 'background' — the
+                               Layer-2 removal semantics (invariance check)
                                (K-way runs: xgboost_multiclass)
     FAITHFULIDS_PILOT_LLM   the same generator LLM id (e.g. qwen3_8b_4bit)
     FAITHFULIDS_LLM_CACHE_DIR  the ledger dir from the original run's artifacts
@@ -67,6 +69,10 @@ def main(argv: list[str] | None = None) -> int:
     llm_override = os.environ.get("FAITHFULIDS_PILOT_LLM") or None
     detector_override = os.environ.get("FAITHFULIDS_PILOT_DETECTOR") or None
     gens = os.environ.get("FAITHFULIDS_PILOT_GENERATORS") or None
+    # Layer-2 removal semantics: re-scoring the SAME claims under a second
+    # operator is the erasure-invariance check (correlated features can let the
+    # conditional imputer restore an erased signal from its neighbours).
+    erasure_op = os.environ.get("FAITHFULIDS_ERASURE_OPERATOR") or None
     gens_override = [g.strip() for g in gens.split(",") if g.strip()] if gens else None
 
     run_dir = run_pilot(
@@ -79,6 +85,7 @@ def main(argv: list[str] | None = None) -> int:
         llm_id_override=llm_override,
         detector_id_override=detector_override,
         generator_ids_override=gens_override,
+        erasure_operator=erasure_op,
         enforce_competence=False,  # re-score is a measurement pass, not a gate
         llm_mode="replay",
         llm_cache_dir=cache_dir,

@@ -58,6 +58,10 @@ def cmd_run(args: argparse.Namespace) -> int:
         detector_override = os.environ.get("FAITHFULIDS_PILOT_DETECTOR") or None
         # Comma-separated generator-axis override. Main use: REPLAY re-scores of
         # runs generated before b5 joined the axis (pin the original list).
+        # Layer-2 removal semantics (invariance check): 'conditional' (default) or
+        # 'background'. Re-scoring a run under both bounds how much the Layer-2
+        # conclusions depend on the erasure operator rather than on the claims.
+        erasure_op = os.environ.get("FAITHFULIDS_ERASURE_OPERATOR") or None
         gens = os.environ.get("FAITHFULIDS_PILOT_GENERATORS") or None
         gens_override = [g.strip() for g in gens.split(",") if g.strip()] if gens else None
         # Competence gate on by default; set FAITHFULIDS_ENFORCE_COMPETENCE=0 to
@@ -71,6 +75,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             llm_id_override=llm_override,
             detector_id_override=detector_override,
             generator_ids_override=gens_override,
+            erasure_operator=erasure_op,
             enforce_competence=enforce,
         )
         print(f"pilot run complete: {run_dir}")
