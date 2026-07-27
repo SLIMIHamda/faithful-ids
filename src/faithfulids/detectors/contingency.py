@@ -90,6 +90,24 @@ class Decision:
             "rationale": self.rationale,
         }
 
+    @classmethod
+    def from_record(cls, record: Mapping[str, Any]) -> "Decision":
+        """Rebuild a Decision from :meth:`as_record` — the inverse, so a decision
+        recorded on a run can be re-read and acted on without re-deriving it."""
+        return cls(
+            rung=int(record["rung"]),
+            rung_name=str(record["rung_name"]),
+            changed=bool(record["changed"]),
+            terminal=bool(record["terminal"]),
+            vocabulary=tuple(record["vocabulary"]),
+            merges=dict(record.get("merges") or {}),
+            exclusions=tuple(record.get("exclusions") or ()),
+            failing=tuple(record.get("failing") or ()),
+            detector_defect=bool(record.get("detector_defect", False)),
+            trigger_stats=dict(record.get("trigger_stats") or {}),
+            rationale=str(record.get("rationale", "")),
+        )
+
 
 def _support(row: Mapping[str, Any]) -> int:
     """Per-class count under either table shape (binary ``support`` / K-way ``n``)."""
@@ -334,6 +352,112 @@ def resolve(
               f"{len(surviving_attacks)} attack classes survive (minimum {min_attack})."
         ),
     )
+
+
+#: The label_map sentinel for a raw label that is not part of the task vocabulary.
+EXCLUDED = "excluded"
+
+
+def apply_to_taxonomy(
+    taxonomy: Mapping[str, Any], decision: Decision, *, new_version: str
+) -> dict[str, Any]:
+    """Materialise a ``Decision`` as the next class taxonomy. PURE — returns a new
+    dict and touches no file (``tools/apply_contingency.py`` does the I/O).
+
+    This is the step that makes the contingency mechanical rather than
+    disciplinary: the vocabulary the next detector is fitted on comes from the
+    Decision, so the config drift guard — not anybody's memory — enforces that a
+    resolved gate failure actually propagates to the taxonomy, the KB, and the
+    fit.
+
+    Three transformations, in the order the taxonomy's own invariants require:
+
+    * **canonical_classes** — excluded classes drop out; a merged group collapses
+      to its parent name at the position of the group's first member, so class
+      order stays stable for anyone diffing the file.
+    * **label_map** — every raw label pointing at an excluded class is retargeted
+      to ``"excluded"``; every label pointing at a merged class is retargeted to
+      the parent. Labels already excluded stay excluded. The map keeps its full
+      key set: a raw label is never dropped, because a dropped key would make the
+      loader silently ignore rows instead of visibly excluding them.
+    * **parents** — the lineage map is a standing fact about the dataset, not a
+      log of what has been applied, so surviving classes KEEP their recorded
+      parent and a future rung can still use it. Two exceptions: a merge parent
+      that is now itself canonical becomes its own parent, and a lineage group
+      that an exclusion has reduced to a single survivor is dissolved (a lone
+      child cannot merge with itself, and ``validate-configs`` rejects a
+      non-canonical parent with fewer than two children).
+
+    Raises ``ValueError`` for a decision there is nothing to materialise: one that
+    changes no vocabulary, and the terminal binary rung — rung 4 is a **negative
+    finding to report**, not a class taxonomy to fit (the binary path does not
+    read this file at all).
+    """
+    if not decision.changed:
+        raise ValueError(
+            f"decision at rung {decision.rung} ({decision.rung_name}) changes no "
+            "vocabulary — there is nothing to materialise"
+        )
+    if decision.rung == RUNG_BINARY:
+        raise ValueError(
+            "rung 4 is the terminal binary rung: a NEGATIVE FINDING for the "
+            "multi-class design, reported in the main text. It is not a class "
+            "taxonomy — the binary path does not read this config."
+        )
+
+    merges = dict(decision.merges)
+    exclusions = set(decision.exclusions)
+    if BENIGN_CLASS in exclusions or BENIGN_CLASS in merges:
+        raise AssertionError(f"{BENIGN_CLASS} can never be merged or excluded")
+
+    canonical = list(taxonomy["canonical_classes"])
+    unknown = (exclusions | set(merges)) - set(canonical)
+    if unknown:
+        raise ValueError(
+            f"decision names {sorted(unknown)}, which are not canonical classes of "
+            f"taxonomy {taxonomy.get('id')!r} v{taxonomy.get('version')} — the decision "
+            "was resolved against a different taxonomy version"
+        )
+
+    new_canonical: list[str] = []
+    for cls in canonical:
+        if cls in exclusions:
+            continue
+        name = merges.get(cls, cls)
+        if name not in new_canonical:
+            new_canonical.append(name)
+
+    missing = set(decision.vocabulary) - set(new_canonical)
+    if missing:
+        raise ValueError(
+            f"applying the decision would drop {sorted(missing)}, which its own "
+            "surviving vocabulary contains — refusing to write an inconsistent taxonomy"
+        )
+
+    new_label_map: dict[str, str] = {}
+    for raw, target in taxonomy["label_map"].items():
+        if target == EXCLUDED or target in exclusions:
+            new_label_map[raw] = EXCLUDED
+        else:
+            new_label_map[raw] = merges.get(target, target)
+
+    old_parents = dict(taxonomy["parents"])
+    survivors: dict[str, list[str]] = {}
+    for cls in new_canonical:
+        survivors.setdefault(old_parents.get(cls, cls), []).append(cls)
+    new_parents: dict[str, str] = {}
+    for cls in new_canonical:
+        parent = old_parents.get(cls, cls)
+        # own parent when: untouched leaf, or a merge parent now canonical, or the
+        # sole survivor of a group an exclusion broke
+        new_parents[cls] = parent if len(survivors.get(parent, ())) >= 2 else cls
+
+    out = dict(taxonomy)
+    out["version"] = new_version
+    out["canonical_classes"] = new_canonical
+    out["label_map"] = new_label_map
+    out["parents"] = new_parents
+    return out
 
 
 def _binary(

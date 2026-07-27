@@ -259,3 +259,133 @@ def test_the_real_committed_taxonomy_and_thresholds_drive_the_engine():
     # DoS/DDoS remain distinct at every rung — the withdrawn merge is unreachable
     assert resolve(_with(DoS=0.1), tax, th).merges == {}
     assert "Volumetric Flood" not in str(d.as_record())
+
+
+# --------------------------------------------------------------------------- #
+# Materialising a Decision as the next taxonomy (amendment 0001's "apply" step)
+# --------------------------------------------------------------------------- #
+
+FULL_TAXONOMY = {
+    "id": "cicids2017", "schema_version": "v1", "kind": "class_taxonomy",
+    "dataset": "cicids2017", "version": "1.1.0",
+    **TAXONOMY,
+    "label_map": {
+        "benign": "BENIGN", "dos hulk": "DoS", "ddos": "DDoS", "portscan": "PortScan",
+        "ftp patator": "FTP-Patator", "ssh patator": "SSH-Patator", "bot": "Bot",
+        "web attack xss": "Web Attack", "infiltration": "excluded",
+    },
+}
+
+
+def _apply(decision, taxonomy=None, version="2.0.0"):
+    from faithfulids.detectors.contingency import apply_to_taxonomy
+
+    return apply_to_taxonomy(taxonomy or FULL_TAXONOMY, decision, new_version=version)
+
+
+def _taxonomy_is_valid(tax):
+    """The same rules validate-configs enforces, so a written file cannot fail CI."""
+    from faithfulids.orchestration.validate_configs import _parent_map_errors
+
+    canon = set(tax["canonical_classes"])
+    errors = _parent_map_errors(tax, canon, "t")
+    errors += [f"label_map[{k!r}] -> {v!r}" for k, v in tax["label_map"].items()
+               if v != "excluded" and v not in canon]
+    errors += [f"orphan {c!r}" for c in tax["canonical_classes"]
+               if c not in set(tax["label_map"].values())]
+    return errors
+
+
+def test_exclusion_rung_drops_the_class_and_keeps_its_raw_labels_visible():
+    """The real 2026-07-24 case: Bot fails the floor, is parentless, is excluded.
+
+    The raw label is retargeted to 'excluded', NOT deleted — a dropped key would
+    make the loader silently ignore those rows instead of visibly excluding them.
+    """
+    decision = resolve(_with(Bot=0.77), TAXONOMY, THRESHOLDS)
+    assert decision.rung == RUNG_EXCLUDED and decision.exclusions == ("Bot",)
+
+    new = _apply(decision)
+    assert "Bot" not in new["canonical_classes"]
+    assert len(new["canonical_classes"]) == 7
+    assert new["label_map"]["bot"] == "excluded"
+    assert "bot" in new["label_map"]          # key kept, target changed
+    assert new["label_map"]["infiltration"] == "excluded"  # already-excluded untouched
+    assert "Bot" not in new["parents"]
+    assert new["version"] == "2.0.0"
+    # the lineage group Bot was not part of survives intact and stays available
+    assert new["parents"]["FTP-Patator"] == new["parents"]["SSH-Patator"] == "Brute Force"
+    assert _taxonomy_is_valid(new) == []
+
+
+def test_merge_rung_collapses_the_group_to_a_parent_that_becomes_canonical():
+    """A rung-2 merge folds BOTH siblings into the new parent name, which then is
+    a canonical class in its own right (and so is its own parent)."""
+    decision = resolve(_with(**{"SSH-Patator": 0.5}), TAXONOMY, THRESHOLDS)
+    assert decision.rung == RUNG_PARENT_MERGED
+    assert decision.merges == {"FTP-Patator": "Brute Force", "SSH-Patator": "Brute Force"}
+
+    new = _apply(decision)
+    assert "Brute Force" in new["canonical_classes"]
+    assert "FTP-Patator" not in new["canonical_classes"]
+    assert "SSH-Patator" not in new["canonical_classes"]
+    # order is stable: the parent sits where the group's first member was
+    assert new["canonical_classes"] == ["BENIGN", "DoS", "DDoS", "PortScan",
+                                        "Brute Force", "Web Attack", "Bot"]
+    assert new["label_map"]["ftp patator"] == new["label_map"]["ssh patator"] == "Brute Force"
+    assert new["parents"]["Brute Force"] == "Brute Force"
+    assert _taxonomy_is_valid(new) == []
+
+
+def test_an_exclusion_that_leaves_one_sibling_dissolves_the_lineage_group():
+    """A lone survivor cannot merge with itself, and validate-configs rejects a
+    non-canonical parent with fewer than two children — so the group dissolves."""
+    from faithfulids.detectors.contingency import Decision
+
+    decision = Decision(
+        rung=RUNG_EXCLUDED, rung_name="parent_merged_minus_excluded", changed=True,
+        terminal=False,
+        vocabulary=("BENIGN", "DoS", "DDoS", "PortScan", "SSH-Patator", "Web Attack", "Bot"),
+        exclusions=("FTP-Patator",), failing=("FTP-Patator",),
+    )
+    new = _apply(decision)
+    assert "Brute Force" not in new["parents"].values()
+    assert new["parents"]["SSH-Patator"] == "SSH-Patator"
+    assert _taxonomy_is_valid(new) == []
+
+
+def test_apply_refuses_the_terminal_rung_and_a_decision_that_changes_nothing():
+    """Rung 4 is a negative finding to report, not a vocabulary to fit; and a
+    rung-1 'the vocabulary stands' decision has nothing to materialise."""
+    from faithfulids.detectors.contingency import apply_to_taxonomy
+
+    stands = resolve(table(ALL_PASS), TAXONOMY, THRESHOLDS)
+    assert stands.changed is False
+    with pytest.raises(ValueError, match="nothing to materialise"):
+        apply_to_taxonomy(FULL_TAXONOMY, stands, new_version="2.0.0")
+
+    binary = resolve(_with(DoS=0.1, DDoS=0.1, PortScan=0.1, Bot=0.1),
+                     TAXONOMY, THRESHOLDS, current_rung=RUNG_PARENT_MERGED)
+    assert binary.rung == RUNG_BINARY
+    with pytest.raises(ValueError, match="NEGATIVE FINDING"):
+        apply_to_taxonomy(FULL_TAXONOMY, binary, new_version="2.0.0")
+
+
+def test_apply_refuses_a_decision_resolved_against_a_different_taxonomy():
+    """Guards the ordering trap: applying a stale Decision to a taxonomy that has
+    already moved would silently exclude a class that is no longer there."""
+    from faithfulids.detectors.contingency import apply_to_taxonomy
+
+    decision = resolve(_with(Bot=0.77), TAXONOMY, THRESHOLDS)
+    already_applied = _apply(decision)  # Bot is gone
+    with pytest.raises(ValueError, match="not canonical classes"):
+        apply_to_taxonomy(already_applied, decision, new_version="3.0.0")
+
+
+def test_decision_record_round_trips():
+    """competence.json stores the Decision as a record; the apply step reads it
+    back, so the two directions must agree exactly."""
+    from faithfulids.detectors.contingency import Decision
+
+    decision = resolve(_with(Bot=0.77), TAXONOMY, THRESHOLDS)
+    assert Decision.from_record(decision.as_record()).as_record() == decision.as_record()

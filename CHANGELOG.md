@@ -650,6 +650,34 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   ROAR at the anchor, correlation stratification, a second attributor family,
   and a semi-synthetic ground-truth recovery test all remain open limitations.
 
+- **`tools/apply_contingency.py` — the contingency's missing "apply" step.**
+  Amendment 0001 registers the ladder and specifies that a Decision is applied by
+  materialising it as the taxonomy config, "so the drift guard, not discipline,
+  enforces propagation" — but the tool was never built, so the 2026-07-24 smoke's
+  rung-3 verdict (Bot fails the recall floor at 0.774 on the competence split, is
+  parentless, is excluded; 6 attack classes survive) could not be turned into the
+  7-class vocabulary that every Tier-A number depends on. New pure function
+  `contingency.apply_to_taxonomy()` (+ `Decision.from_record()`, the inverse of
+  `as_record()`): excluded classes leave `canonical_classes` and their raw labels
+  are **retargeted to `"excluded"` rather than deleted** (a dropped key would make
+  the loader silently ignore rows instead of visibly excluding them); a merged
+  group collapses to its parent name at the position of its first member; the
+  lineage map is treated as a standing fact about the dataset, so survivors keep
+  their recorded parent and a future rung can still use it, except that a group an
+  exclusion has reduced to one survivor is dissolved (a lone child is a rename,
+  which `validate-configs` rejects). Applying is refused for a decision that
+  changes nothing, for the terminal binary rung (**rung 4 is a negative finding to
+  report, not a vocabulary to fit**), and for a Decision naming classes the current
+  taxonomy no longer has. The CLI **re-resolves the Decision from scratch** against
+  the current taxonomy and the frozen thresholds and refuses to write unless it
+  reproduces the recorded one — the record is evidence, not authority — then
+  validates the result against the schema *and* the merge-map structural rules
+  before writing. Output is hand-rendered, not `yaml.safe_dump`ed, so the file's
+  lineage argument survives; a provenance header records the source run, rung,
+  exclusions, merges and rationale. Default version bump is **major**: removing a
+  canonical class is not backward compatible, since every existing run's
+  `target_class` means something different afterwards.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
@@ -667,7 +695,7 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `llm.v1.json` requires `weights.revision` to be a 40-char commit hash (enforced
   going forward; satisfied by the now-pinned configs).
 
-All 226 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
+All 232 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
 firewall-audit, validate-configs, data-integrity, manifest-audit,
 mapping-completeness, release-closure, prereg-freeze, and doc-links are green.
 
