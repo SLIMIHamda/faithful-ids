@@ -1,0 +1,35 @@
+{
+  "analysis": "toy_redundancy",
+  "hypothesis": null,
+  "result": {
+    "by_delta_space": {
+      "prob": {
+        "by": {},
+        "counts": {
+          "irrelevant": 0,
+          "load_bearing": 3,
+          "necessary_not_sufficient": 0,
+          "redundant": 2
+        },
+        "fractions": {
+          "irrelevant": 0.0,
+          "load_bearing": 0.6,
+          "necessary_not_sufficient": 0.0,
+          "redundant": 0.4
+        },
+        "n": 5,
+        "threshold": 0.1
+      }
+    },
+    "component": "eps_att",
+    "erasure_operators": [
+      "background"
+    ],
+    "k": 3,
+    "metric_pair": [
+      "comprehensiveness",
+      "sufficiency"
+    ],
+    "threshold": 0.1
+  }
+}

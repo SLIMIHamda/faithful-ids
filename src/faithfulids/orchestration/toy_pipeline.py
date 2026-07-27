@@ -156,6 +156,9 @@ def run_toy(
         "experiment": "EXP-TOY-001", "dataset": "toy_smoke", "detector": "toy_linear",
         "attribution": "toy_linear", "generators": ["b1_template", "b2_zeroshot", "b3_dte_style"],
         "layer1_top_k": 3, "layer2_k_values": [1, 3], "seed": gen_seed,
+        # R is a reported parameter of every Layer-2 number, toy runs included
+        # (prereg amendment 0003); the toy erases to fixed background values.
+        "layer2_erasure_operator": "background",
     }
     run_id = mint_run_id("EXP-TOY-001", code_version)
     inputs = [ArtifactRef("dataset:toy_smoke", sha256_json(TOY_INSTANCES), kind="dataset")]

@@ -56,6 +56,7 @@ paper/tables/generated/*.pdf
 # references the ephemeral toy run id, so it is not committed.
 analysis/outputs/toy_demo/MANIFEST.json
 analysis/outputs/toy_coverage/MANIFEST.json
+analysis/outputs/toy_redundancy/MANIFEST.json
 
 # Pilot outputs are per-run, NON-CITABLE real results produced on Kaggle — never
 # committed (reproduce them by running the pilot). Includes the run cache dirs.

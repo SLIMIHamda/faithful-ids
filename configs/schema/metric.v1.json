@@ -39,7 +39,18 @@
           "properties": {
             "operator": {"const": "conditional_expectation_imputation"},
             "imputation_model": {"enum": ["per_class_knn", "light_generative"]},
-            "fitted_artifact_manifested": {"const": true}
+            "fitted_artifact_manifested": {"const": true},
+            "run_parameter": {"const": "conditional"}
+          }
+        },
+        "sensitivity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operator", "scope", "run_parameter"],
+          "properties": {
+            "operator": {"const": "background_mean_imputation"},
+            "scope": {"const": "invariance_check"},
+            "run_parameter": {"const": "background"}
           }
         },
         "secondary": {

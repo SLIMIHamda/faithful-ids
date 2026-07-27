@@ -13,6 +13,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+import yaml
+
 from faithfulids.provenance import (
     Manifest,
     Status,
@@ -86,6 +88,24 @@ def run_extractor_version(run_id: str, runs_root: str | Path | None = None) -> s
             if line.strip():
                 return json.loads(line).get("extractor_version")
     return None
+
+
+def run_resolved_config(run_id: str, runs_root: str | Path | None = None) -> dict:
+    """The run's resolved configuration (``config.resolved.yaml``).
+
+    Analysis needs the reported parameters a metric value is conditional on —
+    above all ``layer2_erasure_operator``, the removal operator R that every
+    Layer-2 number is defined relative to (prereg amendment 0003). Exposed
+    through the API rather than read from the run directory so analysis keeps
+    its single import edge. The manifest's ``resolved_config_path`` is honoured
+    when present; ``{}`` when the run predates the file.
+    """
+    handle = load_run(run_id, runs_root)  # verifies output hashes
+    rel = handle.manifest.resolved_config_path or "config.resolved.yaml"
+    path = handle.run_dir / rel
+    if not path.is_file():
+        return {}
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
 def list_runs(experiment_id: str, runs_root: str | Path | None = None) -> list[str]:

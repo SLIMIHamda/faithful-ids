@@ -23,6 +23,7 @@ import yaml
 from analysis.src.bootstrap_ci import bootstrap_mean_ci
 from analysis.src.coverage_risk import risk_coverage_curve
 from analysis.src.friedman_nemenyi import friedman_nemenyi
+from analysis.src.redundancy import tabulate as redundancy_table
 from faithfulids.provenance import repo_root, sha256_json, sha256_text
 from faithfulids.results.api import (
     ResultError,
@@ -30,6 +31,7 @@ from faithfulids.results.api import (
     load_metrics,
     load_run,
     run_extractor_version,
+    run_resolved_config,
 )
 
 CONFIG_DIR = repo_root() / "analysis" / "configs"
@@ -231,6 +233,51 @@ def build_result(name: str, runs_root=None) -> tuple[dict, list[str]]:
             }
         result = {"metric": metric, "component": component, "k": cfg.get("k"),
                   "by_delta_space": by_space}
+    elif test == "layer2_redundancy":
+        # MANDATORY companion to any Layer-2 table (prereg amendment 0003):
+        # comprehensiveness alone cannot tell a cited set whose signal a
+        # correlated substitute carries (redundant) from one that carries
+        # nothing (irrelevant) — both erase to ~0. Sufficiency separates them.
+        # Pairs the two metrics per (instance, generator) at one k/space and
+        # counts the 2x2. Every verdict is relative to the run's removal
+        # operator R; the operator is echoed from resolved_config so no table
+        # can be read without it.
+        compr_name, suff_name = cfg["metric_pair"]
+        component = cfg.get("component", "eps_att")
+        threshold = float(cfg["threshold"])
+        by_space: dict = {}
+        for space in cfg.get("delta_spaces", ["prob"]):
+            def _index(metric_name: str) -> dict:
+                out = {}
+                for r in rows:
+                    if (r["layer"] == "layer2" and r["metric"] == metric_name
+                            and r.get("component") == component
+                            and r.get("delta_space") == space
+                            and r.get("k") == cfg.get("k")):
+                        key = (r["instance_id"], r["grouping"].get("generator_id"))
+                        out[key] = r
+                return out
+            compr, suff = _index(compr_name), _index(suff_name)
+            records = [
+                {
+                    "comprehensiveness": compr[key]["value"],
+                    "sufficiency": suff[key]["value"],
+                    "predicted_class": compr[key]["grouping"].get("predicted_class"),
+                    "generator_id": key[1],
+                }
+                # sorted on (instance_id, generator_id or "") — determinism, and
+                # generator_id is None on generator-blind eps_att rows
+                for key in sorted(compr, key=lambda k: (k[0], k[1] or ""))
+                if key in suff
+            ]
+            by_space[space] = redundancy_table(records, threshold)
+        operators = sorted({
+            run_resolved_config(rid, runs_root).get("layer2_erasure_operator")
+            for rid in run_ids
+        } - {None})
+        result = {"metric_pair": [compr_name, suff_name], "component": component,
+                  "k": cfg.get("k"), "threshold": threshold,
+                  "erasure_operators": operators, "by_delta_space": by_space}
     elif test == "capability_scaling":
         anchor = yaml.safe_load((repo_root() / cfg["anchor"]).read_text(encoding="utf-8"))
         gens = cfg["generators"]

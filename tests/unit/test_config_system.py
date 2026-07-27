@@ -69,3 +69,21 @@ def test_seed_reference_resolves_to_section():
 def test_decision_threshold_reference_resolves():
     thr = resolve_reference("statistics:decision_thresholds:verifier_threshold")
     assert thr["value"] == [0.3, 0.5, 0.7]
+
+
+def test_registered_erasure_operators_match_the_ones_the_runner_accepts():
+    """Prereg amendment 0003: the removal operator R is a reported parameter, so
+    the set of selectable operators is REGISTERED in the metric config. Config
+    and code must not drift — a run parameter with no registry entry would put an
+    unregistered operator behind a Layer-2 number."""
+    from faithfulids.metrics.layer2 import ERASURE_OPERATORS
+
+    erasure = load_config("metric", "layer2_erasure")["erasure"]
+    assert erasure["primary"]["run_parameter"] == "conditional"
+    assert erasure["sensitivity"]["operator"] == "background_mean_imputation"
+    assert erasure["sensitivity"]["scope"] == "invariance_check"  # never a headline
+    registered = {erasure["primary"]["run_parameter"], erasure["sensitivity"]["run_parameter"]}
+    assert registered == set(ERASURE_OPERATORS)
+    # retrain_roar stays the anchor-only secondary and is NOT run-selectable
+    assert erasure["secondary"]["operator"] == "retrain_roar"
+    assert "run_parameter" not in erasure["secondary"]

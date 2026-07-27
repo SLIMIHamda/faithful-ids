@@ -617,6 +617,39 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   retrospective for the methods section: the freeze preceded the design shakedown,
   so the honest ordering is G-001 → shakedown smoke → freeze.
 
+- **Estimand + removal operator declared as reported parameters (amendment 0003).**
+  Answers the standard methodological attack on erasure-based faithfulness: φ is a
+  chosen reference rather than ground truth, correlated features let the detector
+  keep its prediction after a cited feature is erased, and erasure-causality is
+  protocol-dependent. **(1)** The estimand is stated once, in one place:
+  **F(T; φ, f, D, R, k)** — agreement of the explanation text with the **reference
+  attribution** under removal operator **R**, on the frozen detector, at cited-set
+  size k. No claim in this project asserts access to the detector's true reasons;
+  Layer-1 is reference-relative and carries no causal claim, Layer-2 is
+  causal-under-R. The `configs/attribution/treeshap.yaml` note calling φ the
+  "GROUND-TRUTH attribution" is corrected to "reference attribution" — it was the
+  overclaim itself. **(2)** R becomes a **registered, reported** parameter:
+  `background_mean_imputation` joins the metric config as the `sensitivity`
+  operator (scope `invariance_check`, never a headline) beside the primary
+  conditional imputer and the anchor-only `retrain_roar` secondary; selection
+  stays the `erasure_operator` run parameter, recorded in `resolved_config`
+  (toy runs included) and contract-tested against the config so the two cannot
+  drift. Operator construction moves into `build_erasure()`, and the required
+  companion to any Layer-2 headline is the two-operator **ranking-invariance
+  check** — a ranking that moves is a finding to report, not a licence to pick
+  the operator that agrees. **(3)** Comprehensiveness is never reported alone:
+  the comprehensiveness × sufficiency **2×2** (redundant / irrelevant /
+  load-bearing / necessary-not-sufficient) becomes the `layer2_redundancy`
+  analysis test with `pilot_layer2_redundancy` + `toy_redundancy` configs, and
+  the results API gains `run_resolved_config()` so analysis can echo R without
+  breaching its single import edge. This already changed a conclusion: on the
+  B1ℓ rerun (prob, k=3, threshold 0.10, n=60) **37/60 instances are redundant**,
+  with all BENIGN and all DDoS instances redundant — the prob-space ≈0.000 on
+  easy classes is redundancy, not attribution failure, superseding the earlier
+  "saturation" wording. The amendment also records what it does **not** settle:
+  ROAR at the anchor, correlation stratification, a second attributor family,
+  and a semi-synthetic ground-truth recovery test all remain open limitations.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
@@ -627,11 +660,14 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   metrics `1.1.0 → 1.2.0`), plus a new companion metric `arc_n_pairs` (`1.2.0`);
   `mention_*` and `hfr` unchanged at `1.0.0`.
 - Schema (backward-compatible): `metric.v1.json` gains optional `component` /
-  `delta_space`; `detector.v1.json` gains optional `competence_gate`;
+  `delta_space`, plus the `erasure.sensitivity` operator block and
+  `erasure.primary.run_parameter` (amendment 0003 — no formula version changes;
+  the operator is a reported parameter, not a new metric);
+  `detector.v1.json` gains optional `competence_gate`;
   `llm.v1.json` requires `weights.revision` to be a 40-char commit hash (enforced
   going forward; satisfied by the now-pinned configs).
 
-All 122 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
+All 226 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
 firewall-audit, validate-configs, data-integrity, manifest-audit,
 mapping-completeness, release-closure, prereg-freeze, and doc-links are green.
 

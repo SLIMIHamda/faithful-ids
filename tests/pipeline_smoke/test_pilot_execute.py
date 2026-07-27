@@ -122,6 +122,9 @@ def test_pilot_execute_end_to_end(tmp_path):
     # detector competence gate ran on the held-out COMPETENCE split and passed
     resolved = yaml.safe_load((run_dir / "config.resolved.yaml").read_text(encoding="utf-8"))
     assert resolved["llm"] == "mistral_7b_instruct"  # llm_id_override honored
+    # amendment 0003: the removal operator R is a REPORTED PARAMETER of every
+    # Layer-2 number in this run, so it is on the run record, not only in code
+    assert resolved["layer2_erasure_operator"] == "conditional"
     comp = resolved["detector_competence"]
     assert comp["gate_passed"] is True
     assert comp["macro_f1"] >= comp["macro_f1_min"]

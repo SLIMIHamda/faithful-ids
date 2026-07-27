@@ -1,0 +1,24 @@
+id: pilot_layer2_redundancy
+hypothesis: null
+description: >-
+  NON-CITABLE pilot analysis. MANDATORY companion to any Layer-2 table (prereg
+  amendment 0003). Comprehensiveness alone cannot distinguish a cited set whose
+  signal a correlated substitute carries (REDUNDANT) from one that carries
+  nothing (IRRELEVANT) — both erase to a near-zero score change. Sufficiency
+  separates them because the two fail in opposite directions under correlation:
+  comprehensiveness HIGH is good, sufficiency LOW is good. Read on the
+  attribution's own top-k (eps_att, generator-blind, once per instance), so the
+  verdict is about phi and the detector, not about a generator. Every cell count
+  is relative to the run's removal operator R, echoed as erasure_operators.
+source:
+  experiment: EXP-PILOT-001
+  select: latest
+test: layer2_redundancy
+component: eps_att
+metric_pair: [comprehensiveness, sufficiency]
+k: 3
+# Both axes: value >= threshold is HIGH. 0.10 of the score scale — the value the
+# critique was first answered at, fixed here before the check is re-run so the
+# boundary cannot follow the result.
+threshold: 0.10
+delta_spaces: [prob, margin]

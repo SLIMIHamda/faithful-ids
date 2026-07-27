@@ -198,3 +198,90 @@ def test_layer2_per_class_groups_by_predicted_class_in_both_spaces(tmp_path, mon
     assert res["margin"]["per_class"]["Bot"] == 9.0
     # the aggregate the breakdown exists to caveat
     assert res["prob"]["aggregate"] == (0.0 + 0.0 + 0.8) / 3
+
+
+def test_redundancy_2x2_separates_redundant_from_irrelevant():
+    """Prereg amendment 0003. comprehensiveness HIGH is good, sufficiency LOW is
+    good, and the pair fails in OPPOSITE directions under correlation — which is
+    the only way to tell a cited set whose signal a correlated substitute carries
+    (redundant) from one that carries nothing (irrelevant). Both look identical
+    on comprehensiveness alone."""
+    from analysis.src.redundancy import CELLS, classify, tabulate
+
+    thr = 0.10
+    assert classify(0.02, 0.01, thr) == "redundant"              # erasing does nothing, keeping suffices
+    assert classify(0.02, 0.90, thr) == "irrelevant"             # erasing does nothing, keeping does nothing
+    assert classify(0.80, 0.01, thr) == "load_bearing"           # necessary AND sufficient
+    assert classify(0.80, 0.90, thr) == "necessary_not_sufficient"
+    # the boundary is >= on both axes, fixed so it cannot follow a result
+    assert classify(thr, 0.0, thr) == "load_bearing"
+    assert classify(thr - 1e-9, 0.0, thr) == "redundant"
+
+    table = tabulate(
+        [
+            {"comprehensiveness": 0.0, "sufficiency": 0.0, "predicted_class": "BENIGN"},
+            {"comprehensiveness": 0.0, "sufficiency": 0.0, "predicted_class": "BENIGN"},
+            {"comprehensiveness": 0.5, "sufficiency": 0.0, "predicted_class": "Bot"},
+            {"comprehensiveness": 0.0, "sufficiency": 0.5, "predicted_class": None},
+        ],
+        threshold=thr,
+    )
+    assert table["n"] == 4
+    assert table["counts"] == {"redundant": 2, "load_bearing": 1,
+                               "irrelevant": 1, "necessary_not_sufficient": 0}
+    assert set(table["counts"]) == set(CELLS)
+    assert table["fractions"]["redundant"] == 0.5
+    # every BENIGN instance redundant -> prob-space ~0 there is redundancy, not
+    # attribution failure; the None-class row counts in the total but names no class
+    assert table["by"]["predicted_class"]["BENIGN"]["redundant"] == 2
+    assert "None" not in table["by"]["predicted_class"]
+    assert "generator_id" not in table["by"]  # eps_att is generator-blind
+
+
+def test_layer2_redundancy_pairs_the_two_metrics_and_reports_the_operator(monkeypatch):
+    """The analysis test pairs comprehensiveness with sufficiency per instance at
+    one k/space, and echoes the removal operator R the numbers are conditional
+    on — no Layer-2 table is readable without it (amendment 0003)."""
+    import analysis.run as ar
+
+    rows = []
+    def add(metric, space, inst, cls, val):
+        rows.append({"layer": "layer2", "metric": metric, "component": "eps_att",
+                     "delta_space": space, "k": 3, "value": val,
+                     "instance_id": inst, "grouping": {"predicted_class": cls}})
+    # i1: erasing does nothing AND keeping suffices -> redundant (the BENIGN case)
+    add("comprehensiveness", "prob", "i1", "BENIGN", 0.00)
+    add("sufficiency", "prob", "i1", "BENIGN", 0.01)
+    # i2: erasing bites -> load-bearing
+    add("comprehensiveness", "prob", "i2", "Bot", 0.60)
+    add("sufficiency", "prob", "i2", "Bot", 0.02)
+    # margin un-saturates i1: same instance reads load-bearing there
+    add("comprehensiveness", "margin", "i1", "BENIGN", 4.00)
+    add("sufficiency", "margin", "i1", "BENIGN", 0.01)
+    add("comprehensiveness", "margin", "i2", "Bot", 7.00)
+    add("sufficiency", "margin", "i2", "Bot", 0.02)
+    # an unpaired comprehensiveness at a different k must not be classified
+    rows.append({"layer": "layer2", "metric": "comprehensiveness", "component": "eps_att",
+                 "delta_space": "prob", "k": 5, "value": 0.9,
+                 "instance_id": "i3", "grouping": {"predicted_class": "DDoS"}})
+
+    monkeypatch.setattr(ar, "load_config", lambda name: {
+        "id": "t", "test": "layer2_redundancy", "component": "eps_att",
+        "metric_pair": ["comprehensiveness", "sufficiency"], "k": 3,
+        "threshold": 0.10, "delta_spaces": ["prob", "margin"], "run_ids": ["r"],
+    })
+    monkeypatch.setattr(ar, "load_metrics", lambda rid, root=None: rows)
+    monkeypatch.setattr(ar, "run_extractor_version", lambda rid, root=None: "1.4.0")
+    monkeypatch.setattr(ar, "run_resolved_config",
+                        lambda rid, root=None: {"layer2_erasure_operator": "conditional"})
+
+    payload, _ = ar.build_result("t")
+    res = payload["result"]
+    assert res["erasure_operators"] == ["conditional"]
+    prob, margin = res["by_delta_space"]["prob"], res["by_delta_space"]["margin"]
+    assert prob["n"] == 2  # the k=5 row has no sufficiency partner -> dropped
+    assert prob["counts"]["redundant"] == 1 and prob["counts"]["load_bearing"] == 1
+    assert prob["by"]["predicted_class"]["BENIGN"]["redundant"] == 1
+    # the finding amendment 0002 rests on: prob calls BENIGN redundant, margin
+    # calls the same instance load-bearing
+    assert margin["counts"]["load_bearing"] == 2

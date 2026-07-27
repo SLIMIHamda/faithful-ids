@@ -1,0 +1,18 @@
+id: toy_redundancy
+hypothesis: null
+description: >-
+  NON-CITABLE toy analysis. Offline end-to-end exercise of the layer2_redundancy
+  test (prereg amendment 0003) on the deterministic toy run, so the mandatory
+  comprehensiveness x sufficiency companion has a runnable path without the
+  science stack. The toy detector is a fixed linear model with no correlated
+  features, so the cell counts carry no scientific meaning — only the wiring
+  does.
+source:
+  experiment: EXP-TOY-001
+  select: latest
+test: layer2_redundancy
+component: eps_att
+metric_pair: [comprehensiveness, sufficiency]
+k: 3
+threshold: 0.10
+delta_spaces: [prob]  # the toy emits prob only

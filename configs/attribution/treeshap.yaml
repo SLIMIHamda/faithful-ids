@@ -8,10 +8,13 @@ background_policy:
   background: tree_path_dependent_none
   notes: >-
     Exact TreeSHAP over frozen tree ensembles; removal semantics are
-    tree-path-dependent. This is the GROUND-TRUTH attribution against which
-    Layer-1 claim faithfulness is measured. It is NOT the Layer-2 erasure
-    background (blueprint: erasure background is deliberately not the SHAP
-    baseline distribution).
+    tree-path-dependent. This is the REFERENCE attribution phi against which
+    Layer-1 claim faithfulness is measured — a disclosed choice, NOT ground
+    truth for the detector's decision (prereg amendment 0003: the estimand is
+    agreement with phi, and a different target class, background policy, or
+    attributor family would yield a different top-k). It is NOT the Layer-2
+    erasure background (blueprint: erasure background is deliberately not the
+    SHAP baseline distribution).
 cache:
   content_addressed: true
   key_inputs:

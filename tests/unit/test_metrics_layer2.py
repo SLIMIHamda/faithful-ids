@@ -236,3 +236,31 @@ def test_background_operator_severs_the_correlated_neighbour_pathway():
     # background: x0 replaced by the training mean -> the signal is genuinely gone
     assert abs(bg["x0"] - float(x0.mean())) < 1e-9
     assert abs(bg["x0"] - 0.9) > 0.3
+
+
+def test_build_erasure_constructs_each_registered_operator_and_rejects_others():
+    """The factory behind the ``erasure_operator`` run parameter (amendment 0003).
+
+    Both registered operators are reachable by name and no third one is: an
+    unknown name must fail loudly at construction, before any Layer-2 number
+    exists to be mislabelled with the operator it was not computed under.
+    """
+    import numpy as np
+
+    from faithfulids.metrics.layer2 import (
+        ERASURE_OPERATORS,
+        ConditionalExpectationImputer,
+        SimpleBackgroundErasure,
+        build_erasure,
+    )
+
+    X = np.array([[0.0, 1.0], [1.0, 3.0], [2.0, 5.0]])
+    names = ["a", "b"]
+    assert set(ERASURE_OPERATORS) == {"conditional", "background"}
+    assert isinstance(build_erasure("conditional", X, names), ConditionalExpectationImputer)
+    bg = build_erasure("background", X, names)
+    assert isinstance(bg, SimpleBackgroundErasure)
+    # background values are the per-feature TRAINING means, column-aligned
+    assert bg.erase({"a": 9.0, "b": 9.0}, ["a", "b"]) == {"a": 1.0, "b": 3.0}
+    with pytest.raises(ValueError, match="unknown erasure_operator"):
+        build_erasure("roar", X, names)

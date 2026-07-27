@@ -34,7 +34,7 @@ from faithfulids.generation.b4_vte.kb_retrieval import load_feature_semantics
 from faithfulids.generation.b4_vte.verifier import RuleVerifier
 from faithfulids.llm import CallLedger, LLMClient
 from faithfulids.metrics.cost import cost_accounting
-from faithfulids.metrics.layer2 import ConditionalExpectationImputer, SimpleBackgroundErasure
+from faithfulids.metrics.layer2 import build_erasure
 from faithfulids.orchestration.config_loader import load_config
 from faithfulids.orchestration.references import resolve_reference
 from faithfulids.orchestration.registry import load_experiment
@@ -443,27 +443,17 @@ def run_pilot(
     # -- extractor (rule-assisted, no model) + erasure (fitted on train) ---- #
     extcfg = load_config("extraction", "eval_extractor")
     extractor = build_extractor(extcfg, llm_client=None, model_config=None, feature_vocabulary=feature_names)
-    # Removal semantics are a REPORTED PARAMETER of every Layer-2 number, not an
-    # implementation detail: with correlated features a "gentle" conditional
-    # imputation can restore an erased feature's signal from its neighbours, so a
-    # near-zero comprehensiveness may mean redundancy rather than irrelevance.
-    # Running the same claims under a second, deliberately blunt operator bounds
-    # that sensitivity (the invariance check); the ranking should not move.
-    # `conditional` (default) = E[X_removed | X_retained]; `background` = fixed
-    # per-feature training means, which severs the neighbour pathway.
+    # Removal semantics R are a REPORTED PARAMETER of every Layer-2 number, not
+    # an implementation detail (prereg amendment 0003): with correlated features
+    # a "gentle" conditional imputation can restore an erased feature's signal
+    # from its neighbours, so a near-zero comprehensiveness may mean redundancy
+    # rather than irrelevance. Running the same claims under a second,
+    # deliberately blunt operator bounds that sensitivity (the invariance check);
+    # the generator ranking should not move. Recorded below in resolved_config.
     erasure_operator = erasure_operator or "conditional"
-    if erasure_operator == "conditional":
-        erasure = ConditionalExpectationImputer(k=5).fit(
-            train_df[feature_names].to_numpy(), feature_names
-        )
-    elif erasure_operator == "background":
-        erasure = SimpleBackgroundErasure(
-            {f: float(train_df[f].mean()) for f in feature_names}
-        )
-    else:
-        raise ValueError(
-            f"unknown erasure_operator {erasure_operator!r} (expected 'conditional' or 'background')"
-        )
+    erasure = build_erasure(
+        erasure_operator, train_df[feature_names].to_numpy(), feature_names
+    )
 
     top_k = int(load_config("generator", "b1_template")["params"]["top_k"])
     delta_spaces = load_config("metric", "layer2_erasure").get("delta_spaces", ["prob"])

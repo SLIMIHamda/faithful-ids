@@ -41,11 +41,25 @@ metrics:
 # Erasure-efficacy invariant (CI: tests/unit/test_metrics_layer2.py): erasing ALL
 # features must move the score materially; erasing NONE must move it by 0. This
 # smoke test catches a no-op erasure wiring before any LLM tokens are spent.
+# Removal semantics R are a REPORTED PARAMETER of every Layer-2 number (prereg
+# amendment 0003), recorded per run as resolved_config.layer2_erasure_operator.
+# The estimand is F(T; phi, f, D, R, k) — agreement with the REFERENCE
+# attribution under R, never "the detector's true reasons".
 erasure:
   primary:
     operator: conditional_expectation_imputation
     imputation_model: per_class_knn
     fitted_artifact_manifested: true
+    run_parameter: conditional
+  sensitivity:
+    # Blunt operator: fixed per-feature training means. Severs the correlated-
+    # neighbour pathway that makes the primary operator's near-zero
+    # comprehensiveness ambiguous. Ranking-invariance check only — NEVER a
+    # headline, no hypothesis is discharged on it. Magnitudes are not
+    # comparable across operators; only orderings are.
+    operator: background_mean_imputation
+    scope: invariance_check
+    run_parameter: background
   secondary:
     operator: retrain_roar
     scope: anchor_only

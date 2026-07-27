@@ -73,3 +73,32 @@ class ConditionalExpectationImputer:
             j = self._feature_names.index(f)
             out[f] = float(neigh[:, j].mean())
         return out
+
+
+#: The removal operators a run may select, keyed by the ``run_parameter`` name
+#: registered in ``configs/metrics/layer2_erasure.yaml``. R is a REPORTED
+#: PARAMETER of every Layer-2 number (prereg amendment 0003), so the set of
+#: legal names lives here and is contract-tested against the config rather than
+#: being spelled out again at each call site.
+ERASURE_OPERATORS: tuple[str, ...] = ("conditional", "background")
+
+
+def build_erasure(operator: str, X, feature_names: Sequence[str]):
+    """Construct the removal operator ``R`` named by a run parameter.
+
+    ``conditional`` = E[X_removed | X_retained] (primary; gentle — a correlated
+    neighbour can restore an erased feature's signal, which is exactly the
+    ambiguity the sensitivity operator bounds). ``background`` = fixed
+    per-feature training means (sensitivity; severs the neighbour pathway).
+    ``X`` is the training matrix, column-aligned with ``feature_names``.
+    """
+    if operator == "conditional":
+        return ConditionalExpectationImputer(k=5).fit(X, feature_names)
+    if operator == "background":
+        means = np.asarray(X, dtype=float).mean(axis=0)
+        return SimpleBackgroundErasure(
+            {f: float(means[i]) for i, f in enumerate(feature_names)}
+        )
+    raise ValueError(
+        f"unknown erasure_operator {operator!r} (expected one of {list(ERASURE_OPERATORS)})"
+    )

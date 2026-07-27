@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from faithfulids.metrics.layer2.erasure import (
+    ERASURE_OPERATORS,
     ConditionalExpectationImputer,
     SimpleBackgroundErasure,
+    build_erasure,
 )
 from faithfulids.metrics.layer2.metrics import (
     EPS_ATT_METRICS,
@@ -36,4 +38,6 @@ __all__ = [
     "compute_eps_model",
     "SimpleBackgroundErasure",
     "ConditionalExpectationImputer",
+    "ERASURE_OPERATORS",
+    "build_erasure",
 ]
