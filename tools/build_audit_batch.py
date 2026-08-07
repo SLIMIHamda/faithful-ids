@@ -286,6 +286,9 @@ HTML = """<!DOCTYPE html>
   <button id="export" class="primary">Export my annotations</button>
 </header>
 <div id="boot" class="warn"></div>
+<div class="meta" id="buckets"></div>
+<div class="meta">Saved in <b>this browser only</b>, under your annotator name. Export
+regularly &mdash; clearing site data or a private window loses unexported work.</div>
 <div class="meta" id="prog"></div>
 <div class="bar"><div id="pbar"></div></div>
 
@@ -343,18 +346,34 @@ automatically — but export when you finish.</p>
 const ITEMS = JSON.parse(document.getElementById('batch-data').textContent);
 const VOCAB = JSON.parse(document.getElementById('vocab-data').textContent);
 const BATCH_ID = "__BATCH_ID__";
-const KEY = 'audit-' + BATCH_ID;
+// Storage is scoped PER ANNOTATOR. The gate needs two independent passes, and
+// two people sharing a browser profile under one key would mean the second
+// opens the file already holding the first one's answers — which destroys the
+// independence the whole dual-annotation design exists to get.
+const bucketKey = name => 'audit-' + BATCH_ID + '::' + (name || 'unnamed');
+const ACTIVE = 'audit-' + BATCH_ID + '::__active';
 const DIRS = [['+','+ raises','pos'],['-','\\u2212 lowers','neg'],
               ['unclear','unclear','unc'],['absent','absent','abs']];
 
-let state = JSON.parse(localStorage.getItem(KEY) || '{}');
-if(!state.ann) state = {annotator:'', ann:{}, notes:{}, added:{}, hedged:{}, i:0};
+const blank = () => ({annotator:'', ann:{}, notes:{}, added:{}, hedged:{}, i:0});
+const load = name => {
+  const raw = localStorage.getItem(bucketKey(name));
+  const s = raw ? JSON.parse(raw) : blank();
+  if(!s.ann) return blank();
+  s.annotator = name || '';
+  return s;
+};
 // The annotator name is an in-page field, never a prompt(): a blocked dialog
 // (file:// in some browsers, any automated context) throws at load and leaves
 // the annotator looking at a silently blank panel.
+let state = load(localStorage.getItem(ACTIVE) || '');
 let i = state.i || 0, focus = 0;
 
-const save = () => { state.i = i; localStorage.setItem(KEY, JSON.stringify(state)); };
+const save = () => {
+  state.i = i;
+  localStorage.setItem(bucketKey(state.annotator), JSON.stringify(state));
+  localStorage.setItem(ACTIVE, state.annotator || '');
+};
 const featuresOf = it => (it.candidates || []).concat(state.added[it.item_id] || []);
 const isDone = it => featuresOf(it).every(f => (state.ann[it.item_id]||{})[f]);
 
@@ -465,7 +484,39 @@ document.addEventListener('keydown', e => {
 
 const nameBox = document.getElementById('who');
 nameBox.value = state.annotator || '';
-nameBox.addEventListener('input', () => { state.annotator = nameBox.value.trim(); save(); });
+// Switch on 'change' (blur/Enter), never 'input' — switching per keystroke would
+// scatter the work across a bucket for every prefix of the name.
+nameBox.addEventListener('change', () => {
+  const name = nameBox.value.trim();
+  if(name === state.annotator) return;
+  const existing = localStorage.getItem(bucketKey(name));
+  const judged = Object.keys(state.ann).length;
+  if(!existing && !state.annotator && judged){
+    // started annotating before typing a name: carry that work over, do not lose it
+    localStorage.removeItem(bucketKey(''));
+    state.annotator = name;
+    save();
+  } else {
+    state = load(name);
+    state.annotator = name;
+    i = state.i || 0;
+    save();
+  }
+  focus = 0;
+  render();
+  showBuckets();
+});
+
+function showBuckets(){
+  const names = Object.keys(localStorage)
+    .filter(k => k.startsWith('audit-' + BATCH_ID + '::') && !k.endsWith('__active'))
+    .map(k => k.split('::')[1]);
+  const others = names.filter(n => n !== (state.annotator || 'unnamed'));
+  document.getElementById('buckets').textContent = others.length
+    ? 'Other saved passes in this browser: ' + others.join(', ') +
+      ' \\u2014 type a name above to switch. Passes are kept separate.'
+    : '';
+}
 
 document.getElementById('export').onclick = () => {
   if(!state.annotator){ nameBox.focus(); alert('Put your name in the annotator box first — the export is signed with it.'); return; }
@@ -495,7 +546,7 @@ document.getElementById('export').onclick = () => {
 document.getElementById('vocab').innerHTML = VOCAB.map(v => '<option value="' + v + '">').join('');
 // Surface a start-up failure ON THE PAGE. A silent exception here would leave an
 // annotator working against a blank panel with no idea anything was wrong.
-try { render(); }
+try { render(); showBuckets(); }
 catch(err){
   document.getElementById('boot').textContent =
     'This page failed to start: ' + err.name + ' \\u2014 ' + err.message +
