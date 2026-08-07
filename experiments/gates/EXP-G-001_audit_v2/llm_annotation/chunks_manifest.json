@@ -1,0 +1,79 @@
+{
+ "batch_id": "extractor_audit_v2",
+ "chunk_size": 25,
+ "n_chunks": 12,
+ "chunks": [
+  {
+   "chunk": "chunk_01.md",
+   "n_items": 25,
+   "first": "aud2-000",
+   "last": "aud2-024"
+  },
+  {
+   "chunk": "chunk_02.md",
+   "n_items": 25,
+   "first": "aud2-025",
+   "last": "aud2-049"
+  },
+  {
+   "chunk": "chunk_03.md",
+   "n_items": 25,
+   "first": "aud2-050",
+   "last": "aud2-074"
+  },
+  {
+   "chunk": "chunk_04.md",
+   "n_items": 25,
+   "first": "aud2-075",
+   "last": "aud2-099"
+  },
+  {
+   "chunk": "chunk_05.md",
+   "n_items": 25,
+   "first": "aud2-100",
+   "last": "aud2-124"
+  },
+  {
+   "chunk": "chunk_06.md",
+   "n_items": 25,
+   "first": "aud2-125",
+   "last": "aud2-149"
+  },
+  {
+   "chunk": "chunk_07.md",
+   "n_items": 25,
+   "first": "aud2-150",
+   "last": "aud2-174"
+  },
+  {
+   "chunk": "chunk_08.md",
+   "n_items": 25,
+   "first": "aud2-175",
+   "last": "aud2-199"
+  },
+  {
+   "chunk": "chunk_09.md",
+   "n_items": 25,
+   "first": "aud2-200",
+   "last": "aud2-224"
+  },
+  {
+   "chunk": "chunk_10.md",
+   "n_items": 25,
+   "first": "aud2-225",
+   "last": "aud2-249"
+  },
+  {
+   "chunk": "chunk_11.md",
+   "n_items": 25,
+   "first": "aud2-250",
+   "last": "aud2-274"
+  },
+  {
+   "chunk": "chunk_12.md",
+   "n_items": 25,
+   "first": "aud2-275",
+   "last": "aud2-299"
+  }
+ ]
+}

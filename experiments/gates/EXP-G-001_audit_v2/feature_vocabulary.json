@@ -1,0 +1,267 @@
+{
+ "ACK Flag Count": [
+  "number of ack flags",
+  "count of ack flags",
+  "number of acknowledgment flags"
+ ],
+ "Active Max": [
+  "maximum active time",
+  "longest active period"
+ ],
+ "Active Mean": [
+  "average active time",
+  "mean active time"
+ ],
+ "Active Min": [
+  "minimum active time",
+  "shortest active period"
+ ],
+ "Active Std": [
+  "standard deviation of active time",
+  "active time standard deviation"
+ ],
+ "Average Packet Size": [],
+ "Avg Bwd Segment Size": [
+  "average backward segment size",
+  "mean backward segment size"
+ ],
+ "Avg Fwd Segment Size": [
+  "average forward segment size",
+  "mean forward segment size"
+ ],
+ "Bwd Avg Bulk Rate": [],
+ "Bwd Avg Bytes/Bulk": [],
+ "Bwd Avg Packets/Bulk": [],
+ "Bwd Header Length": [
+  "backward header length",
+  "header length in the backward direction",
+  "backward direction header length"
+ ],
+ "Bwd IAT Max": [
+  "maximum backward inter-arrival time",
+  "maximum inter-arrival time of backward packets"
+ ],
+ "Bwd IAT Mean": [
+  "average inter-arrival time of backward packets",
+  "average backward inter-arrival time",
+  "mean backward inter-arrival time",
+  "mean inter-arrival time of backward packets"
+ ],
+ "Bwd IAT Min": [],
+ "Bwd IAT Std": [
+  "standard deviation of backward inter-arrival times",
+  "backward inter-arrival time standard deviation"
+ ],
+ "Bwd IAT Total": [
+  "total inter-arrival time for backward packets",
+  "total backward inter-arrival time",
+  "total iat for backward packets"
+ ],
+ "Bwd PSH Flags": [],
+ "Bwd Packet Length Max": [
+  "maximum backward packet length",
+  "maximum length of backward packets"
+ ],
+ "Bwd Packet Length Mean": [
+  "average backward packet length",
+  "mean backward packet length",
+  "average length of the backward packets",
+  "average length of backward packets"
+ ],
+ "Bwd Packet Length Min": [],
+ "Bwd Packet Length Std": [
+  "standard deviation of backward packet length",
+  "backward packet length standard deviation",
+  "variability of backward packet lengths"
+ ],
+ "Bwd Packets/s": [
+  "backward packets per second",
+  "rate of backward packets",
+  "rate of reverse traffic"
+ ],
+ "Bwd URG Flags": [],
+ "CWE Flag Count": [],
+ "Down/Up Ratio": [
+  "download to upload ratio",
+  "down to up ratio"
+ ],
+ "ECE Flag Count": [],
+ "FIN Flag Count": [
+  "number of fin flags",
+  "count of fin flags"
+ ],
+ "Flow Bytes/s": [
+  "flow bytes per second",
+  "byte rate of the flow",
+  "bytes per second in the flow",
+  "byte throughput of the flow"
+ ],
+ "Flow Duration": [
+  "duration of the flow",
+  "total duration of the flow",
+  "connection duration"
+ ],
+ "Flow IAT Max": [],
+ "Flow IAT Mean": [
+  "average inter-arrival time of the flow",
+  "mean flow inter-arrival time"
+ ],
+ "Flow IAT Min": [],
+ "Flow IAT Std": [
+  "standard deviation of flow inter-arrival times",
+  "flow inter-arrival time standard deviation"
+ ],
+ "Flow Packets/s": [
+  "flow packets per second",
+  "packet rate of the flow",
+  "packets per second in the flow"
+ ],
+ "Fwd Avg Bulk Rate": [],
+ "Fwd Avg Bytes/Bulk": [],
+ "Fwd Avg Packets/Bulk": [],
+ "Fwd Header Length": [
+  "forward header length",
+  "header length in the forward direction"
+ ],
+ "Fwd IAT Max": [],
+ "Fwd IAT Mean": [
+  "average inter-arrival time of forward packets",
+  "average forward inter-arrival time",
+  "mean forward inter-arrival time"
+ ],
+ "Fwd IAT Min": [],
+ "Fwd IAT Std": [
+  "standard deviation of forward inter-arrival times",
+  "forward inter-arrival time standard deviation"
+ ],
+ "Fwd IAT Total": [
+  "total inter-arrival time for forward packets",
+  "total forward inter-arrival time"
+ ],
+ "Fwd PSH Flags": [],
+ "Fwd Packet Length Max": [
+  "maximum forward packet length",
+  "max forward packet length",
+  "maximum length of the forward packets",
+  "maximum length of forward packets",
+  "largest forward packet"
+ ],
+ "Fwd Packet Length Mean": [
+  "average forward packet length",
+  "mean forward packet length",
+  "average length of the forward packets",
+  "average length of forward packets"
+ ],
+ "Fwd Packet Length Min": [
+  "minimum forward packet length",
+  "smallest forward packet"
+ ],
+ "Fwd Packet Length Std": [
+  "standard deviation of forward packet length",
+  "forward packet length standard deviation"
+ ],
+ "Fwd Packets/s": [
+  "forward packets per second",
+  "rate of forward packets"
+ ],
+ "Fwd URG Flags": [],
+ "Idle Max": [
+  "maximum idle time",
+  "longest idle period"
+ ],
+ "Idle Mean": [
+  "average idle time",
+  "mean idle time"
+ ],
+ "Idle Min": [
+  "minimum idle time",
+  "shortest idle period"
+ ],
+ "Idle Std": [
+  "standard deviation of idle time",
+  "idle time standard deviation"
+ ],
+ "Init_Win_bytes_backward": [
+  "initial window bytes in the backward direction",
+  "initial backward window bytes",
+  "backward initial window bytes",
+  "initial window size for backward packets"
+ ],
+ "Init_Win_bytes_forward": [
+  "initial window bytes in the forward direction",
+  "initial forward window bytes",
+  "forward initial window bytes",
+  "initial window size for forward packets",
+  "initial number of bytes sent forward",
+  "initial number of bytes forwarded"
+ ],
+ "Max Packet Length": [
+  "maximum packet length"
+ ],
+ "Min Packet Length": [
+  "minimum packet length"
+ ],
+ "PSH Flag Count": [
+  "number of psh flags",
+  "count of psh flags",
+  "number of push flags"
+ ],
+ "Packet Length Mean": [
+  "average packet length",
+  "mean packet length"
+ ],
+ "Packet Length Std": [
+  "packet length standard deviation",
+  "standard deviation of packet length"
+ ],
+ "Packet Length Variance": [],
+ "RST Flag Count": [
+  "number of rst flags",
+  "count of rst flags",
+  "number of reset flags"
+ ],
+ "SYN Flag Count": [
+  "number of syn flags",
+  "count of syn flags"
+ ],
+ "Subflow Bwd Bytes": [
+  "subflow backward bytes",
+  "backward subflow bytes"
+ ],
+ "Subflow Bwd Packets": [],
+ "Subflow Fwd Bytes": [
+  "subflow forward bytes",
+  "forward subflow bytes",
+  "bytes in the forward subflow"
+ ],
+ "Subflow Fwd Packets": [],
+ "Total Backward Packets": [
+  "total number of backward packets",
+  "number of backward packets",
+  "count of backward packets"
+ ],
+ "Total Fwd Packets": [
+  "total number of forward packets",
+  "number of forward packets",
+  "count of forward packets"
+ ],
+ "Total Length of Bwd Packets": [
+  "total length of backward packets",
+  "total backward packet length",
+  "total size of backward packets"
+ ],
+ "Total Length of Fwd Packets": [
+  "total length of forward packets",
+  "total forward packet length",
+  "total size of forward packets",
+  "total size of the forward packets"
+ ],
+ "URG Flag Count": [
+  "number of urg flags",
+  "count of urg flags",
+  "number of urgent flags",
+  "count of urgent flags"
+ ],
+ "act_data_pkt_fwd": [],
+ "min_seg_size_forward": []
+}
