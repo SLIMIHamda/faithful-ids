@@ -1,0 +1,737 @@
+{
+ "batch_id": "extractor_audit_v2",
+ "annotator": "Hamda",
+ "exported_utc": "2026-08-10T14:43:19.838Z",
+ "items_complete": 17,
+ "items_total": 300,
+ "annotations": [
+  {
+   "item_id": "aud2-000",
+   "feature": "Max Packet Length",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-000",
+   "feature": "Bwd Header Length",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-000",
+   "feature": "Total Backward Packets",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-000",
+   "feature": "Fwd IAT Min",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-001",
+   "feature": "Flow Duration",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-001",
+   "feature": "Packet Length Std",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-001",
+   "feature": "Flow Packets/s",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-001",
+   "feature": "Down/Up Ratio",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-001",
+   "feature": "PSH Flag Count",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-002",
+   "feature": "Fwd Packet Length Std",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-002",
+   "feature": "Fwd IAT Min",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-002",
+   "feature": "Flow Duration",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-002",
+   "feature": "Max Packet Length",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-002",
+   "feature": "Init_Win_bytes_backward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-002",
+   "feature": "Flow IAT Min",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-002",
+   "feature": "Total Backward Packets",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-003",
+   "feature": "Idle Mean",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-003",
+   "feature": "Bwd Packet Length Std",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-003",
+   "feature": "Packet Length Std",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-003",
+   "feature": "Max Packet Length",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-003",
+   "feature": "FIN Flag Count",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-003",
+   "feature": "Subflow Fwd Packets",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-003",
+   "feature": "Init_Win_bytes_backward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-003",
+   "feature": "Idle Min",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-004",
+   "feature": "Fwd Avg Bytes/Bulk",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-004",
+   "feature": "Total Backward Packets",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-004",
+   "feature": "Init_Win_bytes_backward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-004",
+   "feature": "Bwd IAT Min",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-004",
+   "feature": "Packet Length Std",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-004",
+   "feature": "Fwd Packet Length Max",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-004",
+   "feature": "Bwd Packet Length Std",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-004",
+   "feature": "Active Min",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-005",
+   "feature": "Bwd Packet Length Min",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-005",
+   "feature": "Flow IAT Max",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-005",
+   "feature": "Bwd IAT Min",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-005",
+   "feature": "Bwd IAT Max",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-005",
+   "feature": "Init_Win_bytes_backward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-006",
+   "feature": "Fwd Packet Length Max",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-006",
+   "feature": "Bwd Packet Length Min",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-006",
+   "feature": "Subflow Bwd Packets",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-006",
+   "feature": "Fwd Header Length",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-006",
+   "feature": "Init_Win_bytes_forward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-007",
+   "feature": "Average Packet Size",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-007",
+   "feature": "Bwd Packets/s",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-007",
+   "feature": "Init_Win_bytes_forward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-007",
+   "feature": "Total Length of Bwd Packets",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-007",
+   "feature": "Fwd PSH Flags",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-008",
+   "feature": "Init_Win_bytes_backward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-008",
+   "feature": "Bwd Packet Length Mean",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-008",
+   "feature": "Fwd Packets/s",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-008",
+   "feature": "Average Packet Size",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-008",
+   "feature": "Packet Length Mean",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-008",
+   "feature": "Idle Max",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-009",
+   "feature": "Flow IAT Std",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-009",
+   "feature": "Bwd Packet Length Min",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-009",
+   "feature": "Init_Win_bytes_forward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-009",
+   "feature": "Total Length of Fwd Packets",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-010",
+   "feature": "Bwd IAT Max",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-010",
+   "feature": "Init_Win_bytes_forward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-010",
+   "feature": "Fwd Packets/s",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-010",
+   "feature": "Active Max",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-010",
+   "feature": "Fwd IAT Mean",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-010",
+   "feature": "Average Packet Size",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-010",
+   "feature": "Bwd Packets/s",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-011",
+   "feature": "Fwd Header Length",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-011",
+   "feature": "Flow Bytes/s",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-011",
+   "feature": "Init_Win_bytes_forward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-011",
+   "feature": "Init_Win_bytes_backward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-011",
+   "feature": "Idle Mean",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-012",
+   "feature": "Total Backward Packets",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-012",
+   "feature": "CWE Flag Count",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-012",
+   "feature": "Avg Fwd Segment Size",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-012",
+   "feature": "Init_Win_bytes_forward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-012",
+   "feature": "act_data_pkt_fwd",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Fwd Packets/s",
+   "text_asserts_direction": "-",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Flow IAT Mean",
+   "text_asserts_direction": "-",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "PSH Flag Count",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Bwd IAT Max",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Total Backward Packets",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Total Length of Fwd Packets",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Bwd Packets/s",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Flow IAT Max",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-014",
+   "feature": "Init_Win_bytes_backward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-014",
+   "feature": "Active Min",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-014",
+   "feature": "Max Packet Length",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-014",
+   "feature": "Total Backward Packets",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-014",
+   "feature": "Fwd Packet Length Max",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-014",
+   "feature": "Packet Length Std",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-014",
+   "feature": "Bwd Packet Length Std",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-014",
+   "feature": "Bwd Packets/s",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "PSH Flag Count",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Fwd IAT Max",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Bwd IAT Std",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Fwd Header Length",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Fwd Packet Length Std",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Bwd Header Length",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Packet Length Std",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-016",
+   "feature": "act_data_pkt_fwd",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-016",
+   "feature": "Total Backward Packets",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-016",
+   "feature": "Fwd Avg Bulk Rate",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-016",
+   "feature": "Bwd Header Length",
+   "text_asserts_direction": "absent",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-016",
+   "feature": "Init_Win_bytes_forward",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-016",
+   "feature": "Fwd Packet Length Max",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  },
+  {
+   "item_id": "aud2-016",
+   "feature": "Fwd IAT Std",
+   "text_asserts_direction": "+",
+   "hedged": false,
+   "added": false
+  }
+ ]
+}
