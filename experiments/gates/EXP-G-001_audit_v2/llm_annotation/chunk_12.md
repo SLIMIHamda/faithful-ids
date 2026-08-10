@@ -1,32 +1,29 @@
 # Extractor audit — annotation chunk 12 of 12
 
 You are annotating explanation texts about network-traffic classification. Read
-each text and report **what the text itself claims**. Nothing else about this
-task is relevant, and no other context is needed.
+each text and report **what the text itself claims**. No other context is needed
+and none is relevant.
 
 ## Task
 
-For every item, output one record listing **every feature the text makes a
-directional claim about**, and the direction the text asserts:
+For each item, list **every feature the text makes a directional claim about**,
+and the direction the text asserts:
 
-- `"+"`  the text says the feature raises / pushes up the score for the predicted class
-- `"-"`  the text says the feature lowers / pushes down that score
-- `"unclear"` the text names the feature but commits to no direction
+- `"+"` — the text says the feature raises / pushes up the score for the class it argues for
+- `"-"` — the text says it lowers / pushes down that score
+- `"unclear"` — the text names the feature but commits to no direction
 
-Also set `"hedged": true` when the text gives a direction but softens it
-("may slightly reduce", "possibly raises").
+Set `"hedged": true` when a direction is softened ("may slightly reduce").
 
 ## Rules
 
-1. Report **only what the prose says**. Do not judge whether the text is right
-   about the traffic. Do not add features the text does not discuss.
+1. Report **only what the prose says**, not whether it is correct about the traffic.
 2. Use the **canonical feature name** from the vocabulary below, even when the
    text paraphrases it ("maximum forward packet length" -> `Fwd Packet Length Max`).
-3. A feature the text does not mention is simply **left out** of the record.
-   Do not emit `"absent"` rows.
-4. If a text mentions no feature at all, emit `"claims": []` for that item.
-5. Output **one JSON object per line** (JSONL), one line per item, in the given
-   order, inside a single fenced code block. No commentary before or after.
+3. A feature the text does not mention is simply left out. Do not emit `absent` rows.
+4. If a text mentions no feature at all, emit `"claims": []`.
+5. Output one JSON object per line (JSONL), one line per item, in the order
+   given, inside a single fenced code block. No commentary.
 
 ## Output format
 

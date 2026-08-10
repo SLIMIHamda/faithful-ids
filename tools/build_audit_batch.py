@@ -62,6 +62,9 @@ sys.path.insert(0, str(REPO / "src"))
 
 from faithfulids.orchestration.references import resolve_reference  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _audit_prompts import FREE_RECALL  # noqa: E402
+
 #: Items per LLM prompt chunk. Small enough that a chunk plus its instructions
 #: stays well inside a single response, which is what stopped v1's chunks from
 #: truncating mid-item.
@@ -558,51 +561,6 @@ catch(err){
 """
 
 
-LLM_HEADER = """# Extractor audit — annotation chunk {n:02d} of {total:02d}
-
-You are annotating explanation texts about network-traffic classification. Read
-each text and report **what the text itself claims**. Nothing else about this
-task is relevant, and no other context is needed.
-
-## Task
-
-For every item, output one record listing **every feature the text makes a
-directional claim about**, and the direction the text asserts:
-
-- `"+"`  the text says the feature raises / pushes up the score for the predicted class
-- `"-"`  the text says the feature lowers / pushes down that score
-- `"unclear"` the text names the feature but commits to no direction
-
-Also set `"hedged": true` when the text gives a direction but softens it
-("may slightly reduce", "possibly raises").
-
-## Rules
-
-1. Report **only what the prose says**. Do not judge whether the text is right
-   about the traffic. Do not add features the text does not discuss.
-2. Use the **canonical feature name** from the vocabulary below, even when the
-   text paraphrases it ("maximum forward packet length" -> `Fwd Packet Length Max`).
-3. A feature the text does not mention is simply **left out** of the record.
-   Do not emit `"absent"` rows.
-4. If a text mentions no feature at all, emit `"claims": []` for that item.
-5. Output **one JSON object per line** (JSONL), one line per item, in the given
-   order, inside a single fenced code block. No commentary before or after.
-
-## Output format
-
-```jsonl
-{{"item_id": "aud2-000", "claims": [{{"feature": "Flow Duration", "dir": "+", "hedged": false}}]}}
-```
-
-## Feature vocabulary (use these exact names)
-
-{vocab}
-
----
-
-## Items
-
-"""
 
 
 def write_llm_chunks(items: list[dict], vocab: dict[str, list[str]], out: Path,
@@ -613,7 +571,9 @@ def write_llm_chunks(items: list[dict], vocab: dict[str, list[str]], out: Path,
     chunks = [items[k:k + CHUNK_SIZE] for k in range(0, len(items), CHUNK_SIZE)]
     manifest = []
     for n, chunk in enumerate(chunks, start=1):
-        body = [LLM_HEADER.format(n=n, total=len(chunks), vocab=vocab_block)]
+        body = [FREE_RECALL.format(
+            title=f"Extractor audit — annotation chunk {n:02d} of {len(chunks):02d}",
+            vocab=vocab_block)]
         for it in chunk:
             body.append(f"### {it['item_id']}\n\n```\n{it['explanation_text']}\n```\n")
         body.append(
