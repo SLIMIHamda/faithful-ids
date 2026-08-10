@@ -1,0 +1,82 @@
+{
+ "passes": [
+  "Hamda",
+  "repons_GPT_probe_matched",
+  "repons_grok_probe_matched"
+ ],
+ "n_units": 104,
+ "n_items": 17,
+ "krippendorff_alpha": 0.8942303845076621,
+ "pairwise": {
+  "Hamda|repons_GPT_probe_matched": {
+   "agreement": 0.9230769230769231,
+   "kappa": 0.8532886616117089
+  },
+  "Hamda|repons_grok_probe_matched": {
+   "agreement": 0.9615384615384616,
+   "kappa": 0.9225325884543762
+  },
+  "repons_GPT_probe_matched|repons_grok_probe_matched": {
+   "agreement": 0.9519230769230769,
+   "kappa": 0.9076868453754661
+  }
+ },
+ "disagreements": [
+  {
+   "item_id": "aud2-001",
+   "feature": "Flow Packets/s",
+   "Hamda": "+",
+   "repons_GPT_probe_matched": "-",
+   "repons_grok_probe_matched": "+"
+  },
+  {
+   "item_id": "aud2-001",
+   "feature": "PSH Flag Count",
+   "Hamda": "+",
+   "repons_GPT_probe_matched": "-",
+   "repons_grok_probe_matched": "+"
+  },
+  {
+   "item_id": "aud2-008",
+   "feature": "Average Packet Size",
+   "Hamda": "+",
+   "repons_GPT_probe_matched": "absent",
+   "repons_grok_probe_matched": "absent"
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Bwd Packets/s",
+   "Hamda": "absent",
+   "repons_GPT_probe_matched": "+",
+   "repons_grok_probe_matched": "+"
+  },
+  {
+   "item_id": "aud2-013",
+   "feature": "Total Length of Fwd Packets",
+   "Hamda": "absent",
+   "repons_GPT_probe_matched": "+",
+   "repons_grok_probe_matched": "+"
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Fwd Packet Length Std",
+   "Hamda": "+",
+   "repons_GPT_probe_matched": "unclear",
+   "repons_grok_probe_matched": "+"
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "PSH Flag Count",
+   "Hamda": "+",
+   "repons_GPT_probe_matched": "unclear",
+   "repons_grok_probe_matched": "+"
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Packet Length Std",
+   "Hamda": "absent",
+   "repons_GPT_probe_matched": "unclear",
+   "repons_grok_probe_matched": "+"
+  }
+ ]
+}

@@ -28,6 +28,7 @@ Run::
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from itertools import combinations
 from pathlib import Path
@@ -43,16 +44,53 @@ def load_human(path: Path) -> dict[tuple[str, str], str]:
             for r in data["annotations"] if "feature" in r}
 
 
+#: Replies arrive named by whoever saved them — .jsonl, .json and .txt all show
+#: up in practice, and the content is JSONL regardless of the extension.
+RESPONSE_SUFFIXES = (".jsonl", ".json", ".txt")
+
+
 def load_llm(path: Path) -> dict[tuple[str, str], str]:
-    """A JSONL pass: one {'item_id', 'claims':[{feature, dir}]} per line."""
+    """A JSONL pass: one {'item_id', 'claims':[{feature, dir}]} per line.
+
+    utf-8-sig, because a reply pasted through a text editor on Windows often
+    carries a BOM that would otherwise break the first line.
+    """
     out: dict[tuple[str, str], str] = {}
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for n, line in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), 1):
         if not line.strip():
             continue
-        rec = json.loads(line)
+        try:
+            rec = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"{path.name}:{n} is not JSON ({exc.msg}) — usually a truncated "
+                             f"reply; ask the model to continue from that item")
         for c in rec.get("claims") or []:
             out[(rec["item_id"], c["feature"])] = c.get("dir")
     return out
+
+
+def discover(probe: Path, include: str | None) -> dict[str, dict]:
+    """Every pass in the probe dir, de-duplicated by content.
+
+    The same reply often gets saved twice under different extensions; counting
+    it as two annotators would inflate agreement and quietly bias the alpha.
+    """
+    passes: dict[str, dict] = {}
+    seen: dict[str, str] = {}
+    files = sorted(probe.glob("human_*.json"))
+    files += sorted(f for f in (probe / "responses").iterdir()
+                    if f.suffix.lower() in RESPONSE_SUFFIXES) if (probe / "responses").is_dir() else []
+    for f in files:
+        name = f.stem.replace("human_", "")
+        if include and include.lower() not in f.name.lower() and not f.stem.startswith("human_"):
+            continue
+        digest = hashlib.sha256(f.read_bytes()).hexdigest()
+        if digest in seen:
+            print(f"note: {f.name} is byte-identical to {seen[digest]} — counted once")
+            continue
+        seen[digest] = f.name
+        passes[name] = load_human(f) if f.stem.startswith("human_") else load_llm(f)
+    return passes
 
 
 def krippendorff_nominal(passes: list[dict[tuple[str, str], str]], units: list) -> float | None:
@@ -113,13 +151,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--key", type=Path,
                     help="audit_key_DO_NOT_SHOW_ANNOTATOR.json (default: ../ of the probe)")
     ap.add_argument("--max-show", type=int, default=25, help="disagreeing cells to print")
+    ap.add_argument("--include", help="substring filter on response filenames, e.g. 'matched'. "
+                                      "Matched and free-recall are DIFFERENT tasks — pooling "
+                                      "them in one comparison mixes two elicitations.")
     args = ap.parse_args(argv)
 
-    passes: dict[str, dict] = {}
-    for f in sorted(args.probe.glob("human_*.json")):
-        passes[f.stem.replace("human_", "")] = load_human(f)
-    for f in sorted((args.probe / "responses").glob("*.jsonl")):
-        passes[f.stem] = load_llm(f)
+    passes = discover(args.probe, args.include)
     if len(passes) < 2:
         print(f"need at least two passes; found {list(passes)} in {args.probe}")
         return 2
@@ -182,7 +219,7 @@ def main(argv: list[str] | None = None) -> int:
     if len(dis) > args.max_show:
         print(f"... and {len(dis) - args.max_show} more")
 
-    out = args.probe / "comparison.json"
+    out = args.probe / (f"comparison_{args.include}.json" if args.include else "comparison.json")
     out.write_text(json.dumps({
         "passes": list(passes),
         "n_units": len(units),
