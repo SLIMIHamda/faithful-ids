@@ -1,0 +1,1859 @@
+{
+ "passes": [
+  "LLM_1",
+  "LLM_2"
+ ],
+ "n_units": 1842,
+ "n_items": 300,
+ "krippendorff_alpha": 0.7069454347437873,
+ "pairwise": {
+  "LLM_1|LLM_2": {
+   "agreement": 0.8333333333333334,
+   "kappa": 0.7131692471563892
+  }
+ },
+ "disagreements": [
+  {
+   "item_id": "aud2-001",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-001",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-001",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Fwd Packet Length Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-015",
+   "feature": "Packet Length Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-017",
+   "feature": "Fwd Packet Length Std",
+   "LLM_1": "+",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-019",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-019",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-019",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-019",
+   "feature": "Subflow Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-020",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-020",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-020",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-020",
+   "feature": "Subflow Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-021",
+   "feature": "Flow IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-021",
+   "feature": "Fwd IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-021",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-021",
+   "feature": "Max Packet Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-030",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-030",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-030",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-030",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-030",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-033",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-033",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-033",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-033",
+   "feature": "Fwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-033",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-036",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-036",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-036",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-036",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-036",
+   "feature": "Fwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-036",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-039",
+   "feature": "Flow Bytes/s",
+   "LLM_1": "unclear",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-043",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-043",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-043",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-043",
+   "feature": "Subflow Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-044",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-044",
+   "feature": "Fwd IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-044",
+   "feature": "Fwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-055",
+   "feature": "FIN Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-055",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-055",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-055",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-055",
+   "feature": "RST Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-055",
+   "feature": "SYN Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-056",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-056",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-056",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-056",
+   "feature": "Subflow Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-061",
+   "feature": "Average Packet Size",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-061",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-061",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-061",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-061",
+   "feature": "Packet Length Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-064",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-064",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-064",
+   "feature": "Flow IAT Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-064",
+   "feature": "Fwd IAT Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-065",
+   "feature": "Fwd Packet Length Std",
+   "LLM_1": "+",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-068",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-068",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-068",
+   "feature": "Bwd IAT Total",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-068",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-070",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-070",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-070",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-070",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-070",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-072",
+   "feature": "Flow IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-076",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-076",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-076",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-076",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-076",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-078",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-078",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-078",
+   "feature": "Flow IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-078",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-078",
+   "feature": "Fwd Packet Length Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-078",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-080",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-080",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-080",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-080",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-080",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-082",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-082",
+   "feature": "Bwd IAT Total",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-082",
+   "feature": "Down/Up Ratio",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-082",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-082",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-083",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-083",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-083",
+   "feature": "Fwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-089",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-094",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-098",
+   "feature": "ACK Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-098",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-098",
+   "feature": "Packet Length Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-098",
+   "feature": "RST Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-098",
+   "feature": "URG Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-106",
+   "feature": "Average Packet Size",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-106",
+   "feature": "Avg Fwd Segment Size",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-106",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-106",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-106",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-107",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-107",
+   "feature": "Bwd Packet Length Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-107",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-107",
+   "feature": "Down/Up Ratio",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-107",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-109",
+   "feature": "Flow IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-109",
+   "feature": "Fwd Packet Length Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-109",
+   "feature": "Init_Win_bytes_forward",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-109",
+   "feature": "Total Backward Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-109",
+   "feature": "act_data_pkt_fwd",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-114",
+   "feature": "ACK Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-114",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-114",
+   "feature": "Fwd IAT Total",
+   "LLM_1": "unclear",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-114",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-114",
+   "feature": "Subflow Bwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-114",
+   "feature": "Subflow Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-117",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-117",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-117",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-117",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-117",
+   "feature": "Subflow Bwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-117",
+   "feature": "Subflow Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-122",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-122",
+   "feature": "Flow IAT Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-122",
+   "feature": "Flow IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-122",
+   "feature": "Flow IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-122",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-122",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-122",
+   "feature": "Fwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-125",
+   "feature": "ACK Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-125",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-125",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-125",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-125",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-125",
+   "feature": "URG Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-126",
+   "feature": "Average Packet Size",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-126",
+   "feature": "Avg Fwd Segment Size",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-126",
+   "feature": "Bwd IAT Total",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-126",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-126",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-146",
+   "feature": "Bwd Packet Length Mean",
+   "LLM_1": "+",
+   "LLM_2": "unclear"
+  },
+  {
+   "item_id": "aud2-147",
+   "feature": "Flow IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-147",
+   "feature": "Fwd IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-147",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-147",
+   "feature": "Max Packet Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-148",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-148",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-148",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-148",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-148",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-148",
+   "feature": "URG Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-151",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-151",
+   "feature": "Bwd IAT Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-151",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-151",
+   "feature": "Bwd IAT Total",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-151",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-153",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-153",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-153",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-153",
+   "feature": "Flow IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-153",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-153",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-154",
+   "feature": "Max Packet Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-162",
+   "feature": "Fwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-162",
+   "feature": "Fwd Packet Length Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-162",
+   "feature": "Init_Win_bytes_forward",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-162",
+   "feature": "Total Backward Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-162",
+   "feature": "act_data_pkt_fwd",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-172",
+   "feature": "Fwd Packet Length Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-172",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-172",
+   "feature": "Total Length of Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-172",
+   "feature": "act_data_pkt_fwd",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-173",
+   "feature": "Fwd Packet Length Std",
+   "LLM_1": "+",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-174",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-174",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-174",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-174",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-174",
+   "feature": "Fwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-174",
+   "feature": "Total Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-189",
+   "feature": "ACK Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-189",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-189",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-189",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-189",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-189",
+   "feature": "URG Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-191",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-191",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-191",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-191",
+   "feature": "Flow IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-191",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-191",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-199",
+   "feature": "Fwd Packet Length Std",
+   "LLM_1": "+",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "ACK Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "Bwd IAT Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "Bwd PSH Flags",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "Bwd Packet Length Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "Fwd PSH Flags",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "Fwd Packet Length Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-201",
+   "feature": "FIN Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-201",
+   "feature": "Fwd PSH Flags",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-201",
+   "feature": "Fwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-201",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-201",
+   "feature": "SYN Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-205",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-205",
+   "feature": "Bwd IAT Total",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-205",
+   "feature": "Bwd Packet Length Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-205",
+   "feature": "Down/Up Ratio",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-205",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-207",
+   "feature": "Flow Duration",
+   "LLM_1": "absent",
+   "LLM_2": "unclear"
+  },
+  {
+   "item_id": "aud2-220",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-220",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-220",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-220",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-223",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-223",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-223",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-223",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-223",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-223",
+   "feature": "Fwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-223",
+   "feature": "URG Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-233",
+   "feature": "Flow IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-233",
+   "feature": "Fwd IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-233",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-233",
+   "feature": "Max Packet Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-236",
+   "feature": "Active Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-236",
+   "feature": "Fwd Packet Length Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-236",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-236",
+   "feature": "Total Backward Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-238",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-239",
+   "feature": "Fwd Header Length",
+   "LLM_1": "+",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-244",
+   "feature": "Flow IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-244",
+   "feature": "Fwd IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-244",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-244",
+   "feature": "Max Packet Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-253",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-253",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-253",
+   "feature": "Flow IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-253",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-253",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-264",
+   "feature": "Init_Win_bytes_forward",
+   "LLM_1": "unclear",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-266",
+   "feature": "Active Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-266",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-266",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-266",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-266",
+   "feature": "Fwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-268",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-268",
+   "feature": "Bwd Packet Length Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-268",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-268",
+   "feature": "Flow IAT Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-268",
+   "feature": "Fwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-268",
+   "feature": "Packet Length Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-272",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-272",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-272",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-272",
+   "feature": "Flow IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-272",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-273",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-273",
+   "feature": "Bwd IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-273",
+   "feature": "Bwd IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-273",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-280",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-280",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-280",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-280",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-284",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-284",
+   "feature": "Flow IAT Max",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-284",
+   "feature": "Flow IAT Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-284",
+   "feature": "Flow IAT Min",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-284",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-284",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-284",
+   "feature": "Fwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-288",
+   "feature": "URG Flag Count",
+   "LLM_1": "+",
+   "LLM_2": "absent"
+  },
+  {
+   "item_id": "aud2-289",
+   "feature": "ACK Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-289",
+   "feature": "Bwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-289",
+   "feature": "FIN Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-289",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-289",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-289",
+   "feature": "RST Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-289",
+   "feature": "SYN Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-289",
+   "feature": "URG Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-290",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-290",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-290",
+   "feature": "Fwd Packet Length Mean",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-290",
+   "feature": "Fwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-290",
+   "feature": "Max Packet Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-290",
+   "feature": "Total Length of Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-295",
+   "feature": "Flow Duration",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-295",
+   "feature": "Flow IAT Std",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-295",
+   "feature": "Flow Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-295",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-295",
+   "feature": "Fwd Packets/s",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-298",
+   "feature": "Bwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-298",
+   "feature": "Fwd Header Length",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-298",
+   "feature": "PSH Flag Count",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  },
+  {
+   "item_id": "aud2-298",
+   "feature": "Subflow Fwd Packets",
+   "LLM_1": "unclear",
+   "LLM_2": "+"
+  }
+ ]
+}

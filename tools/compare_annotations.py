@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from itertools import combinations
 from pathlib import Path
 
@@ -69,28 +70,83 @@ def load_llm(path: Path) -> dict[tuple[str, str], str]:
     return out
 
 
-def discover(probe: Path, include: str | None) -> dict[str, dict]:
-    """Every pass in the probe dir, de-duplicated by content.
+def covered(path: Path, is_human: bool) -> set[str]:
+    """The items a pass actually answered — NOT the items it made claims about.
 
-    The same reply often gets saved twice under different extensions; counting
-    it as two annotators would inflate agreement and quietly bias the alpha.
+    A free-recall pass legitimately returns ``claims: []`` for an item that
+    discusses no feature, and that is an answer. Coverage therefore comes from
+    the item ids present in the file, so a partial annotator's unanswered items
+    can be excluded rather than silently read as a wall of ``absent``.
+    """
+    if is_human:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return {r["item_id"] for r in data["annotations"] if "feature" in r}
+    out = set()
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
+        if line.strip():
+            out.add(json.loads(line)["item_id"])
+    return out
+
+
+def discover(probe: Path, include: str | None,
+             humans: list[Path] | None = None) -> tuple[dict[str, dict], dict[str, set]]:
+    """Every pass under ``probe``, de-duplicated by content.
+
+    Accepts both layouts: flat files in ``responses/`` (one file per pass) and a
+    directory per model holding chunk replies, which are merged into one pass.
+    The same reply often gets saved twice under different extensions or
+    concatenated into an ``all`` file; counting it twice would inflate agreement
+    and bias the alpha, so identical content is dropped and a chunk file whose
+    items are already covered by a sibling aggregate is not double counted.
     """
     passes: dict[str, dict] = {}
+    cover: dict[str, set] = {}
     seen: dict[str, str] = {}
-    files = sorted(probe.glob("human_*.json"))
-    files += sorted(f for f in (probe / "responses").iterdir()
-                    if f.suffix.lower() in RESPONSE_SUFFIXES) if (probe / "responses").is_dir() else []
-    for f in files:
-        name = f.stem.replace("human_", "")
-        if include and include.lower() not in f.name.lower() and not f.stem.startswith("human_"):
+
+    def add(name: str, files: list[Path], is_human: bool) -> None:
+        labels: dict[tuple[str, str], str] = {}
+        items: set[str] = set()
+        for f in files:
+            digest = hashlib.sha256(f.read_bytes()).hexdigest()
+            if digest in seen:
+                print(f"note: {f.name} is byte-identical to {seen[digest]} — counted once")
+                continue
+            seen[digest] = f.name
+            new = covered(f, is_human)
+            if new & items:
+                print(f"note: {f.name} repeats items already loaded for {name} — skipped "
+                      f"(looks like an aggregate of the chunk files)")
+                continue
+            items |= new
+            labels.update(load_human(f) if is_human else load_llm(f))
+        if labels:
+            passes[name] = labels
+            cover[name] = items
+
+    for f in sorted(probe.glob("human_*.json")):
+        add(f.stem.replace("human_", ""), [f], True)
+
+    for h in humans or []:
+        add(h.stem.replace("human_", "").replace("annotations_", ""), [h], True)
+
+    for resp in (probe / "responses", probe / "llm_annotation" / "responses"):
+        if not resp.is_dir():
             continue
-        digest = hashlib.sha256(f.read_bytes()).hexdigest()
-        if digest in seen:
-            print(f"note: {f.name} is byte-identical to {seen[digest]} — counted once")
-            continue
-        seen[digest] = f.name
-        passes[name] = load_human(f) if f.stem.startswith("human_") else load_llm(f)
-    return passes
+        for d in sorted(p for p in resp.iterdir() if p.is_dir()):
+            files = sorted(f for f in d.rglob("*")
+                           if f.suffix.lower() in RESPONSE_SUFFIXES
+                           and re.search(r"chunk[_-]?\d+", f.name, re.I))
+            extra = sorted(f for f in d.rglob("*")
+                           if f.suffix.lower() in RESPONSE_SUFFIXES and f not in files)
+            if include and include.lower() not in d.name.lower():
+                continue
+            add(d.name, files + extra, False)
+        for f in sorted(p for p in resp.iterdir()
+                        if p.is_file() and p.suffix.lower() in RESPONSE_SUFFIXES):
+            if include and include.lower() not in f.name.lower():
+                continue
+            add(f.stem, [f], False)
+    return passes, cover
 
 
 def krippendorff_nominal(passes: list[dict[tuple[str, str], str]], units: list) -> float | None:
@@ -151,25 +207,48 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--key", type=Path,
                     help="audit_key_DO_NOT_SHOW_ANNOTATOR.json (default: ../ of the probe)")
     ap.add_argument("--max-show", type=int, default=25, help="disagreeing cells to print")
+    ap.add_argument("--human", type=Path, action="append",
+                    help="extra human export to include (repeatable)")
     ap.add_argument("--include", help="substring filter on response filenames, e.g. 'matched'. "
                                       "Matched and free-recall are DIFFERENT tasks — pooling "
                                       "them in one comparison mixes two elicitations.")
     args = ap.parse_args(argv)
 
-    passes = discover(args.probe, args.include)
+    passes, cover = discover(args.probe, args.include, args.human)
     if len(passes) < 2:
         print(f"need at least two passes; found {list(passes)} in {args.probe}")
         return 2
 
-    items = json.loads((args.probe / "probe_items.json").read_text(encoding="utf-8"))
-    # Unit set: every candidate that was put to an annotator, plus anything any
-    # pass named that was not on the list (a free-recall pass can do that).
+    src = args.probe / "probe_items.json"
+    if src.is_file():
+        items = json.loads(src.read_text(encoding="utf-8"))
+    else:  # full batch: candidates live in audit_batch.jsonl
+        items = {it["item_id"]: it
+                 for line in (args.probe / "audit_batch.jsonl").read_text(
+                     encoding="utf-8").splitlines() if line.strip()
+                 for it in [json.loads(line)]}
+
+    # Restrict to items EVERY pass answered. Imputing 'absent' for an item an
+    # annotator never saw would score their silence as a judgment — the 17-item
+    # human pass beside a 300-item LLM pass would otherwise read as 283 items of
+    # perfect disagreement.
+    shared = set(items)
+    for c in cover.values():
+        shared &= c
+    dropped = len(items) - len(shared)
+    items = {k: v for k, v in items.items() if k in shared}
+
     units = {(iid, f) for iid, it in items.items() for f in it["candidates"]}
-    for p in passes.values():
-        units |= set(p)
+    for name, p in passes.items():
+        units |= {u for u in p if u[0] in shared}
     units = sorted(units)
 
-    print(f"passes: {', '.join(passes)}")
+    print("passes:")
+    for name in passes:
+        print(f"  {name:<34} answered {len(cover[name]):>3} items")
+    if dropped:
+        print(f"\nrestricted to the {len(shared)} items every pass answered "
+              f"({dropped} dropped — not all passes covered them)")
     print(f"units:  {len(units)} (item, feature) cells over {len(items)} items\n")
 
     print("=== label distribution ===")
@@ -191,7 +270,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"\nKrippendorff alpha (nominal, all passes): "
           f"{'undefined' if alpha is None else f'{alpha:.3f}'}")
 
-    key_path = args.key or (args.probe.parent / "audit_key_DO_NOT_SHOW_ANNOTATOR.json")
+    key_path = args.key or next(
+        (c for c in (args.probe / "audit_key_DO_NOT_SHOW_ANNOTATOR.json",
+                     args.probe.parent / "audit_key_DO_NOT_SHOW_ANNOTATOR.json")
+         if c.is_file()), args.probe / "missing.json")
     if key_path.is_file():
         key = json.loads(key_path.read_text(encoding="utf-8"))
         print("\n=== each pass vs the EXTRACTOR (directional claims only) ===")
@@ -200,7 +282,10 @@ def main(argv: list[str] | None = None) -> int:
                      for iid in items for c in key[iid]["extractor_claims"]}
         pred = {(u, d) for u, d in extractor.items() if d in DIRECTIONAL}
         for name, p in passes.items():
-            gold = {(u, d) for u, d in p.items() if d in DIRECTIONAL}
+            # gold must live on the SAME item set as the prediction, or a pass
+            # covering more items than the comparison scores its extra claims as
+            # misses and recall collapses
+            gold = {(u, d) for u, d in p.items() if d in DIRECTIONAL and u[0] in shared}
             pr, rc, f1 = prf(pred, gold)
             print(f"{name:<28}{pr:>11.3f}{rc:>9.3f}{f1:>9.3f}")
         print("\nNOTE: this is NOT the EXP-G-001 verdict. The gate scores the extractor "
