@@ -678,6 +678,33 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   canonical class is not backward compatible, since every existing run's
   `target_class` means something different afterwards.
 
+- **Amendment 0004 — a directional claim requires explicit textual evidence; extractor 1.5.0.**
+  Two LLM annotators covered all 300 EXP-G-001 audit items and agreed on 1836 of
+  1842 cells about which features are claimed and in which direction — yet raw
+  Krippendorff alpha was only 0.707, because **98% of the disagreement was one
+  distinction**: `unclear` vs `+` on `b2_zeroshot`'s value-description prose
+  (258/349 of its cells; 0% on b0/b1/b1l). The reading decided the gate — F1
+  0.975 lenient vs 0.848 strict — so a 13-point swing rested on an unwritten
+  instruction. The amendment writes it: **a claim is directional only with
+  explicit textual evidence, and inference by default is never evidence.** The
+  strict reading is adopted knowing it fails the gate, because under the lenient
+  one EXP-G-001 certifies an instrument whose **403 of 1183 directional claims
+  (34%) are defaults** — a gate a guess can pass is measuring nothing.
+  Consequences registered with the rule: gold must be **re-elicited** (both
+  existing LLM passes and the 17-item human pass predate it and split on
+  interpreting the old wording — adopting the one that happens to match would
+  reintroduce the freedom being closed); every verdict reports F1 **split by
+  `direction_evidence`** plus the default share; and the failed 1.4.0 attempt is
+  logged per amendment 0001's gate-failure clause. **Extractor 1.4.0 → 1.5.0**
+  widens the direction lexicon — and the amendment records that this was measured
+  and is nearly worthless (defaults 403 → 393, 34.1% → 33.2%): the extractor
+  defaults on that prose because the prose carries no cue, so the rule applies
+  symmetrically and the scorer excludes `default`-derived claims from the
+  prediction side. Direction-transparent connectives ("contributed to", "added
+  to", "drove") are excluded from the lexicon on principle — they take polarity
+  from their object and mis-sign "contributing to a *reduced* risk"; a first
+  draft included them and a regression test caught it.
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
@@ -695,7 +722,7 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `llm.v1.json` requires `weights.revision` to be a 40-char commit hash (enforced
   going forward; satisfied by the now-pinned configs).
 
-All 232 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
+All 233 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
 firewall-audit, validate-configs, data-integrity, manifest-audit,
 mapping-completeness, release-closure, prereg-freeze, and doc-links are green.
 

@@ -1,6 +1,6 @@
 # EXP-G-001 extractor audit — blind protocol (extractor_audit_v2)
 
-Built 2026-08-10 by `tools/build_audit_batch.py`
+Built 2026-08-18 by `tools/build_audit_batch.py`
 from run `EXP-PILOT-001__3309768__2026-07-25T1354Z`, extractor **1.4.0**, seed **3001**
 (`seeds:gates:extractor_audit`). Regenerating with the same run and seed
 reproduces this batch byte for byte.

@@ -113,7 +113,7 @@ def test_extractor_version_is_stamped_current():
         feature_vocabulary=["Flow Duration"],
     )
     claims = ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased."))
-    assert claims.extractor_version == "1.4.0"
+    assert claims.extractor_version == "1.5.0"
 
 
 def test_rule_assisted_recovers_paraphrased_feature_names():
@@ -232,3 +232,37 @@ def test_rule_assisted_masks_substring_feature_collisions():
     assert "Fwd Packet Length Mean" in feats
     assert "Flow Duration" in feats
     assert "Packet Length Mean" not in feats  # masked: only matched inside the longer name
+
+
+def test_direction_cues_exclude_polarity_transparent_connectives():
+    """Extractor 1.5.0 (prereg amendment 0004). The 300-item audit showed the cue
+    lists were too narrow, but widening them is only safe for words that carry
+    polarity THEMSELVES.
+
+    "contributed to", "added to", "drove", "supports" inherit polarity from what
+    follows, so as bare cues they are wrong about as often as they are right —
+    and nearest-cue-wins would let the connective outrank the word carrying the
+    sign. A first draft of the expansion included them and this is the case that
+    caught it.
+    """
+    from faithfulids.extraction.extractor import _NEG_WORDS, _POS_WORDS
+
+    transparent = ("add", "contribut", "driv", "support", "toward", "favor")
+    for w in transparent:
+        assert w not in _POS_WORDS and w not in _NEG_WORDS, (
+            f"{w!r} is direction-transparent — it takes its sign from its object, "
+            f"so as a cue it mis-signs 'contributing to a reduced risk'"
+        )
+
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["Flow Duration", "Flow Bytes/s"],
+    )
+    text = ("Flow Duration was long, contributing to a reduced attack score. "
+            "Flow Bytes/s was elevated, which amplified the attack score.")
+    d = {c.feature: c.direction for c in ext.extract(
+        ExplanationRecord("i0", "b3_dte_style", text)).claims}
+    # the valenced word decides, not the connective that precedes it
+    assert d["Flow Duration"] is Direction.NEGATIVE
+    # and the widened positive stems do fire
+    assert d["Flow Bytes/s"] is Direction.POSITIVE

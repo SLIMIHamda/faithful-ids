@@ -42,8 +42,35 @@ def _norm(s: str) -> str:
 # the default-POSITIVE branch, mis-signing 63/150 instances (blind audit
 # 2026-07-11, extractor_audit_batch_v1). "increasing" fell through identically
 # but the POSITIVE default made it accidentally correct, hiding the bug.
-_POS_WORDS = ("increas", "rais", "higher", "elevat", "push")
-_NEG_WORDS = ("decreas", "lower", "reduc")
+#
+# Extractor 1.5.0: the 300-item audit found the lists too narrow — common
+# directional verbs ("added to the score", "contributed to", "drove", "signals")
+# matched nothing and fell to the default, which the base rate then made
+# accidentally right. Prereg amendment 0004 rules that a default is never
+# directional evidence, so every one of those was a false claim. Terms below are
+# generic directional verbs of English chosen as a CLASS, not harvested from the
+# cells that failed, and the list is not iterated against the score (amendment
+# 0004(E) discloses the residual exposure).
+# Only terms that carry polarity THEMSELVES belong here. Direction-transparent
+# connectives — "contributed to", "added to", "drove", "supports", "toward" —
+# inherit their polarity from the object that follows, so as bare cues they are
+# wrong roughly as often as they are right: "contributing to a REDUCED risk
+# assessment" is negative, and nearest-cue-wins would let the connective
+# outrank the word that actually carries the sign. A first draft of this
+# expansion included them and a regression test caught it immediately.
+#
+# The consequence is deliberate and is a known limitation: "added to the attack
+# score" carries explicit directional evidence a reader can see, and this
+# extractor still defaults on it. Under amendment 0004 that is a MISS (recall
+# cost), not a wrong sign — the honest failure of the two.
+_POS_WORDS = (
+    "increas", "rais", "higher", "elevat", "push", "boost", "amplif",
+    "strengthen", "reinforc", "heighten", "intensif", "upward",
+)
+_NEG_WORDS = (
+    "decreas", "lower", "reduc", "diminish", "weaken", "suppress", "dampen",
+    "lessen", "downward",
+)
 
 # A signed attribution value attached to a feature. B0 dumps raw SHAP as
 # "Feature=-7.9774" (sign-only, NO direction word), which the word-based parser

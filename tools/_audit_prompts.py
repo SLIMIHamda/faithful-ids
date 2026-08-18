@@ -30,13 +30,31 @@ and the direction the text asserts:
 
 - `"+"` — the text says the feature raises / pushes up the score for the class it argues for
 - `"-"` — the text says it lowers / pushes down that score
-- `"unclear"` — the text names the feature but commits to no direction
+- `"unclear"` — the text names the feature but gives no explicit directional evidence
 
 Set `"hedged": true` when a direction is softened ("may slightly reduce").
 
+## What counts as a directional claim
+
+**Only mark `+` or `-` when the text gives explicit evidence of the direction.**
+The text must say something about the feature's *effect*: that it increases,
+raises, lowers, reduces, drives, contributes to, adds to, weakens, or otherwise
+moves the score — or give a signed value for it.
+
+**Describing the feature's value is not a directional claim.** "A high PSH Flag
+Count (1.0) suggests potential payload manipulation typical of botnet activity"
+says the value is high and reads it as suspicious; it does not say the feature
+raises the score. That is **`unclear`**. So is "unusually large", "within normal
+bounds", "consistent with automated traffic" — unless the sentence also states
+the effect on the score.
+
+When you find yourself inferring the direction from what the feature *means*
+rather than reading it in the text, the answer is `unclear`.
+
 ## Rules
 
-1. Report **only what the prose says**, not whether it is correct about the traffic.
+1. Report **only what the prose says**, not whether it is correct about the
+   traffic, and not what you can infer about it.
 2. Use the **canonical feature name** from the vocabulary below, even when the
    text paraphrases it ("maximum forward packet length" -> `Fwd Packet Length Max`).
 3. A feature the text does not mention is simply left out. Do not emit `absent` rows.
