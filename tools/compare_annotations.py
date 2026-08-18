@@ -101,15 +101,20 @@ def discover(probe: Path, include: str | None,
     """
     passes: dict[str, dict] = {}
     cover: dict[str, set] = {}
-    seen: dict[str, str] = {}
 
     def add(name: str, files: list[Path], is_human: bool) -> None:
         labels: dict[tuple[str, str], str] = {}
         items: set[str] = set()
+        # De-duplication is scoped to ONE pass: the same reply saved twice under
+        # two extensions is a duplicate, but two ANNOTATORS producing identical
+        # content is perfect agreement and must be counted — dropping it would
+        # delete exactly the cells where they agree most and bias alpha down.
+        seen: dict[str, str] = {}
         for f in files:
             digest = hashlib.sha256(f.read_bytes()).hexdigest()
             if digest in seen:
-                print(f"note: {f.name} is byte-identical to {seen[digest]} — counted once")
+                print(f"note: {f.name} is byte-identical to {seen[digest]} "
+                      f"within {name} — counted once")
                 continue
             seen[digest] = f.name
             new = covered(f, is_human)

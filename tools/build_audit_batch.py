@@ -60,6 +60,7 @@ import yaml
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src"))
 
+from faithfulids.orchestration.config_loader import load_config  # noqa: E402
 from faithfulids.orchestration.references import resolve_reference  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -201,6 +202,34 @@ def build_items(picked: list[dict], vocab: dict[str, list[str]], decoys: int,
             "extractor_claims": rec["claims"],
         }
     return items, key
+
+
+def reextract(items: list[dict], key: dict, vocab: dict[str, list[str]]) -> str:
+    """Re-run the CURRENT extractor over the audit texts, in place on ``key``.
+
+    The claims frozen in a run's ``claims.jsonl`` belong to whatever extractor
+    version produced that run. The gate scores the instrument as it stands now,
+    so the prediction side has to be recomputed whenever the extractor moves —
+    and it can be, for free: the rule engine is pure Python with no model, no
+    GPU and no tokens. Stored beside the original claims rather than replacing
+    them, so the attempt log (amendment 0004(D)) keeps both.
+    """
+    from faithfulids.extraction import build as build_extractor
+    from faithfulids.framework import ExplanationRecord
+
+    cfg = load_config("extraction", "eval_extractor")
+    version = cfg["version"]
+    ext = build_extractor(cfg, llm_client=None, model_config=None,
+                          feature_vocabulary=sorted(vocab))
+    for it in items:
+        iid = it["item_id"]
+        claims = ext.extract(ExplanationRecord(
+            iid, key[iid]["generator_id"], it["explanation_text"])).claims
+        key[iid][f"extractor_claims_{version.replace('.', '_')}"] = [
+            {"feature": c.feature, "direction": c.direction.value,
+             "direction_evidence": c.direction_evidence} for c in claims
+        ]
+    return version
 
 
 # --------------------------------------------------------------------------- #
@@ -704,6 +733,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"NOTE: registered strata sum to {total}, --n is {args.n}; using the strata.")
     picked = sample(records, strata, rng)
     items, key = build_items(picked, vocab, args.decoys, rng, run_id)
+    current = reextract(items, key, vocab)
 
     out = args.out
     out.mkdir(parents=True, exist_ok=True)

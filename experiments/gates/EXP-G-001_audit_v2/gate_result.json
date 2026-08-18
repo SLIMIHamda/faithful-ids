@@ -1,0 +1,180 @@
+{
+ "batch": "EXP-G-001_audit_v2",
+ "annotators": [
+  "LLM_1_V2",
+  "LLM_2_V2"
+ ],
+ "n_items": 300,
+ "n_cells": 1843,
+ "agreement": 0.9880629408572978,
+ "cohens_kappa": 0.9809055028187764,
+ "krippendorff_alpha": 0.9809097076503164,
+ "n_disputed": 22,
+ "disputed_cells": [
+  {
+   "item_id": "aud2-017",
+   "feature": "Fwd Packet Length Std",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-039",
+   "feature": "Flow Bytes/s",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-092",
+   "feature": "Flow Duration",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-098",
+   "feature": "Packet Length Std",
+   "LLM_1_V2": "absent",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-114",
+   "feature": "Flow IAT Total",
+   "LLM_1_V2": "unclear",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-118",
+   "feature": "Max Packet Length",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-128",
+   "feature": "Bwd Packets/s",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-146",
+   "feature": "Bwd Packet Length Mean",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-154",
+   "feature": "Flow IAT Min",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-154",
+   "feature": "Max Packet Length",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-172",
+   "feature": "Fwd Packet Length Max",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-172",
+   "feature": "Init_Win_bytes_backward",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-172",
+   "feature": "Total Length of Fwd Packets",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-172",
+   "feature": "act_data_pkt_fwd",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-183",
+   "feature": "Flow Bytes/s",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "Bwd PSH Flags",
+   "LLM_1_V2": "unclear",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "Fwd PSH Flags",
+   "LLM_1_V2": "unclear",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-200",
+   "feature": "PSH Flag Count",
+   "LLM_1_V2": "absent",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-239",
+   "feature": "Fwd Header Length",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "absent"
+  },
+  {
+   "item_id": "aud2-264",
+   "feature": "Bwd Packet Length Mean",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-264",
+   "feature": "Init_Win_bytes_forward",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  },
+  {
+   "item_id": "aud2-283",
+   "feature": "Init_Win_bytes_forward",
+   "LLM_1_V2": "+",
+   "LLM_2_V2": "unclear"
+  }
+ ],
+ "extractor_claims_key": "extractor_claims_1_5_0",
+ "n_directional_claims": 1183,
+ "n_default": 393,
+ "default_share": 0.3322062552831784,
+ "threshold": 0.95,
+ "results": {
+  "agreed + adjudicated": {
+   "precision": 0.930379746835443,
+   "recall": 0.8323895809739524,
+   "f1": 0.8786610878661087,
+   "tp": 735,
+   "n_gold": 883,
+   "n_pred": 790
+  },
+  "disputed -> LLM_1_V2": {
+   "precision": 0.9316455696202531,
+   "recall": 0.8177777777777778,
+   "f1": 0.8710059171597633,
+   "tp": 736,
+   "n_gold": 900,
+   "n_pred": 790
+  },
+  "disputed -> LLM_2_V2": {
+   "precision": 0.930379746835443,
+   "recall": 0.8323895809739524,
+   "f1": 0.8786610878661087,
+   "tp": 735,
+   "n_gold": 883,
+   "n_pred": 790
+  }
+ },
+ "adjudication_can_change_verdict": false,
+ "passed": false
+}
