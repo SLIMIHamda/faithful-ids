@@ -719,6 +719,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--decoys", type=int, default=2,
                    help="unmentioned features added per item (default 2)")
     p.add_argument("--batch-id", default="extractor_audit_v2")
+    p.add_argument("--exclude", type=Path, action="append",
+                   help="an existing audit key whose (instance, generator) pairs are "
+                        "HELD OUT of this draw — builds a validation set disjoint from "
+                        "a batch the instrument was tuned on")
     args = p.parse_args(argv)
 
     seed = int(resolve_reference("seeds:gates")["extractor_audit"])
@@ -729,6 +733,17 @@ def main(argv: list[str] | None = None) -> int:
     versions = {r["extractor_version"] for r in records}
     if len(versions) != 1:
         raise SystemExit(f"mixed extractor versions in {run_id}: {sorted(versions)}")
+
+    used: set[tuple[str, str]] = set()
+    for kp in args.exclude or []:
+        prior = json.loads(kp.read_text(encoding="utf-8"))
+        used |= {(v["instance_id"], v["generator_id"]) for v in prior.values()}
+    if used:
+        before = len(records)
+        records = [r for r in records
+                   if (r["instance_id"], r["generator_id"]) not in used]
+        print(f"held out {before - len(records)} explanations already annotated in "
+              f"{len(args.exclude)} prior batch(es); {len(records)} remain")
 
     strata = dict(DEFAULT_STRATA)
     total = sum(strata.values())

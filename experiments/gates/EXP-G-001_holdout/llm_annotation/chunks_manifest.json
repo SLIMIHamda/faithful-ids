@@ -1,0 +1,25 @@
+{
+ "batch_id": "extractor_audit_holdout",
+ "chunk_size": 25,
+ "n_chunks": 3,
+ "chunks": [
+  {
+   "chunk": "chunk_01.md",
+   "n_items": 25,
+   "first": "aud2-000",
+   "last": "aud2-024"
+  },
+  {
+   "chunk": "chunk_02.md",
+   "n_items": 25,
+   "first": "aud2-025",
+   "last": "aud2-049"
+  },
+  {
+   "chunk": "chunk_03.md",
+   "n_items": 10,
+   "first": "aud2-050",
+   "last": "aud2-059"
+  }
+ ]
+}

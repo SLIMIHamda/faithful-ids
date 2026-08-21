@@ -144,35 +144,35 @@
    "LLM_2_V2": "unclear"
   }
  ],
- "extractor_claims_key": "extractor_claims_2_0_0",
- "n_directional_claims": 790,
+ "extractor_claims_key": "extractor_claims_2_1_0",
+ "n_directional_claims": 837,
  "n_default": 0,
  "default_share": 0.0,
  "threshold": 0.95,
  "results": {
   "agreed + adjudicated": {
-   "precision": 0.930379746835443,
-   "recall": 0.8323895809739524,
-   "f1": 0.8786610878661087,
-   "tp": 735,
+   "precision": 0.953405017921147,
+   "recall": 0.9037372593431483,
+   "f1": 0.9279069767441861,
+   "tp": 798,
    "n_gold": 883,
-   "n_pred": 790
+   "n_pred": 837
   },
   "disputed -> LLM_1_V2": {
-   "precision": 0.9316455696202531,
-   "recall": 0.8177777777777778,
-   "f1": 0.8710059171597633,
-   "tp": 736,
+   "precision": 0.954599761051374,
+   "recall": 0.8877777777777778,
+   "f1": 0.9199769717904432,
+   "tp": 799,
    "n_gold": 900,
-   "n_pred": 790
+   "n_pred": 837
   },
   "disputed -> LLM_2_V2": {
-   "precision": 0.930379746835443,
-   "recall": 0.8323895809739524,
-   "f1": 0.8786610878661087,
-   "tp": 735,
+   "precision": 0.953405017921147,
+   "recall": 0.9037372593431483,
+   "f1": 0.9279069767441861,
+   "tp": 798,
    "n_gold": 883,
-   "n_pred": 790
+   "n_pred": 837
   }
  },
  "adjudication_can_change_verdict": false,

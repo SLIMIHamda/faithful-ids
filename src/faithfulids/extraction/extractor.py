@@ -72,12 +72,35 @@ _NEG_WORDS = (
     "lessen", "downward",
 )
 
+# Direction-TRANSPARENT connectives (extractor 2.1.0). These take their polarity
+# from the object that follows — "contributed to a REDUCED risk" is negative —
+# so they are NOT valenced cues and must never outrank one. 2.0.0 excluded them
+# entirely, which the EXP-G-001 audit showed was the wrong correction: 120 of
+# 143 recall misses (84%) were sentences like "Active Min added to the BENIGN
+# score" and "the Idle Mean also contributed to the DoS score", where a reader
+# sees explicit directional evidence and the rule engine saw nothing.
+#
+# The fix is PRECEDENCE, not inclusion. A valenced cue anywhere in the window
+# wins (nearest first). Only when the window holds none does a transparent
+# connective count, and then as POSITIVE — because its object is the score
+# itself: to "add to" or "contribute to" the <class> score is to raise it.
+_TRANSPARENT_WORDS = (
+    "contribut", "add", "driv", "drove", "support", "signal", "reinforc",
+    "bolster", "push toward", "point to",
+)
+
 # A signed attribution value attached to a feature. B0 dumps raw SHAP as
 # "Feature=-7.9774" (sign-only, NO direction word), which the word-based parser
 # was defaulting to POSITIVE — collapsing DSA. Prefer the '=' form, then a
 # standalone explicitly-signed number. Unsigned magnitudes ("(magnitude 0.80)",
 # "by 4.55") deliberately do NOT match, so B1/B3 keep their word-driven signs.
-_NUM_AFTER_EQ = re.compile(r"=\s*([+-]?\d+(?:\.\d+)?)")
+# Extractor 2.1.0 requires an EXPLICIT sign. B0 always writes one
+# ("Total Backward Packets=+1.0998"), because the number IS a signed SHAP
+# attribution. B2 writes the feature's MEASURED VALUE in the same shape
+# ("PSH Flag Count = 1.0"), and with the sign optional that parsed as +1.0 —
+# the extractor reading a value as a direction, and 46 of the 55 false
+# positives in the EXP-G-001 audit. A value is not an attribution.
+_NUM_AFTER_EQ = re.compile(r"=\s*([+-]\d+(?:\.\d+)?)")
 _NUM_SIGNED = re.compile(r"(?<![\w.])([+-]\d+(?:\.\d+)?)")
 
 # Sentence terminator for the claim window (extractor 1.3.0). Lookahead keeps
@@ -266,6 +289,11 @@ class RuleAssistedExtractor(ClaimExtractor):
         if m:
             value = float(m.group(1))
             return Direction.from_value(value), abs(value), "number"
+        # No valenced cue and no signed value. A transparent connective now
+        # counts (2.1.0) — and only here, strictly after the valenced branch, so
+        # "contributing to a reduced risk" still resolves NEGATIVE above.
+        if any(w in window for w in _TRANSPARENT_WORDS):
+            return Direction.POSITIVE, None, "connective"
         # No cue and no signed value: the text does not say. Extractor 2.0.0
         # asserts NOTHING here (prereg amendment 0004) instead of falling back to
         # POSITIVE. The fallback was right often enough to look harmless -- "+"

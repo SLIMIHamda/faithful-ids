@@ -108,6 +108,7 @@ annotation is fixed, and every attempt is logged.** Attempts so far:
 | 1 | 2026-08-10 | 1.4.0 | pre-amendment LLM pass, strict reading | 0.741 | 0.990 | 0.848 | **FAILED** |
 | 2 | 2026-08-10 | 1.5.0 (widened lexicon) | re-elicited, 2 annotators, alpha 0.981 | 0.930 | 0.832 | **0.879** | **FAILED** |
 | 3 | 2026-08-10 | 2.0.0 (asserts no unevidenced direction) | same gold as attempt 2 | 0.930 | 0.832 | **0.879** | **FAILED** |
+| 4 | 2026-08-10 | 2.1.0 (connective precedence + signed-number requirement) | same gold as attempt 2 | 0.953 | 0.904 | **0.928** | **FAILED** |
 
 Attempt 1 is recorded as a failure even though its gold does not meet (B),
 because a result that looked like a pass under the lenient reading must not
@@ -202,3 +203,69 @@ A clean-room alternative — deriving the lexicon from a held-out corpus — is 
 stronger design and is **not** what was done. That is a limitation of this gate,
 stated rather than hidden. Given (E)'s measured result, it is also close to
 moot: the lexicon is not where this gate is decided.
+
+### Attempt 4, and a projection that was wrong
+
+Attempt 4 applied both defects registered above. `_NUM_AFTER_EQ` now requires an
+explicit sign — justified independently of the score by b0's own template,
+`f"{feature}={value:+.4f}"`, whose `:+` spec means a SHAP dump can never write an
+unsigned value (checked: 75 signed, 0 unsigned across the b0 stratum). And
+direction-transparent connectives were reinstated by **precedence rather than
+inclusion**: a valenced cue wins wherever it sits in the window, and a
+connective counts only when the window holds none, as POSITIVE.
+
+F1 moved 0.879 → **0.928. Still short of 0.95.**
+
+**The projection recorded before the attempt said 0.966, and it was wrong.** It
+assumed the recovered claims would be as clean as the ones already parsed. The
+mandatory split by `direction_evidence` shows they are not:
+
+| evidence | claims | precision |
+|---|---|---|
+| `word` | 669 | 0.987 |
+| `number` | 80 | 0.938 |
+| `connective` | 88 | **0.716** |
+
+"Added to the score" is genuinely weaker evidence than a valenced verb, and the
+connective branch brought in about 25 false positives along with the recall it
+recovered. This is the split doing the job (C) requires: a headline number that
+hid its composition would have made 0.928 look like simple progress rather than
+a trade.
+
+### Why the held-out validation is only partial
+
+Option 1 of the plan — tune on the audit set, validate on unseen items — is
+**structurally limited by an earlier design choice**. The sampling design
+censused `b3`, `b4` and `b5` at 60 items each, which is every explanation the
+source run contains for them. The held-out draw
+(`experiments/gates/EXP-G-001_holdout`, built with `--exclude`) therefore has
+**60 items and zero b3/b4/b5**: 15 b0, 15 b1, 20 b1l, 10 b2.
+
+The recall failures the connective fix targets live in b4 (60), b1l (53) and b5
+(29). So the held-out set can validate the signed-number fix on b2 (thinly, 10
+items) and the connective fix on b1l (20 items), and re-confirm the litmus — but
+it cannot validate the fix where it matters most. Genuinely unseen b4/b5 text
+requires a fresh generation run; the other available K-way run's b4 explanations
+are byte-identical to this one's, so they are not held-out data.
+
+Censusing bought statistical coverage of the hardest strata at the cost of
+having no reserve for validation. Recorded because it is a design lesson for any
+future audit sampling, not a defect to repair now.
+
+### The instrument under audit is the DEGRADED one
+
+`configs/extraction/eval_extractor.yaml` registers `rule_assisted: true` with a
+pinned LLM (`google/gemma-4-26B-A4B-it`). `RuleAssistedExtractor.extract` tries
+that model's JSON first and falls back to the regex engine only when no client
+is supplied — and the pilot supplies none, for GPU economy.
+
+**Every attempt in this log has therefore audited the fallback, not the
+registered instrument.** That is a fair thing to audit — the pilot really does
+run rule-only, and its numbers really are produced this way — but it means a
+failing verdict here does not establish that the registered extractor fails
+EXP-G-001. It establishes that the rule engine alone reaches F1 0.928 on this
+gold, with a residual concentrated in prose whose directional language is
+paraphrastic rather than lexical: exactly the class an LLM-assisted parse exists
+to handle. Deciding which instrument the gate is for is a prerequisite to
+attempt 5, and it is a scientific decision, not a tuning one.
+

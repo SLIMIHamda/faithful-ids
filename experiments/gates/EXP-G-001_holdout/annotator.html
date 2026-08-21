@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extractor audit — blind annotation (60 items)</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --panel:#fff; --ink:#1a202c; --muted:#64748b; --line:#e2e8f0;
+    --accent:#2563eb; --accent-soft:#dbeafe; --pos:#b45309; --pos-bg:#fef3c7;
+    --neg:#0e7490; --neg-bg:#cffafe; --unc:#6d28d9; --unc-bg:#ede9fe;
+    --abs:#475569; --abs-bg:#e2e8f0; --done:#15803d; --done-bg:#dcfce7; --hl:#fde68a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f172a; --panel:#1e293b; --ink:#e2e8f0; --muted:#94a3b8; --line:#334155;
+      --accent:#60a5fa; --accent-soft:#1e3a5f; --pos:#fbbf24; --pos-bg:#4a3510;
+      --neg:#22d3ee; --neg-bg:#0e3a45; --unc:#c4b5fd; --unc-bg:#312e5e;
+      --abs:#cbd5e1; --abs-bg:#33415c; --done:#4ade80; --done-bg:#14401f; --hl:#7a5c00;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.55 system-ui,"Segoe UI",Roboto,sans-serif}
+  #app{max-width:1180px;margin:0 auto;padding:18px 22px 70px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  header h1{font-size:17px;margin:0;font-weight:650}
+  .spacer{flex:1}
+  button{font:inherit;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+         border-radius:8px;padding:6px 12px;cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:4px 0 14px}
+  .bar>div{height:100%;background:var(--accent);width:0%;transition:width .2s}
+  .meta{color:var(--muted);font-size:13px}
+  .cols{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:start}
+  @media (max-width:920px){.cols{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .text{white-space:pre-wrap;font-size:15px;line-height:1.65}
+  .text mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 2px}
+  .claim{border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:9px}
+  .claim.done{border-color:var(--done);background:var(--done-bg)}
+  .fname{font-weight:600;font-size:14px;margin-bottom:7px;word-break:break-word}
+  .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .opt{border-radius:7px;padding:4px 9px;font-size:13px;border:1px solid var(--line)}
+  .opt[data-sel="1"]{font-weight:700}
+  .opt.pos[data-sel="1"]{background:var(--pos-bg);border-color:var(--pos);color:var(--pos)}
+  .opt.neg[data-sel="1"]{background:var(--neg-bg);border-color:var(--neg);color:var(--neg)}
+  .opt.unc[data-sel="1"]{background:var(--unc-bg);border-color:var(--unc);color:var(--unc)}
+  .opt.abs[data-sel="1"]{background:var(--abs-bg);border-color:var(--abs);color:var(--abs)}
+  .hedge{margin-top:6px;font-size:12px;color:var(--muted)}
+  .added{border-style:dashed}
+  .addrow{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .addrow input{font:inherit;padding:6px 9px;border:1px solid var(--line);border-radius:8px;
+                background:var(--bg);color:var(--ink);flex:1;min-width:210px}
+  textarea{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;
+           background:var(--bg);color:var(--ink);margin-top:10px}
+  .nav{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .grid{display:flex;flex-wrap:wrap;gap:3px;margin-top:12px}
+  .cell{width:19px;height:19px;border-radius:4px;border:1px solid var(--line);
+        font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .cell.done{background:var(--done);border-color:var(--done);color:#fff}
+  .cell.cur{outline:2px solid var(--accent)}
+  kbd{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+  details{margin:6px 0 14px}
+  summary{cursor:pointer;color:var(--accent);font-size:14px}
+  .warn{color:var(--pos);font-size:13px}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <h1>Extractor audit — blind annotation (60 items)</h1>
+  <label class="meta">annotator
+    <input id="who" placeholder="your name or initials" style="font:inherit;padding:4px 8px;
+      border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:170px">
+  </label>
+  <span class="spacer"></span>
+  <button id="export" class="primary">Export my annotations</button>
+</header>
+<div id="boot" class="warn"></div>
+<div class="meta" id="buckets"></div>
+<div class="meta">Saved in <b>this browser only</b>, under your annotator name. Export
+regularly &mdash; clearing site data or a private window loses unexported work.</div>
+<div class="meta" id="prog"></div>
+<div class="bar"><div id="pbar"></div></div>
+
+<details>
+<summary>What am I judging? (read once)</summary>
+<div class="panel" style="margin-top:8px">
+<p>You read an explanation written about a network-traffic classification. For every
+feature listed, say <b>what the text itself claims</b> about that feature's effect
+on the predicted class's score:</p>
+<ul>
+<li><b>+ raises</b> — the text says this feature pushes the score up / toward the predicted class.</li>
+<li><b>&minus; lowers</b> — the text says it pushes the score down / away.</li>
+<li><b>unclear</b> — the text mentions the feature but does not commit to a direction.</li>
+<li><b>absent</b> — the text does not actually talk about this feature. Some listed
+features are there precisely because they are <i>not</i> in the text.</li>
+</ul>
+<p><b>If the text claims a feature that is not in the list, add it</b> using the box at the
+bottom of the panel. Missing claims matter as much as wrong ones.</p>
+<p>Judge <b>only what the prose says</b>. Do not judge whether the text is correct about the
+traffic — that is a different question and not this task. Tick <i>hedged</i> when the text
+states a direction but softens it ("may slightly reduce", "possibly lowers").</p>
+<p>Keys: <kbd>1</kbd>&hairsp;/&hairsp;<kbd>2</kbd>&hairsp;/&hairsp;<kbd>3</kbd>&hairsp;/&hairsp;<kbd>4</kbd>
+set the focused feature, <kbd>&darr;</kbd>&hairsp;/&hairsp;<kbd>&uarr;</kbd> move between features,
+<kbd>&rarr;</kbd>&hairsp;/&hairsp;<kbd>&larr;</kbd> change item. Your work saves in this browser
+automatically — but export when you finish.</p>
+</div>
+</details>
+
+<div class="cols">
+  <div class="panel"><div class="text" id="text"></div></div>
+  <div>
+    <div class="panel">
+      <div id="claims"></div>
+      <div class="addrow">
+        <input id="addf" list="vocab" placeholder="The text claims another feature — type its name">
+        <datalist id="vocab"></datalist>
+        <button id="addbtn">Add</button>
+      </div>
+      <div class="warn" id="addwarn"></div>
+      <textarea id="note" rows="2" placeholder="Note on this item (optional)"></textarea>
+    </div>
+    <div class="nav">
+      <button id="prev">&larr; Previous</button>
+      <button id="next" class="primary">Next &rarr;</button>
+      <span class="meta" id="itemmeta"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+</div>
+
+<script type="application/json" id="batch-data">[{"item_id": "aud2-000", "explanation_text": "Explanation:  \n1. A high value in Init_Win_bytes_forward significantly increased the SSH-Patator score by 5.2456.  \n2. A high value in Init_Win_bytes_backward further increased the SSH-Patator score by 4.4060.  \n3. A high count of URG Flags increased the SSH-Patator score by 3.8950.  \n4. A larger min_seg_size_forward increased the SSH-Patator score by 1.0442.  \n5. A higher Bwd Packets/s increased the SSH-Patator score by 0.9203.  \n\nOverall decision: The network activity strongly indicates an SSH-Patator attack based on the cumulative contribution of these features", "candidates": ["Init_Win_bytes_backward", "Bwd Packets/s", "Fwd Avg Bulk Rate", "Init_Win_bytes_forward", "min_seg_size_forward", "URG Flag Count", "FIN Flag Count"]}, {"item_id": "aud2-001", "explanation_text": "Explanation:  \n1. High Init_Win_bytes_backward increased the BENIGN score by 1.8986.  \n2. A large number of Total Backward Packets further increased the BENIGN score by 1.0733.  \n3. Fwd Packet Length Max contributed to the BENIGN score with an increase of 0.6455.  \n4. Active Min also increased the BENIGN score by 0.6024.  \n5. Fwd IAT Std added to the BENIGN score with an increase of 0.4211.  \n\nThe decision favors BENIGN based on these contributing factors.", "candidates": ["Idle Mean", "Idle Std", "Total Backward Packets", "Active Min", "Fwd Packet Length Max", "Fwd IAT Std", "Init_Win_bytes_backward"]}, {"item_id": "aud2-002", "explanation_text": "SHAP attribution (top-5) for class DoS: Init_Win_bytes_backward=+2.8856; Idle Min=+1.0224; Idle Mean=+0.9044; FIN Flag Count=+0.7171; Bwd Packet Length Std=+0.7091", "candidates": ["Packet Length Variance", "Init_Win_bytes_backward", "Idle Min", "Avg Fwd Segment Size", "Idle Mean", "Bwd Packet Length Std", "FIN Flag Count", "Packet Length Std"]}, {"item_id": "aud2-003", "explanation_text": "Explanation:  \nThe Total Length of Fwd Packets significantly increased the PortScan score by 2.1011.  \nThe Init_Win_bytes_forward further increased the score by 1.0857.  \nThe Bwd Packets/s also contributed by increasing the score by 1.0750.  \nThe PSH Flag Count added to the score with a magnitude of 1.0241.  \nThe Flow Bytes/s increased the score by 0.8046.  \nThe cumulative effect of these factors led to the prediction of PortScan.", "candidates": ["Total Length of Fwd Packets", "Active Min", "Init_Win_bytes_forward", "Bwd Packets/s", "PSH Flag Count", "Flow Bytes/s", "Subflow Fwd Packets", "Fwd Packets/s"]}, {"item_id": "aud2-004", "explanation_text": "Explanation:  \nThe Total Length of Fwd Packets significantly increased the PortScan score by 2.0936.  \nThe Init_Win_bytes_forward further increased the PortScan score by 1.2529.  \nThe Flow Bytes/s contributed to the PortScan score with an increase of 1.1337.  \nThe PSH Flag Count added to the PortScan score, increasing it by 1.0112.  \nThe Packet Length Mean also raised the PortScan score by 0.6916.  \n\nOverall decision: The network flow was classified as PortScan due to the cumulative increase in the PortScan score from these contributing factors.", "candidates": ["Init_Win_bytes_forward", "Total Length of Fwd Packets", "PSH Flag Count", "Total Backward Packets", "Flow Duration", "Packet Length Mean", "Fwd Packets/s", "Flow Bytes/s"]}, {"item_id": "aud2-005", "explanation_text": "SHAP attribution (top-5) for class BENIGN: Init_Win_bytes_forward=+2.3657; Init_Win_bytes_backward=+0.5813; Average Packet Size=+0.5402; Packet Length Std=+0.2516; Fwd Header Length=+0.2288", "candidates": ["Init_Win_bytes_forward", "Average Packet Size", "Fwd Packet Length Mean", "Init_Win_bytes_backward", "Bwd Packet Length Max", "Fwd Header Length", "Packet Length Std"]}, {"item_id": "aud2-006", "explanation_text": "SHAP attribution (top-5) for class Bot: Init_Win_bytes_backward=+4.9280; Init_Win_bytes_forward=+3.1784; Fwd Header Length=+1.9376; Flow IAT Mean=-0.9125; Flow Bytes/s=+0.8479", "candidates": ["Flow IAT Mean", "Init_Win_bytes_backward", "Init_Win_bytes_forward", "Bwd IAT Mean", "Fwd Header Length", "Flow Bytes/s", "Bwd Packets/s"]}, {"item_id": "aud2-007", "explanation_text": "SHAP attribution (top-5) for class BENIGN: Init_Win_bytes_forward=+2.2500; Bwd Packet Length Min=+1.0519; Fwd Packet Length Max=+0.6535; Idle Min=-0.3133; Init_Win_bytes_backward=+0.2692", "candidates": ["Init_Win_bytes_forward", "Idle Min", "Flow IAT Mean", "Bwd Packet Length Min", "Init_Win_bytes_backward", "Fwd IAT Total", "Fwd Packet Length Max"]}, {"item_id": "aud2-008", "explanation_text": "Explanation:  \n1. High Init_Win_bytes_backward significantly increased the DoS score by 2.3553.  \n2. Elevated Idle Mean further increased the DoS score by 1.1049.  \n3. Increased Init_Win_bytes_forward added to the DoS score with a magnitude of 1.0896.  \n4. Greater Bwd Packet Length Std contributed to the DoS score by 0.9875.  \n5. Higher Idle Min also raised the DoS score by 0.9104.  \n\nThe model predicted **DoS** based on the cumulative impact of these contributing factors.", "candidates": ["Idle Mean", "Init_Win_bytes_backward", "Init_Win_bytes_forward", "Packet Length Std", "Idle Std", "Bwd Packet Length Std", "Fwd Avg Packets/Bulk", "Idle Min"]}, {"item_id": "aud2-009", "explanation_text": "Explanation:  \n1. A high Bwd Header Length significantly increased the SSH-Patator score by 4.8244.  \n2. A large Total Length of Bwd Packets further increased the SSH-Patator score by 4.3148.  \n3. A high Fwd Packet Length Std contributed to the SSH-Patator score with an increase of 1.1604.  \n4. A high Fwd Packet Length Max added to the SSH-Patator score with an increase of 1.0569.  \n5. A high min_seg_size_forward also increased the SSH-Patator score by 0.9651.  \n\nThe model predicts the connection is **SSH-Patator** due to the cumulative", "candidates": ["Packet Length Std", "Fwd Packet Length Std", "Bwd Header Length", "min_seg_size_forward", "Bwd PSH Flags", "Total Length of Bwd Packets", "URG Flag Count", "Fwd Packet Length Max"]}, {"item_id": "aud2-010", "explanation_text": "The model classified this flow as FTP-Patator. The most influential factors were: 1. Max Packet Length increased the FTP-Patator score (magnitude 6.3059); 2. Bwd Header Length increased the FTP-Patator score (magnitude 5.8738); 3. Fwd Packet Length Std increased the FTP-Patator score (magnitude 3.4219); 4. Packet Length Std increased the FTP-Patator score (magnitude 1.0442); 5. Init_Win_bytes_backward increased the FTP-Patator score (magnitude 0.7394).", "candidates": ["Fwd Packet Length Std", "Bwd Header Length", "Active Std", "Packet Length Std", "Max Packet Length", "Init_Win_bytes_backward", "Bwd Avg Bulk Rate"]}, {"item_id": "aud2-011", "explanation_text": "The flow was classified as **FTP-Patator** due to several key features indicating automated brute-force attempts. A **high PSH Flag Count (1.0)** suggests payload negotiation, common in FTP attempts. **High Bwd Header Length (488.0)** and **high Fwd Header Length (296.0)** indicate large header sizes typical of FTP traffic. Additionally, **low Average Packet Size (12.125)** and **low Avg Fwd Segment Size (11.444)** align with small data transfers seen in brute-force attacks. These features collectively point to automated FTP login attempts.", "candidates": ["Average Packet Size", "PSH Flag Count", "Bwd Header Length", "Fwd Header Length", "Total Length of Fwd Packets", "Init_Win_bytes_backward", "Avg Fwd Segment Size"]}, {"item_id": "aud2-012", "explanation_text": "The model classified this flow as DDoS. The most influential factors were: 1. act_data_pkt_fwd increased the DDoS score (magnitude 1.6010); 2. Init_Win_bytes_backward increased the DDoS score (magnitude 1.4036); 3. Bwd Packet Length Mean increased the DDoS score (magnitude 1.3349); 4. Fwd Packet Length Max increased the DDoS score (magnitude 1.3013); 5. Total Length of Bwd Packets increased the DDoS score (magnitude 0.6188).", "candidates": ["Init_Win_bytes_backward", "Fwd Packet Length Max", "Packet Length Mean", "Bwd Packet Length Std", "act_data_pkt_fwd", "Bwd Packet Length Mean", "Total Length of Bwd Packets", "Idle Min"]}, {"item_id": "aud2-013", "explanation_text": "The flow was classified as **DoS** due to high **Flow IAT Std** and **Flow IAT Max**, indicating highly variable intervals between packets, which is common in distributed denial-of-service attacks. The **Flow Duration** and **Flow IAT Max** suggest an unusually long session with irregular timing, potentially masking malicious traffic. Additionally, the **Bwd Header Length** and **Fwd Header Length** being unusually high may indicate abnormal packet structures often seen in DoS attacks.", "candidates": ["Flow IAT Max", "Flow Duration", "Fwd Header Length", "ACK Flag Count", "Flow IAT Std", "Fwd PSH Flags", "Bwd Header Length"]}, {"item_id": "aud2-014", "explanation_text": "Explanation:  \nThe Total Length of Fwd Packets significantly increased the FTP-Patator score by 4.1656.  \nFwd PSH Flags further increased the FTP-Patator score by 3.6462.  \nFwd Packet Length Std added to the FTP-Patator score with a magnitude of 2.7371.  \nPacket Length Std slightly decreased the FTP-Patator score by 1.3427.  \nInit_Win_bytes_forward contributed to the FTP-Patator score with a magnitude of 1.2817.  \n\nOverall decision: The network traffic was classified as FTP-Patator due to the cumulative effect of these contributing factors.", "candidates": ["Fwd Packet Length Std", "Bwd Packet Length Std", "Fwd Packets/s", "Active Max", "Total Length of Fwd Packets", "Packet Length Std", "Fwd PSH Flags", "Init_Win_bytes_forward"]}, {"item_id": "aud2-015", "explanation_text": "Explanation:  \nThe highest contributing factor was Fwd IAT Min, which significantly increased the Web Attack score by 7.2361. Next, Max Packet Length also increased the score by 4.7808. Flow IAT Min further raised the score by 2.1648. Init_Win_bytes_backward added 1.0627 to the score. Finally, Flow Duration contributed an additional 0.8855.  \nOverall decision: The network flow was classified as a Web Attack due to the cumulative increase in the Web Attack score from these key features.", "candidates": ["Flow Duration", "Init_Win_bytes_backward", "Fwd IAT Min", "Flow IAT Min", "Bwd IAT Max", "ACK Flag Count", "Max Packet Length"]}, {"item_id": "aud2-016", "explanation_text": "The flow was classified as **DoS** due to extremely high **Fwd Packets/s** and **Fwd Packets/s** values, indicating a massive rate of packets being sent in the forward direction, which is a common sign of a denial-of-service attack. The **Flow Packets/s** value of 666,666.67 suggests an abnormally high traffic rate, overwhelming the target system. Additionally, the **Fwd Packets/s** and **Fwd IAT Mean** values are unusually high, further supporting the detection of a potential DoS attack.", "candidates": ["Flow IAT Std", "RST Flag Count", "Fwd IAT Mean", "Fwd Packets/s", "Flow Packets/s"]}, {"item_id": "aud2-017", "explanation_text": "The model classified this flow as DDoS. The most influential factors were: 1. act_data_pkt_fwd increased the DDoS score (magnitude 2.9255); 2. Init_Win_bytes_forward increased the DDoS score (magnitude 1.3944); 3. Total Backward Packets increased the DDoS score (magnitude 1.1495); 4. Flow IAT Min increased the DDoS score (magnitude 0.6869); 5. Fwd Packet Length Max increased the DDoS score (magnitude 0.6766).", "candidates": ["Flow IAT Min", "Fwd Packet Length Max", "Init_Win_bytes_forward", "act_data_pkt_fwd", "URG Flag Count", "FIN Flag Count", "Total Backward Packets"]}, {"item_id": "aud2-018", "explanation_text": "Explanation:  \n1. The act_data_pkt_fwd value significantly increased the DDoS score by 1.8005.  \n2. The Bwd Packet Length Mean further increased the DDoS score by 1.7010.  \n3. The Init_Win_bytes_forward contributed to the DDoS score with an increase of 1.0361.  \n4. The Fwd Packet Length Max added to the DDoS score with an increase of 0.8815.  \n5. The Init_Win_bytes_backward also increased the DDoS score by 0.7416.  \n\nOverall decision: The network traffic was classified as DDoS due to the cumulative effect of these contributing factors.", "candidates": ["Init_Win_bytes_backward", "act_data_pkt_fwd", "Fwd Packet Length Max", "URG Flag Count", "Flow Duration", "Packet Length Mean", "Bwd Packet Length Mean", "Init_Win_bytes_forward"]}, {"item_id": "aud2-019", "explanation_text": "The flow was classified as **FTP-Patator** due to several key features indicating automated, repetitive brute-force attempts. A **high PSH Flag Count (1.0)** suggests payload negotiation, common in FTP. **High Bwd Header Length (488.0)** and **high Fwd Header Length (296.0)** indicate large headers, often used to bypass rate limits. Additionally, **low Average Packet Size (11.95)** and **low Avg Fwd Segment Size (11.0)** suggest small, frequent data transfers typical of automated login attempts. These features align with FTP-Patator's behavior of sending many small packets in rapid succession.", "candidates": ["Flow IAT Mean", "PSH Flag Count", "Total Backward Packets", "Average Packet Size", "Avg Fwd Segment Size", "Bwd Header Length", "Fwd Header Length"]}, {"item_id": "aud2-020", "explanation_text": "Explanation:  \nThe Total Length of Fwd Packets significantly increased the PortScan score by 2.0969.  \nThe Init_Win_bytes_forward further increased the PortScan score by 1.2595.  \nThe PSH Flag Count contributed to the PortScan score by increasing it by 1.0109.  \nThe Flow Bytes/s added to the PortScan score with a magnitude of 0.9072.  \nThe Bwd Packets/s also increased the PortScan score by 0.7932.  \n\nOverall decision: The network flow was classified as PortScan due to the cumulative effect of these contributing factors.", "candidates": ["Fwd Packets/s", "Bwd Packets/s", "Avg Fwd Segment Size", "Total Length of Fwd Packets", "Flow IAT Max", "Init_Win_bytes_forward", "PSH Flag Count", "Flow Bytes/s"]}, {"item_id": "aud2-021", "explanation_text": "The model classified this flow as PortScan. The most influential factors were: 1. Total Length of Fwd Packets increased the PortScan score (magnitude 2.2285); 2. PSH Flag Count increased the PortScan score (magnitude 0.8674); 3. Bwd Packets/s increased the PortScan score (magnitude 0.7822); 4. Flow IAT Mean decreased the PortScan score (magnitude 0.6310); 5. Fwd Packets/s decreased the PortScan score (magnitude 0.4954).", "candidates": ["Bwd Packet Length Min", "Bwd Packets/s", "Total Length of Fwd Packets", "Fwd Packets/s", "Fwd Avg Bulk Rate", "PSH Flag Count", "Flow IAT Mean"]}, {"item_id": "aud2-022", "explanation_text": "SHAP attribution (top-5) for class FTP-Patator: Max Packet Length=+6.3059; Bwd Header Length=+5.8738; Fwd Packet Length Std=+3.3831; Packet Length Std=+1.0632; Init_Win_bytes_backward=+0.7394", "candidates": ["Init_Win_bytes_backward", "Active Min", "Bwd PSH Flags", "Bwd Header Length", "Max Packet Length", "Fwd Packet Length Std", "Packet Length Std"]}, {"item_id": "aud2-023", "explanation_text": "Explanation:  \n1. High Init_Win_bytes_backward significantly increased the Bot score by 4.5495.  \n2. Bwd IAT Std further increased the Bot score by 1.4471.  \n3. Init_Win_bytes_forward contributed to the Bot score with an increase of 1.2292.  \n4. Bwd Packet Length Max added to the Bot score with an increase of 0.9696.  \n5. Total Length of Bwd Packets also increased the Bot score by 0.8811.  \n\nThe model predicted **Bot** based on the cumulative impact of these contributing factors.", "candidates": ["Init_Win_bytes_forward", "Total Length of Bwd Packets", "Bwd IAT Std", "Bwd Packet Length Max", "Bwd Avg Bulk Rate", "Bwd Packet Length Mean", "Init_Win_bytes_backward"]}, {"item_id": "aud2-024", "explanation_text": "The model classified this flow as DDoS. The most influential factors were: 1. Init_Win_bytes_backward increased the DDoS score (magnitude 1.5499); 2. act_data_pkt_fwd increased the DDoS score (magnitude 1.3816); 3. Bwd Packet Length Mean increased the DDoS score (magnitude 1.3386); 4. Fwd Packet Length Max increased the DDoS score (magnitude 1.3085); 5. Packet Length Mean increased the DDoS score (magnitude 0.6241).", "candidates": ["act_data_pkt_fwd", "Bwd Packet Length Mean", "Init_Win_bytes_backward", "Packet Length Mean", "Fwd Packet Length Max", "Fwd IAT Min", "Subflow Bwd Bytes"]}, {"item_id": "aud2-025", "explanation_text": "Explanation:  \n1. High Init_Win_bytes_backward significantly increased the Bot score by 3.1951.  \n2. Bwd IAT Min further increased the Bot score by 3.0518.  \n3. Flow IAT Max contributed to the Bot score with an increase of 2.5033.  \n4. Fwd IAT Max added to the Bot score with an increase of 1.6841.  \n5. Bwd Packet Length Max also raised the Bot score by 1.6075.  \n\nThe decision to classify the instance as Bot was driven by multiple factors that collectively increased the Bot score.", "candidates": ["Fwd IAT Min", "Init_Win_bytes_backward", "Bwd IAT Min", "Bwd Packet Length Max", "Flow IAT Max", "Idle Std", "Fwd IAT Max"]}, {"item_id": "aud2-026", "explanation_text": "SHAP attribution (top-5) for class DDoS: act_data_pkt_fwd=+1.5998; Init_Win_bytes_backward=+1.3344; Fwd Packet Length Max=+1.2650; Total Length of Fwd Packets=+1.2297; Init_Win_bytes_forward=-0.6668", "candidates": ["Init_Win_bytes_forward", "Flow IAT Std", "Init_Win_bytes_backward", "Fwd Packet Length Max", "Total Length of Fwd Packets", "FIN Flag Count", "act_data_pkt_fwd"]}, {"item_id": "aud2-027", "explanation_text": "SHAP attribution (top-5) for class PortScan: Total Length of Fwd Packets=+2.1036; Bwd Packets/s=+1.2072; Init_Win_bytes_forward=+1.1976; PSH Flag Count=+1.0046; Flow Duration=+0.7669", "candidates": ["Init_Win_bytes_forward", "Flow Duration", "PSH Flag Count", "Bwd Packets/s", "Flow Packets/s", "Total Length of Fwd Packets", "Idle Min"]}, {"item_id": "aud2-028", "explanation_text": "The flow was classified as **FTP-Patator** due to several key features indicating automated brute-force attempts. A **SYN Flag Count = 1.0** suggests initiation of a connection, while **Fwd PSH Flags = 1.0** and **Fwd Packet Length Mean = 7.0** indicate data transmission behavior typical of FTP. Additionally, **Flow Duration = 230.0** and **Flow Packets/s = 13043.47826** suggest high-frequency, short-lived connections, consistent with automated login attempts. These features align with the pattern of FTP-Patator, which systematically tries credentials.", "candidates": ["Max Packet Length", "Flow Packets/s", "SYN Flag Count", "Bwd IAT Total", "Fwd PSH Flags", "Flow Duration", "Packet Length Mean", "Fwd Packet Length Mean"]}, {"item_id": "aud2-029", "explanation_text": "The flow was classified as **Web Attack** due to the presence of **PSH Flag Count = 1.0**, which suggests potential payload manipulation, and **Subflow Fwd Packets = 3.0**, indicating fragmented or unusual packet behavior. Additionally, **Bwd Header Length = 40.0** and **Fwd Header Length = 104.0** suggest abnormal header sizes, which may indicate attempts to bypass security filters. These features collectively point toward suspicious network behavior consistent with a Web Attack.", "candidates": ["Bwd Header Length", "Subflow Fwd Packets", "Fwd Header Length", "Active Max", "FIN Flag Count", "PSH Flag Count"]}, {"item_id": "aud2-030", "explanation_text": "This flow was classified as **DDoS** due to high **Flow Packets/s** (89.78) and **Bwd Packets/s** (51.31), indicating a high rate of packets, which is common in DDoS attacks. The **Flow Duration** (77,965 ms) and **Bwd IAT Std** (44,110.52) suggest irregular intervals between packets, a sign of distributed traffic. Additionally, the **Bwd Header Length** (92.0) and **Bwd Packet Length Std** (5,795.50) show large and variable packet sizes, which can indicate malicious traffic patterns.", "candidates": ["URG Flag Count", "Bwd IAT Std", "Flow Packets/s", "Bwd Packets/s", "Min Packet Length", "Flow Duration", "Packet Length Std", "Bwd Header Length", "Bwd Packet Length Std"]}, {"item_id": "aud2-031", "explanation_text": "The flow was classified as **PortScan** due to high **Bwd Packets/s** (15,151.52) and **Flow Packets/s** (30,303.03), indicating a high rate of packets sent in a short time, typical of scanning behavior. The **PSH Flag Count** is 1.0, suggesting attempts to push data, often seen in scans. Additionally, **Flow Duration** (66.0) and **Flow IAT Std** (0.0) show a very short and consistent interval between packets, further supporting the scan pattern.", "candidates": ["Fwd Packet Length Max", "Subflow Fwd Bytes", "Flow Packets/s", "Bwd Packets/s", "Flow Duration", "PSH Flag Count", "Flow IAT Std"]}, {"item_id": "aud2-032", "explanation_text": "SHAP attribution (top-5) for class Bot: Init_Win_bytes_backward=+4.5495; Bwd IAT Std=+1.4471; Init_Win_bytes_forward=+1.2292; Bwd Packet Length Max=+0.9696; Total Length of Bwd Packets=+0.8811", "candidates": ["Init_Win_bytes_forward", "Init_Win_bytes_backward", "Bwd Packet Length Max", "ACK Flag Count", "Bwd IAT Std", "Total Length of Bwd Packets", "Bwd Avg Packets/Bulk"]}, {"item_id": "aud2-033", "explanation_text": "Explanation:  \nThe highest contributing factor was Max Packet Length, which increased the FTP-Patator score by 6.3059. Next, Bwd Header Length also increased the score by 5.8738. Fwd Packet Length Std contributed by increasing the score by 3.3756. Packet Length Std further increased the score by 1.1028. Finally, Init_Win_bytes_backward added 0.7394 to the FTP-Patator score.  \n\nOverall decision: The network traffic was classified as FTP-Patator due to the cumulative effect of these contributing factors increasing the predicted score.", "candidates": ["Init_Win_bytes_backward", "Total Length of Fwd Packets", "Bwd Header Length", "Max Packet Length", "Fwd Avg Packets/Bulk", "Fwd Packet Length Std", "Packet Length Std"]}, {"item_id": "aud2-034", "explanation_text": "SHAP attribution (top-5) for class DoS: Init_Win_bytes_backward=+2.9496; Idle Min=+0.9958; Idle Mean=+0.9613; Bwd Packet Length Std=+0.7817; FIN Flag Count=+0.6414", "candidates": ["Bwd Packet Length Std", "Fwd Avg Bytes/Bulk", "Idle Min", "FIN Flag Count", "Packet Length Std", "Fwd IAT Max", "Idle Mean", "Init_Win_bytes_backward"]}, {"item_id": "aud2-035", "explanation_text": "The model classified this flow as Web Attack. The most influential factors were: 1. Fwd IAT Min increased the Web Attack score (magnitude 7.4495); 2. Max Packet Length increased the Web Attack score (magnitude 4.7825); 3. Flow IAT Min increased the Web Attack score (magnitude 2.0858); 4. Init_Win_bytes_backward increased the Web Attack score (magnitude 1.2049); 5. Flow Duration increased the Web Attack score (magnitude 0.9704).", "candidates": ["Flow Duration", "Max Packet Length", "Fwd IAT Min", "Flow IAT Min", "Bwd Header Length", "Init_Win_bytes_backward", "Active Max"]}, {"item_id": "aud2-036", "explanation_text": "SHAP attribution (top-5) for class FTP-Patator: Max Packet Length=+6.3059; Bwd Header Length=+5.8738; Packet Length Std=+0.9814; Average Packet Size=+0.7531; Flow Duration=-0.7240", "candidates": ["Bwd Packets/s", "Packet Length Std", "Max Packet Length", "Average Packet Size", "Bwd Packet Length Max", "Bwd Header Length", "Flow Duration"]}, {"item_id": "aud2-037", "explanation_text": "The model classified this flow as Bot. The most influential factors were: 1. Init_Win_bytes_backward increased the Bot score (magnitude 5.0289); 2. Init_Win_bytes_forward increased the Bot score (magnitude 3.5115); 3. Fwd Header Length increased the Bot score (magnitude 1.9376); 4. Flow Bytes/s increased the Bot score (magnitude 1.0307); 5. Fwd Packets/s increased the Bot score (magnitude 0.5474).", "candidates": ["Init_Win_bytes_backward", "Fwd Packets/s", "Init_Win_bytes_forward", "Bwd IAT Min", "Fwd Avg Bytes/Bulk", "Fwd Header Length", "Flow Bytes/s"]}, {"item_id": "aud2-038", "explanation_text": "The model classified this flow as DoS. The most influential factors were: 1. Init_Win_bytes_forward increased the DoS score (magnitude 2.7883); 2. Average Packet Size increased the DoS score (magnitude 1.1829); 3. Bwd Packets/s increased the DoS score (magnitude 1.1344); 4. Fwd Packets/s increased the DoS score (magnitude 1.1151); 5. Flow IAT Max increased the DoS score (magnitude 0.5386).", "candidates": ["Bwd Packets/s", "Average Packet Size", "SYN Flag Count", "Init_Win_bytes_forward", "Bwd PSH Flags", "Flow IAT Max", "Fwd Packets/s"]}, {"item_id": "aud2-039", "explanation_text": "SHAP attribution (top-5) for class FTP-Patator: Max Packet Length=+6.3059; Bwd Header Length=+5.8738; Fwd Packet Length Std=+3.4468; Packet Length Std=+1.0859; Init_Win_bytes_backward=+0.7394", "candidates": ["Bwd Header Length", "URG Flag Count", "Fwd Packet Length Std", "Init_Win_bytes_backward", "Max Packet Length", "Fwd IAT Total", "Packet Length Std"]}, {"item_id": "aud2-040", "explanation_text": "Explanation:  \nThe act_data_pkt_fwd value significantly increased the DDoS score by 2.7415, indicating a strong association with DDoS activity. The Init_Win_bytes_forward further increased the score by 1.4088, suggesting forward data transmission patterns typical of DDoS attacks. Total Backward Packets added 1.1466 to the score, highlighting unusual backward traffic behavior. Fwd Packet Length Max contributed 0.6766, pointing to large packet sizes often seen in DDoS attacks. Flow IAT Min added 0.6231, showing minimal intervals between packets, a common characteristic in DDoS scenarios.  \n\nOverall decision: The system classified the network flow as a DDoS attack", "candidates": ["Subflow Bwd Packets", "min_seg_size_forward", "Total Backward Packets", "act_data_pkt_fwd", "Init_Win_bytes_forward", "Fwd Packet Length Max", "Flow IAT Min"]}, {"item_id": "aud2-041", "explanation_text": "The model classified this flow as DoS. The most influential factors were: 1. Init_Win_bytes_backward increased the DoS score (magnitude 3.0045); 2. Idle Min increased the DoS score (magnitude 0.9849); 3. Idle Mean increased the DoS score (magnitude 0.9684); 4. Bwd Packet Length Std increased the DoS score (magnitude 0.7922); 5. FIN Flag Count increased the DoS score (magnitude 0.6434).", "candidates": ["Idle Mean", "Idle Min", "Init_Win_bytes_backward", "Max Packet Length", "FIN Flag Count", "CWE Flag Count", "Packet Length Std", "Bwd Packet Length Std"]}, {"item_id": "aud2-042", "explanation_text": "The model classified this flow as Web Attack. The most influential factors were: 1. Init_Win_bytes_forward increased the Web Attack score (magnitude 4.5109); 2. Init_Win_bytes_backward increased the Web Attack score (magnitude 4.0522); 3. URG Flag Count increased the Web Attack score (magnitude 0.9659); 4. min_seg_size_forward increased the Web Attack score (magnitude 0.6676); 5. Flow Duration increased the Web Attack score (magnitude 0.5196).", "candidates": ["min_seg_size_forward", "Flow Duration", "Init_Win_bytes_forward", "Avg Bwd Segment Size", "Subflow Fwd Bytes", "URG Flag Count", "Init_Win_bytes_backward"]}, {"item_id": "aud2-043", "explanation_text": "Explanation:  \n1. High Init_Win_bytes_backward significantly increased the Bot score by 5.0289.  \n2. High Init_Win_bytes_forward further increased the Bot score by 3.5115.  \n3. Increased Fwd Header Length added 1.9376 to the Bot score.  \n4. Elevated Flow Bytes/s contributed 1.0307 to the Bot score.  \n5. Higher Fwd Packets/s added 0.5474 to the Bot score.  \n\nThe model predicted **Bot** based on the cumulative impact of these contributing factors.", "candidates": ["Init_Win_bytes_forward", "Flow Bytes/s", "Init_Win_bytes_backward", "Fwd Packets/s", "Fwd Header Length", "Avg Fwd Segment Size", "Fwd Avg Bulk Rate"]}, {"item_id": "aud2-044", "explanation_text": "SHAP attribution (top-5) for class Web Attack: Fwd IAT Min=+7.3025; Max Packet Length=+4.7825; Flow IAT Min=+1.9237; Init_Win_bytes_backward=+0.8456; min_seg_size_forward=+0.8427", "candidates": ["Bwd Avg Bulk Rate", "min_seg_size_forward", "Init_Win_bytes_backward", "Flow Bytes/s", "Max Packet Length", "Fwd IAT Min", "Flow IAT Min"]}, {"item_id": "aud2-045", "explanation_text": "Explanation:  \n1. A high value in Init_Win_bytes_forward significantly increased the SSH-Patator score by 5.0303.  \n2. A high value in Init_Win_bytes_backward further increased the SSH-Patator score by 4.4092.  \n3. A high count of URG Flags increased the SSH-Patator score by 3.8950.  \n4. A larger min_seg_size_forward increased the SSH-Patator score by 1.0347.  \n5. A higher Bwd Packets/s increased the SSH-Patator score by 0.8035.  \n\nOverall decision: The network activity strongly indicates an SSH-Patator attack based on the cumulative contribution of these features", "candidates": ["Bwd Packets/s", "min_seg_size_forward", "Init_Win_bytes_forward", "Bwd IAT Std", "Fwd Packet Length Max", "Init_Win_bytes_backward", "URG Flag Count"]}, {"item_id": "aud2-046", "explanation_text": "SHAP attribution (top-5) for class FTP-Patator: Total Length of Fwd Packets=+4.1582; Fwd PSH Flags=+4.0821; Fwd Packet Length Std=+2.5015; Init_Win_bytes_forward=+1.3521; Packet Length Std=+1.2594", "candidates": ["Total Length of Fwd Packets", "Packet Length Std", "Fwd Packet Length Mean", "Fwd Avg Bytes/Bulk", "Init_Win_bytes_forward", "Fwd PSH Flags", "Fwd Packet Length Std"]}, {"item_id": "aud2-047", "explanation_text": "Explanation:  \nThe highest contributing factor was Max Packet Length, which increased the FTP-Patator score by 6.3059. Next, Bwd Header Length also increased the score by 5.8738. Fwd Packet Length Std contributed by increasing the score by 3.4468. Packet Length Std further increased the score by 1.0859. Finally, Init_Win_bytes_backward added 0.7394 to the FTP-Patator score.  \n\nOverall decision: The network traffic was classified as FTP-Patator due to the cumulative effect of these contributing factors increasing the predicted score.", "candidates": ["Init_Win_bytes_backward", "Max Packet Length", "Fwd Packet Length Std", "Bwd Header Length", "Packet Length Std", "Bwd Packet Length Min", "Flow IAT Max"]}, {"item_id": "aud2-048", "explanation_text": "The model classified this flow as DDoS. The most influential factors were: 1. act_data_pkt_fwd increased the DDoS score (magnitude 2.7415); 2. Init_Win_bytes_forward increased the DDoS score (magnitude 1.4088); 3. Total Backward Packets increased the DDoS score (magnitude 1.1466); 4. Fwd Packet Length Max increased the DDoS score (magnitude 0.6766); 5. Flow IAT Min increased the DDoS score (magnitude 0.6231).", "candidates": ["act_data_pkt_fwd", "Total Backward Packets", "Bwd Packet Length Max", "Flow IAT Min", "Init_Win_bytes_forward", "Flow Packets/s", "Fwd Packet Length Max"]}, {"item_id": "aud2-049", "explanation_text": "The model classified this flow as SSH-Patator. The most influential factors were: 1. Init_Win_bytes_forward increased the SSH-Patator score (magnitude 5.2456); 2. Init_Win_bytes_backward increased the SSH-Patator score (magnitude 4.4060); 3. URG Flag Count increased the SSH-Patator score (magnitude 3.8950); 4. min_seg_size_forward increased the SSH-Patator score (magnitude 1.0442); 5. Bwd Packets/s increased the SSH-Patator score (magnitude 0.9203).", "candidates": ["Init_Win_bytes_forward", "Flow IAT Mean", "Init_Win_bytes_backward", "URG Flag Count", "Bwd Packets/s", "Bwd IAT Std", "min_seg_size_forward"]}, {"item_id": "aud2-050", "explanation_text": "SHAP attribution (top-5) for class SSH-Patator: Bwd Header Length=+4.8244; Total Length of Bwd Packets=+4.3185; Fwd Packet Length Std=+1.1687; Fwd Packet Length Max=+1.0569; min_seg_size_forward=+0.9677", "candidates": ["Total Length of Fwd Packets", "Total Length of Bwd Packets", "Bwd Header Length", "Fwd Packet Length Max", "Init_Win_bytes_backward", "Packet Length Std", "Fwd Packet Length Std", "min_seg_size_forward"]}, {"item_id": "aud2-051", "explanation_text": "Explanation:  \n1. A high value in Init_Win_bytes_forward significantly increased the DoS score by 3.1715.  \n2. Fwd Packets/s further increased the DoS score by 1.4065.  \n3. Average Packet Size contributed to the DoS score with an increase of 1.1822.  \n4. Bwd Packets/s added to the DoS score, increasing it by 1.0944.  \n5. Flow IAT Min also raised the DoS score by 0.7456.  \n\nThe combination of these factors led to the prediction of a DoS attack.", "candidates": ["Idle Max", "Flow IAT Min", "Bwd Packets/s", "Init_Win_bytes_forward", "Fwd Avg Bytes/Bulk", "Average Packet Size", "Fwd Packets/s"]}, {"item_id": "aud2-052", "explanation_text": "The model classified this flow as FTP-Patator. The most influential factors were: 1. Max Packet Length increased the FTP-Patator score (magnitude 6.3059); 2. Bwd Header Length increased the FTP-Patator score (magnitude 5.8738); 3. Fwd Packet Length Std increased the FTP-Patator score (magnitude 3.3756); 4. Packet Length Std increased the FTP-Patator score (magnitude 1.1028); 5. Init_Win_bytes_backward increased the FTP-Patator score (magnitude 0.7394).", "candidates": ["Bwd IAT Total", "Total Length of Fwd Packets", "Bwd Header Length", "Max Packet Length", "Packet Length Std", "Init_Win_bytes_backward", "Fwd Packet Length Std"]}, {"item_id": "aud2-053", "explanation_text": "Explanation:  \n1. High Init_Win_bytes_backward significantly increased the DoS score by 3.0045.  \n2. A long Idle Min further increased the DoS score by 0.9849.  \n3. A high Idle Mean also contributed to the DoS score by 0.9684.  \n4. Elevated Bwd Packet Length Std added to the DoS score with a magnitude of 0.7922.  \n5. A notable FIN Flag Count increased the DoS score by 0.6434.  \n\nThe model predicted **DoS** based on the cumulative impact of these contributing factors.", "candidates": ["FIN Flag Count", "Average Packet Size", "Bwd Packet Length Std", "Idle Mean", "Active Std", "Init_Win_bytes_backward", "Packet Length Std", "Idle Min"]}, {"item_id": "aud2-054", "explanation_text": "The model classified this flow as PortScan. The most influential factors were: 1. Total Length of Fwd Packets increased the PortScan score (magnitude 2.0936); 2. Init_Win_bytes_forward increased the PortScan score (magnitude 1.2529); 3. Flow Bytes/s increased the PortScan score (magnitude 1.1337); 4. PSH Flag Count increased the PortScan score (magnitude 1.0112); 5. Packet Length Mean increased the PortScan score (magnitude 0.6916).", "candidates": ["Packet Length Mean", "Init_Win_bytes_forward", "Total Length of Fwd Packets", "min_seg_size_forward", "Flow Bytes/s", "PSH Flag Count", "Idle Max"]}, {"item_id": "aud2-055", "explanation_text": "The flow was classified as **BENIGN** due to its low traffic volume and lack of suspicious flags. The **Flow Duration** of 1404.0 seconds and **Flow Packets/s** of 2849.0 suggest a steady, controlled data transfer. Additionally, **Bwd Packets/s** and **Fwd Packets/s** are both high, indicating balanced bidirectional communication. The absence of **SYN**, **FIN**, **RST**, or **PSH** flags, along with low **ACK Flag Count**, suggests no abrupt connection termination or retransmission, further supporting a benign classification.", "candidates": ["Fwd Packets/s", "Bwd Packets/s", "Total Length of Fwd Packets", "ACK Flag Count", "Flow Duration", "Flow Packets/s", "Flow IAT Max"]}, {"item_id": "aud2-056", "explanation_text": "The model classified this flow as DDoS. The most influential factors were: 1. act_data_pkt_fwd increased the DDoS score (magnitude 1.8005); 2. Bwd Packet Length Mean increased the DDoS score (magnitude 1.7010); 3. Init_Win_bytes_forward increased the DDoS score (magnitude 1.0361); 4. Fwd Packet Length Max increased the DDoS score (magnitude 0.8815); 5. Init_Win_bytes_backward increased the DDoS score (magnitude 0.7416).", "candidates": ["Packet Length Mean", "Flow IAT Min", "Bwd Packet Length Min", "Init_Win_bytes_backward", "act_data_pkt_fwd", "Fwd Packet Length Max", "Bwd Packet Length Mean", "Init_Win_bytes_forward"]}, {"item_id": "aud2-057", "explanation_text": "SHAP attribution (top-5) for class DoS: Init_Win_bytes_forward=+3.1595; Fwd Packets/s=+1.4043; Average Packet Size=+1.1826; Bwd Packets/s=+1.0940; Flow IAT Min=+0.7441", "candidates": ["Fwd Packets/s", "Flow Bytes/s", "Average Packet Size", "Flow IAT Min", "Bwd Packets/s", "Idle Mean", "Init_Win_bytes_forward"]}, {"item_id": "aud2-058", "explanation_text": "Explanation:  \nThe Total Length of Fwd Packets significantly increased the PortScan score by 2.1038.  \nThe Flow IAT Mean further increased the PortScan score by 1.1835.  \nThe Flow IAT Min also increased the PortScan score by 1.0859.  \nThe Init_Win_bytes_forward contributed to the increase by 1.0777.  \nThe PSH Flag Count added a smaller increase of 1.0242 to the PortScan score.  \n\nOverall decision: The network flow was classified as PortScan due to the cumulative effect of these contributing factors.", "candidates": ["Fwd Packets/s", "SYN Flag Count", "Init_Win_bytes_forward", "CWE Flag Count", "PSH Flag Count", "Flow IAT Min", "Flow IAT Mean", "Total Length of Fwd Packets"]}, {"item_id": "aud2-059", "explanation_text": "The flow was classified as **DDoS** due to its unusually long **Flow Duration** (8,001,793.0) and **Flow IAT Std** (4,618,963.55), indicating irregular and potentially malicious timing patterns. The **Fwd Packets/s** and **Flow Packets/s** are very low (0.5), suggesting a slow but sustained attack, while **Active Max**, **Idle Max**, and **Fwd IAT Max** are extremely high, pointing to prolonged idle periods typical in DDoS attacks. Additionally, the **Fwd Header Length** is high (80.0), which may indicate abnormal packet structures often seen in distributed attacks.", "candidates": ["Idle Max", "Active Max", "Fwd IAT Max", "Flow Packets/s", "Flow IAT Std", "Bwd Packet Length Max", "Flow Duration", "Fwd Packets/s", "Fwd Header Length", "Fwd IAT Min"]}]</script>
+<script type="application/json" id="vocab-data">["ACK Flag Count", "Active Max", "Active Mean", "Active Min", "Active Std", "Average Packet Size", "Avg Bwd Segment Size", "Avg Fwd Segment Size", "Bwd Avg Bulk Rate", "Bwd Avg Bytes/Bulk", "Bwd Avg Packets/Bulk", "Bwd Header Length", "Bwd IAT Max", "Bwd IAT Mean", "Bwd IAT Min", "Bwd IAT Std", "Bwd IAT Total", "Bwd PSH Flags", "Bwd Packet Length Max", "Bwd Packet Length Mean", "Bwd Packet Length Min", "Bwd Packet Length Std", "Bwd Packets/s", "Bwd URG Flags", "CWE Flag Count", "Down/Up Ratio", "ECE Flag Count", "FIN Flag Count", "Flow Bytes/s", "Flow Duration", "Flow IAT Max", "Flow IAT Mean", "Flow IAT Min", "Flow IAT Std", "Flow Packets/s", "Fwd Avg Bulk Rate", "Fwd Avg Bytes/Bulk", "Fwd Avg Packets/Bulk", "Fwd Header Length", "Fwd IAT Max", "Fwd IAT Mean", "Fwd IAT Min", "Fwd IAT Std", "Fwd IAT Total", "Fwd PSH Flags", "Fwd Packet Length Max", "Fwd Packet Length Mean", "Fwd Packet Length Min", "Fwd Packet Length Std", "Fwd Packets/s", "Fwd URG Flags", "Idle Max", "Idle Mean", "Idle Min", "Idle Std", "Init_Win_bytes_backward", "Init_Win_bytes_forward", "Max Packet Length", "Min Packet Length", "PSH Flag Count", "Packet Length Mean", "Packet Length Std", "Packet Length Variance", "RST Flag Count", "SYN Flag Count", "Subflow Bwd Bytes", "Subflow Bwd Packets", "Subflow Fwd Bytes", "Subflow Fwd Packets", "Total Backward Packets", "Total Fwd Packets", "Total Length of Bwd Packets", "Total Length of Fwd Packets", "URG Flag Count", "act_data_pkt_fwd", "min_seg_size_forward"]</script>
+<script>
+const ITEMS = JSON.parse(document.getElementById('batch-data').textContent);
+const VOCAB = JSON.parse(document.getElementById('vocab-data').textContent);
+const BATCH_ID = "extractor_audit_holdout";
+// Storage is scoped PER ANNOTATOR. The gate needs two independent passes, and
+// two people sharing a browser profile under one key would mean the second
+// opens the file already holding the first one's answers — which destroys the
+// independence the whole dual-annotation design exists to get.
+const bucketKey = name => 'audit-' + BATCH_ID + '::' + (name || 'unnamed');
+const ACTIVE = 'audit-' + BATCH_ID + '::__active';
+const DIRS = [['+','+ raises','pos'],['-','\u2212 lowers','neg'],
+              ['unclear','unclear','unc'],['absent','absent','abs']];
+
+const blank = () => ({annotator:'', ann:{}, notes:{}, added:{}, hedged:{}, i:0});
+const load = name => {
+  const raw = localStorage.getItem(bucketKey(name));
+  const s = raw ? JSON.parse(raw) : blank();
+  if(!s.ann) return blank();
+  s.annotator = name || '';
+  return s;
+};
+// The annotator name is an in-page field, never a prompt(): a blocked dialog
+// (file:// in some browsers, any automated context) throws at load and leaves
+// the annotator looking at a silently blank panel.
+let state = load(localStorage.getItem(ACTIVE) || '');
+let i = state.i || 0, focus = 0;
+
+const save = () => {
+  state.i = i;
+  localStorage.setItem(bucketKey(state.annotator), JSON.stringify(state));
+  localStorage.setItem(ACTIVE, state.annotator || '');
+};
+const featuresOf = it => (it.candidates || []).concat(state.added[it.item_id] || []);
+const isDone = it => featuresOf(it).every(f => (state.ann[it.item_id]||{})[f]);
+
+function highlight(text, feats){
+  const esc = text.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const uniq = [...new Set(feats)].filter(Boolean).sort((a,b) => b.length - a.length);
+  if(!uniq.length) return esc;
+  // ONE alternation pass, longest name first. Marking feature by feature would
+  // re-match inside the tags it just inserted, and a lookbehind guard against
+  // that is not available in every browser an annotator might open this in.
+  const pats = uniq.map(f => f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/[_\s]+/g,'[_\\s]+'));
+  return esc.replace(new RegExp('(' + pats.join('|') + ')','gi'), '<mark>$1</mark>');
+}
+
+function render(){
+  const it = ITEMS[i];
+  const feats = featuresOf(it);
+  document.getElementById('text').innerHTML = highlight(it.explanation_text, feats);
+  document.getElementById('itemmeta').textContent = it.item_id;
+  const done = ITEMS.filter(isDone).length;
+  document.getElementById('prog').textContent =
+    'item ' + (i+1) + ' / ' + ITEMS.length + '  \u2014  ' + done + ' complete';
+  document.getElementById('pbar').style.width = (100*done/ITEMS.length) + '%';
+
+  const box = document.getElementById('claims');
+  box.innerHTML = '';
+  feats.forEach((f, idx) => {
+    const cur = (state.ann[it.item_id]||{})[f];
+    const added = (state.added[it.item_id]||[]).includes(f);
+    const d = document.createElement('div');
+    d.className = 'claim' + (cur ? ' done' : '') + (added ? ' added' : '');
+    if(idx === focus) d.style.outline = '2px solid var(--accent)';
+    const opts = DIRS.map(([v,label,cls]) =>
+      '<button class="opt ' + cls + '" data-f="' + encodeURIComponent(f) + '" data-v="' + v +
+      '" data-sel="' + (cur === v ? 1 : 0) + '">' + label + '</button>').join('');
+    d.innerHTML = '<div class="fname">' + f + (added ? '  <span class="meta">(you added)</span>' : '') +
+      '</div><div class="opts">' + opts + '</div>' +
+      '<label class="hedge"><input type="checkbox" data-hedge="' + encodeURIComponent(f) + '"' +
+      (((state.hedged[it.item_id]||{})[f]) ? ' checked' : '') + '> hedged / softened</label>';
+    box.appendChild(d);
+  });
+  document.getElementById('note').value = state.notes[it.item_id] || '';
+  document.getElementById('addwarn').textContent = '';
+
+  const g = document.getElementById('grid');
+  g.innerHTML = '';
+  ITEMS.forEach((x, n) => {
+    const c = document.createElement('div');
+    c.className = 'cell' + (isDone(x) ? ' done' : '') + (n === i ? ' cur' : '');
+    c.title = x.item_id;
+    c.onclick = () => { i = n; focus = 0; save(); render(); };
+    g.appendChild(c);
+  });
+}
+
+document.getElementById('claims').addEventListener('click', ev => {
+  const b = ev.target.closest('button.opt');
+  if(!b) return;
+  const it = ITEMS[i], f = decodeURIComponent(b.dataset.f);
+  state.ann[it.item_id] = state.ann[it.item_id] || {};
+  state.ann[it.item_id][f] = b.dataset.v;
+  focus = featuresOf(it).indexOf(f);
+  save(); render();
+});
+document.getElementById('claims').addEventListener('change', ev => {
+  const c = ev.target.closest('input[data-hedge]');
+  if(!c) return;
+  const it = ITEMS[i], f = decodeURIComponent(c.dataset.hedge);
+  state.hedged[it.item_id] = state.hedged[it.item_id] || {};
+  state.hedged[it.item_id][f] = c.checked;
+  save();
+});
+document.getElementById('note').addEventListener('input', ev => {
+  state.notes[ITEMS[i].item_id] = ev.target.value; save();
+});
+function addFeature(){
+  const it = ITEMS[i], raw = document.getElementById('addf').value.trim();
+  const warn = document.getElementById('addwarn');
+  if(!raw) return;
+  const hit = VOCAB.find(v => v.toLowerCase() === raw.toLowerCase());
+  if(!hit){ warn.textContent = 'Not a known feature name — pick one from the list.'; return; }
+  if(featuresOf(it).includes(hit)){ warn.textContent = hit + ' is already listed.'; return; }
+  state.added[it.item_id] = (state.added[it.item_id] || []).concat([hit]);
+  document.getElementById('addf').value = '';
+  save(); render();
+}
+document.getElementById('addbtn').onclick = addFeature;
+document.getElementById('addf').addEventListener('keydown', e => { if(e.key === 'Enter') addFeature(); });
+
+const go = d => { i = Math.min(ITEMS.length-1, Math.max(0, i+d)); focus = 0; save(); render(); };
+document.getElementById('prev').onclick = () => go(-1);
+document.getElementById('next').onclick = () => go(1);
+document.addEventListener('keydown', e => {
+  if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  const it = ITEMS[i], feats = featuresOf(it);
+  if(e.key === 'ArrowRight') go(1);
+  else if(e.key === 'ArrowLeft') go(-1);
+  else if(e.key === 'ArrowDown'){ focus = Math.min(feats.length-1, focus+1); render(); }
+  else if(e.key === 'ArrowUp'){ focus = Math.max(0, focus-1); render(); }
+  else if(['1','2','3','4'].includes(e.key) && feats[focus]){
+    state.ann[it.item_id] = state.ann[it.item_id] || {};
+    state.ann[it.item_id][feats[focus]] = DIRS[+e.key-1][0];
+    if(focus < feats.length-1) focus++;
+    save(); render();
+  } else return;
+  e.preventDefault();
+});
+
+const nameBox = document.getElementById('who');
+nameBox.value = state.annotator || '';
+// Switch on 'change' (blur/Enter), never 'input' — switching per keystroke would
+// scatter the work across a bucket for every prefix of the name.
+nameBox.addEventListener('change', () => {
+  const name = nameBox.value.trim();
+  if(name === state.annotator) return;
+  const existing = localStorage.getItem(bucketKey(name));
+  const judged = Object.keys(state.ann).length;
+  if(!existing && !state.annotator && judged){
+    // started annotating before typing a name: carry that work over, do not lose it
+    localStorage.removeItem(bucketKey(''));
+    state.annotator = name;
+    save();
+  } else {
+    state = load(name);
+    state.annotator = name;
+    i = state.i || 0;
+    save();
+  }
+  focus = 0;
+  render();
+  showBuckets();
+});
+
+function showBuckets(){
+  const names = Object.keys(localStorage)
+    .filter(k => k.startsWith('audit-' + BATCH_ID + '::') && !k.endsWith('__active'))
+    .map(k => k.split('::')[1]);
+  const others = names.filter(n => n !== (state.annotator || 'unnamed'));
+  document.getElementById('buckets').textContent = others.length
+    ? 'Other saved passes in this browser: ' + others.join(', ') +
+      ' \u2014 type a name above to switch. Passes are kept separate.'
+    : '';
+}
+
+document.getElementById('export').onclick = () => {
+  if(!state.annotator){ nameBox.focus(); alert('Put your name in the annotator box first — the export is signed with it.'); return; }
+  const rows = [];
+  ITEMS.forEach(it => {
+    const added = state.added[it.item_id] || [];
+    featuresOf(it).forEach(f => {
+      const d = (state.ann[it.item_id]||{})[f];
+      if(!d) return;
+      rows.push({item_id: it.item_id, feature: f, text_asserts_direction: d,
+                 hedged: !!((state.hedged[it.item_id]||{})[f]), added: added.includes(f)});
+    });
+    if(state.notes[it.item_id]) rows.push({item_id: it.item_id, note: state.notes[it.item_id]});
+  });
+  const done = ITEMS.filter(isDone).length;
+  const blob = new Blob([JSON.stringify({
+    batch_id: BATCH_ID, annotator: state.annotator,
+    exported_utc: new Date().toISOString(),
+    items_complete: done, items_total: ITEMS.length, annotations: rows
+  }, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'annotations_' + state.annotator.replace(/\W+/g,'_') + '.json';
+  a.click();
+};
+
+document.getElementById('vocab').innerHTML = VOCAB.map(v => '<option value="' + v + '">').join('');
+// Surface a start-up failure ON THE PAGE. A silent exception here would leave an
+// annotator working against a blank panel with no idea anything was wrong.
+try { render(); showBuckets(); }
+catch(err){
+  document.getElementById('boot').textContent =
+    'This page failed to start: ' + err.name + ' \u2014 ' + err.message +
+    '. Please report this instead of annotating.';
+}
+</script>
+</body>
+</html>

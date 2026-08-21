@@ -173,7 +173,13 @@ def main(argv: list[str] | None = None) -> int:
     gold = gold_for({})
     print(f"{'evidence':<12}{'claims':>8}{'precision':>11}{'recall*':>9}{'F1*':>9}"
           "   (*recall vs the whole gold set)")
-    for ev in ("word", "number", DEFAULT_EVIDENCE):
+    # iterate the evidence values the instrument ACTUALLY emitted, not a
+    # hard-coded list: a new branch (2.1.0 added "connective") would otherwise
+    # vanish from a split that amendment 0004(C) makes mandatory.
+    present = sorted({c["direction_evidence"] for _, c in claims
+                      if c["direction"] in DIRECTIONAL} | {DEFAULT_EVIDENCE},
+                     key=lambda e: (e == DEFAULT_EVIDENCE, str(e)))
+    for ev in present:
         sub = {((iid, c["feature"]), c["direction"]) for iid, c in claims
                if c["direction"] in DIRECTIONAL and c["direction_evidence"] == ev}
         p, r, f1, _ = prf(sub, gold)

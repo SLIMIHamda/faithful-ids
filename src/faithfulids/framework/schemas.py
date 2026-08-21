@@ -88,7 +88,7 @@ class ClaimTuple:
     artifact stays valid; what changed is that no sign is invented alongside it.
     """
 
-    _EVIDENCE_VALUES = (None, "word", "number", "llm", "default")
+    _EVIDENCE_VALUES = (None, "word", "number", "connective", "llm", "default")
 
     feature: str
     direction: Direction | None

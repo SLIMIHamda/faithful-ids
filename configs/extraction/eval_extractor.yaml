@@ -14,7 +14,7 @@ kind: extraction
 # matching (Qwen3-32B smoke: 38/60 B3 instances scored 0 because "the maximum
 # forward packet length" never exact-matched "Fwd Packet Length Max").
 # Prompt asset unchanged (1.0.0).
-version: 2.0.0
+version: 2.1.0
 # FIREWALL SIDE B. model.model_family must be disjoint from every generator LLM
 # family {mistral, llama3, qwen, frontier} AND the VtE verifier family {phi}.
 # gemma-4-26B-A4B-it: latest Gemma generation (MoE, 25.2B total / 3.8B active),

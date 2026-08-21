@@ -68,15 +68,38 @@ def test_rule_assisted_reads_numeric_sign_from_raw_shap_dump():
         _rule_only(), llm_client=None, model_config=None,
         feature_vocabulary=["Fwd Packet Length Max", "Bwd IAT Total", "Flow Duration"],
     )
+    # b0's template is f"{feature}={value:+.4f}" — the ':+' spec ALWAYS emits a
+    # sign, so a b0 dump never contains an unsigned value. Verified against all
+    # 75 numeric values in the EXP-G-001 audit's b0 stratum: 75 signed, 0 not.
     text = (
         "SHAP attribution (top-5) for class benign: Fwd Packet Length Max=-7.9774; "
-        "Bwd IAT Total=-1.2186; Flow Duration=0.5501"
+        "Bwd IAT Total=-1.2186; Flow Duration=+0.5501"
     )
     claims = ext.extract(ExplanationRecord("i0", "b0_raw_shap", text)).claims
     d = {c.feature: c.direction for c in claims}
     assert d["Fwd Packet Length Max"] is Direction.NEGATIVE
     assert d["Bwd IAT Total"] is Direction.NEGATIVE
     assert d["Flow Duration"] is Direction.POSITIVE  # +0.55, sign-only, no word
+
+
+def test_unsigned_value_after_equals_is_not_a_direction():
+    """Extractor 2.1.0 (prereg amendment 0004, attempt 4). The numeric branch
+    exists to read b0's SIGNED SHAP dump. b2_zeroshot writes the feature's
+    MEASURED VALUE in the same shape — "PSH Flag Count = 1.0" — and while the
+    sign was optional that parsed as +1.0, so the extractor read a value as a
+    direction: 46 of the 55 false positives in the audit. A value is not an
+    attribution, and b0's format string guarantees the sign it relies on."""
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["PSH Flag Count", "Bwd Header Length"],
+    )
+    text = ("The flow was classified as **Web Attack** due to the presence of "
+            "**PSH Flag Count = 1.0**, and **Bwd Header Length = 40.0**.")
+    claims = {c.feature: c for c in ext.extract(
+        ExplanationRecord("i0", "b2_zeroshot", text)).claims}
+    for f in ("PSH Flag Count", "Bwd Header Length"):
+        assert claims[f].direction is None, f"{f} value read as a direction"
+        assert claims[f].direction_evidence == "default"
 
 
 def test_rule_assisted_reads_participle_direction_words():
@@ -113,7 +136,7 @@ def test_extractor_version_is_stamped_current():
         feature_vocabulary=["Flow Duration"],
     )
     claims = ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased."))
-    assert claims.extractor_version == "2.0.0"
+    assert claims.extractor_version == "2.1.0"
 
 
 def test_rule_assisted_recovers_paraphrased_feature_names():
@@ -313,3 +336,43 @@ def test_extractor_asserts_no_direction_without_evidence():
     c = ClaimTuple("X", None, rank=1, direction_evidence="default")
     assert c.to_dict()["direction"] is None
     assert ClaimTuple.from_dict(c.to_dict()) == c
+
+
+def test_transparent_connective_counts_only_when_no_valenced_cue():
+    """Extractor 2.1.0 (prereg amendment 0004, attempt 4): PRECEDENCE, not
+    exclusion.
+
+    2.0.0 excluded direction-transparent connectives outright because
+    "contributing to a reduced risk" mis-signed as POSITIVE. The EXP-G-001 audit
+    showed that correction was wrong in the other direction: 120 of 143 recall
+    misses (84%) were sentences like "Active Min added to the BENIGN score",
+    where a reader sees explicit evidence and the engine saw none.
+
+    So a valenced cue wins wherever it sits in the window; a connective counts
+    only when the window holds none, and then as POSITIVE — its object is the
+    score, and to add to the <class> score is to raise it. Checked against gold:
+    right on 99 of the 100 audit cells where this pattern occurs.
+    """
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["Active Min", "Idle Mean", "Flow Duration", "Bwd IAT Std"],
+    )
+    text = (
+        "Active Min added to the BENIGN score, showing stable activity. "
+        "The Idle Mean also contributed to the DoS score. "
+        "Flow Duration was below thresholds, contributing to a reduced attack score. "
+        "Bwd IAT Std drove the score downward."
+    )
+    c = {x.feature: x for x in ext.extract(
+        ExplanationRecord("i0", "b5_narrative_vte", text)).claims}
+
+    # no valenced cue in the window -> the connective counts, POSITIVE
+    assert c["Active Min"].direction is Direction.POSITIVE
+    assert c["Active Min"].direction_evidence == "connective"
+    assert c["Idle Mean"].direction is Direction.POSITIVE
+
+    # a valenced cue IS present -> it wins, and the connective must not outrank it
+    assert c["Flow Duration"].direction is Direction.NEGATIVE, "regression: 'reduced' must win"
+    assert c["Flow Duration"].direction_evidence == "word"
+    assert c["Bwd IAT Std"].direction is Direction.NEGATIVE
+    assert c["Bwd IAT Std"].direction_evidence == "word"
