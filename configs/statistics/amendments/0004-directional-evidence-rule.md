@@ -103,13 +103,57 @@ standing part of the verdict, not a diagnostic someone has to think to compute.
 Amendment 0001's gate-failure clause governs: **the instrument iterates, the
 annotation is fixed, and every attempt is logged.** Attempts so far:
 
-| # | date | extractor | gold | F1 | verdict |
-|---|---|---|---|---|---|
-| 1 | 2026-08-10 | 1.4.0 | pre-amendment LLM pass, strict reading | 0.848 | **FAILED** (below 0.95) |
+| # | date | extractor | gold | P | R | F1 | verdict |
+|---|---|---|---|---|---|---|---|
+| 1 | 2026-08-10 | 1.4.0 | pre-amendment LLM pass, strict reading | 0.741 | 0.990 | 0.848 | **FAILED** |
+| 2 | 2026-08-10 | 1.5.0 (widened lexicon) | re-elicited, 2 annotators, alpha 0.981 | 0.930 | 0.832 | **0.879** | **FAILED** |
+| 3 | 2026-08-10 | 2.0.0 (asserts no unevidenced direction) | same gold as attempt 2 | 0.930 | 0.832 | **0.879** | **FAILED** |
 
 Attempt 1 is recorded as a failure even though its gold does not meet (B),
 because a result that looked like a pass under the lenient reading must not
 vanish from the record now that the strict reading is registered.
+
+Attempt 2 is the first scored against gold meeting (B). The revised prompt moved
+inter-annotator Krippendorff alpha from **0.707 to 0.981** (22 disagreeing cells
+in 1843) — confirming the disagreement was in the instructions, not the
+annotators. The litmus stratum is clean (`b0_raw_shap` and `b1_template` both
+1.000/1.000/1.000), so the gold can be relied on. Adjudicating the 22 disputed
+cells cannot change the verdict: the two extremes give F1 in [0.871, 0.879].
+
+Attempt 3 scores **identically** to attempt 2, by construction: the scorer
+already excluded `default`-derived claims from the prediction side, so
+withdrawing the invented sign made the *artifact* honest without moving the
+*number*. It is logged as its own attempt anyway — the instrument changed, and
+an unchanged score is a result about the change, not an absence of one.
+
+### What attempts 2 and 3 localise
+
+The failure is **not** mis-signing: only **5** of 883 gold claims get the wrong
+sign. It is two separate defects, and the binding one is recall.
+
+**Recall 0.832 — 148 missed gold claims, 140 of them cells where the extractor
+found no cue and therefore asserts nothing**, concentrated in `b4_vte` (64),
+`b1l_llm_render` (53) and `b5_narrative_vte` (30). These are texts where two
+annotators independently read explicit directional evidence and the rule engine
+did not. This is the gate's real finding and no lexicon tweak so far has touched
+it (attempt 2 moved defaults 403 → 393).
+
+**Precision 0.930 — 55 false positives, 46 of them from `number` evidence, and
+the mechanism is a category error.** `_NUM_AFTER_EQ` treats any `Feature = <n>`
+as a signed attribution, because that is how `b0_raw_shap` dumps SHAP
+(`Total Backward Packets=+1.0998`). But `b2_zeroshot` writes the feature's
+**measured value** in the same shape — `PSH Flag Count = 1.0` — and the
+unsigned number parses as +1.0, so the extractor reads a *value* as a
+*direction*. b0 always emits an explicit sign; requiring one would separate the
+two cases.
+
+**That fix is NOT applied here.** It was discovered by scoring against this
+audit set, and (E) binds the instrument against being iterated on the evaluation
+data. It is registered as the candidate for attempt 4, to be decided
+deliberately rather than adopted because it improves a number. Its arithmetic is
+stated so the decision can be informed: removing 46 false positives raises
+precision to about 0.985 and leaves recall untouched, giving F1 ≈ 0.90 — still
+below 0.95. **Precision is not where this gate is lost.**
 
 ## (E) Instrument iteration: what was tried, and what it was worth
 

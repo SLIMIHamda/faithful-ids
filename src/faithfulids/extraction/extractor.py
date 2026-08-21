@@ -266,7 +266,15 @@ class RuleAssistedExtractor(ClaimExtractor):
         if m:
             value = float(m.group(1))
             return Direction.from_value(value), abs(value), "number"
-        return Direction.POSITIVE, None, "default"
+        # No cue and no signed value: the text does not say. Extractor 2.0.0
+        # asserts NOTHING here (prereg amendment 0004) instead of falling back to
+        # POSITIVE. The fallback was right often enough to look harmless -- "+"
+        # is the base rate -- which is precisely why it survived three instrument
+        # revisions and why the EXP-G-001 audit had to find it: 49 of b2's
+        # fallbacks were directions the text never asserted, scored as claims.
+        # The claim is still emitted: the feature IS mentioned, and Layer-1
+        # mention precision/recall depend on that.
+        return None, None, "default"
 
 
 def build(

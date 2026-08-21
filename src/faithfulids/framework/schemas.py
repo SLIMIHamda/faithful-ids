@@ -68,21 +68,30 @@ class ClaimTuple:
     ``direction`` are mandatory — a bare "feature X increased the risk" claim is
     representable.
 
-    ``direction_evidence`` records HOW the extractor obtained ``direction``
-    (additive, 2026-07-11 audit follow-up): ``"word"`` (explicit direction cue),
-    ``"number"`` (signed attribution value), ``"llm"`` (extractor model's JSON),
-    or ``"default"`` (no textual evidence — the extractor's fallback sign).
-    ``None`` means unrecorded (legacy claims, corruption-built claims) and is
-    treated as asserted by the metrics: only an explicit ``"default"`` marks a
-    guess. This keeps ``direction`` always populated (schema unchanged for
-    consumers) while letting Layer-1 separate reading fidelity (``dsa_asserted``)
-    from assertion style (``direction_assertion_rate``).
+    ``direction_evidence`` records HOW the extractor obtained ``direction``:
+    ``"word"`` (explicit direction cue), ``"number"`` (signed attribution value),
+    ``"llm"`` (extractor model's JSON), or ``"default"`` (the text gave no
+    directional evidence). ``None`` means unrecorded (legacy claims,
+    corruption-built claims) and is treated as asserted by the metrics: only an
+    explicit ``"default"`` marks a non-assertion, which keeps RQ0's sign-flip
+    corruptions inside the ``dsa_asserted`` denominator.
+
+    **``direction`` is None exactly when ``direction_evidence`` is ``"default"``**
+    (extractor 2.0.0, prereg amendment 0004). Until then the extractor supplied a
+    fallback POSITIVE sign in that case and recorded the fallback in
+    ``direction_evidence``; the EXP-G-001 audit showed why that cannot stand —
+    against a 300-item dual-annotated gold, 49 of those fallbacks were directions
+    the text never asserted, and they were scored as claims because the artifact
+    could not express "the text does not say". A claim now records that the
+    feature was mentioned without asserting a direction for it. The evidence
+    string keeps the value ``"default"`` so every existing filter and cached
+    artifact stays valid; what changed is that no sign is invented alongside it.
     """
 
     _EVIDENCE_VALUES = (None, "word", "number", "llm", "default")
 
     feature: str
-    direction: Direction
+    direction: Direction | None
     rank: int | None = None
     magnitude: float | None = None
     direction_evidence: str | None = None
@@ -100,11 +109,20 @@ class ClaimTuple:
             raise ValueError(
                 f"ClaimTuple.direction_evidence must be one of {self._EVIDENCE_VALUES}"
             )
+        # The invariant is enforced rather than documented: a null direction that
+        # did not come from "no evidence", or a "default" that still carries a
+        # sign, would each be a silent way back to inventing directions.
+        if (self.direction is None) != (self.direction_evidence == "default"):
+            raise ValueError(
+                "ClaimTuple: direction is None exactly when direction_evidence is "
+                f"'default' (got direction={self.direction!r}, "
+                f"direction_evidence={self.direction_evidence!r})"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "feature": self.feature,
-            "direction": self.direction.value,
+            "direction": None if self.direction is None else self.direction.value,
             "rank": self.rank,
             "magnitude": self.magnitude,
             "direction_evidence": self.direction_evidence,
@@ -114,7 +132,8 @@ class ClaimTuple:
     def from_dict(cls, d: dict[str, Any]) -> "ClaimTuple":
         return cls(
             feature=d["feature"],
-            direction=Direction.from_str(d["direction"]),
+            direction=(None if d.get("direction") is None
+                       else Direction.from_str(d["direction"])),
             rank=d.get("rank"),
             magnitude=d.get("magnitude"),
             direction_evidence=d.get("direction_evidence"),

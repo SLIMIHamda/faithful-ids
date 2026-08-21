@@ -144,10 +144,10 @@
    "LLM_2_V2": "unclear"
   }
  ],
- "extractor_claims_key": "extractor_claims_1_5_0",
- "n_directional_claims": 1183,
- "n_default": 393,
- "default_share": 0.3322062552831784,
+ "extractor_claims_key": "extractor_claims_2_0_0",
+ "n_directional_claims": 790,
+ "n_default": 0,
+ "default_share": 0.0,
  "threshold": 0.95,
  "results": {
   "agreed + adjudicated": {

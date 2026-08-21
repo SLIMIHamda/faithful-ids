@@ -1,10 +1,20 @@
 {
-  "description": "Hand-computed Layer-1 fixture. Attribution top-3 = {A,B,C} (by |value|). Claims name A(+,1, word-evidenced), B(+,2) [WRONG sign: attr B is negative; direction_evidence 'default' = extractor guess, no textual assertion], and E(+,3, word-evidenced) [HALLUCINATED: absent from attribution]. Present claims = {A,B}; asserted present = {A}. So dsa = 1/2 (grades the default guess), dsa_asserted = 1/1 (A only, correct), direction_assertion_rate = 1/2. ARC rank-pairs = claimed-with-rank in top-3 = {A(1),B(2)} -> arc_n_pairs = 2, arc = 1.0 (perfectly ordered). All other values as before.",
+  "description": "Hand-computed Layer-1 fixture. Attribution top-3 = {A,B,C} (by |value|). Claims name A(+,1, word-evidenced), B(rank 2) whose direction_evidence is 'default' -- extractor 2.0.0 asserts NO direction there, so its direction is null (prereg amendment 0004) -- and E(+,3, word-evidenced) [HALLUCINATED: absent from attribution]. Present claims = {A,B}; asserted present = {A}. So dsa = 1/2 (B's null direction cannot match attr B's negative sign), dsa_asserted = 1/1 (A only, correct), direction_assertion_rate = 1/2. ARC rank-pairs = claimed-with-rank in top-3 = {A(1),B(2)} -> arc_n_pairs = 2, arc = 1.0 (perfectly ordered). NOTE the expected values are UNCHANGED from the 1.x fixture: B's guessed '+' was already graded as wrong by dsa and already excluded from dsa_asserted, so withdrawing the guess moves no number here.",
   "top_k": 3,
   "attribution": {
     "instance_id": "i0",
-    "feature_names": ["A", "B", "C", "D"],
-    "values": [0.9, -0.6, 0.3, 0.1],
+    "feature_names": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "values": [
+      0.9,
+      -0.6,
+      0.3,
+      0.1
+    ],
     "base_value": 0.5,
     "method": "treeshap",
     "exact": true,
@@ -13,9 +23,27 @@
   "claims": {
     "instance_id": "i0",
     "claims": [
-      {"feature": "A", "direction": "+", "rank": 1, "magnitude": 0.9, "direction_evidence": "word"},
-      {"feature": "B", "direction": "+", "rank": 2, "magnitude": 0.6, "direction_evidence": "default"},
-      {"feature": "E", "direction": "+", "rank": 3, "magnitude": 0.2, "direction_evidence": "word"}
+      {
+        "feature": "A",
+        "direction": "+",
+        "rank": 1,
+        "magnitude": 0.9,
+        "direction_evidence": "word"
+      },
+      {
+        "feature": "B",
+        "direction": null,
+        "rank": 2,
+        "magnitude": 0.6,
+        "direction_evidence": "default"
+      },
+      {
+        "feature": "E",
+        "direction": "+",
+        "rank": 3,
+        "magnitude": 0.2,
+        "direction_evidence": "word"
+      }
     ],
     "extractor_id": "eval_extractor",
     "extractor_version": "1.0.0",

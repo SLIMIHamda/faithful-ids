@@ -59,6 +59,13 @@ def sign_flip(cs: ClaimSet, params: Mapping[str, Any]) -> CorruptionResult:
     claims = list(cs.claims)
     i = _highest_magnitude_index(cs.claims)
     c = claims[i]
+    if c.direction is None:
+        # Nothing to flip: the extractor asserted no direction for this claim
+        # (extractor 2.0.0). Inventing one here would manufacture the very kind
+        # of unevidenced claim amendment 0004 exists to keep out, and would make
+        # the corruption battery grade a sign the pipeline never produced.
+        return CorruptionResult("sign_flip", "skipped", cs,
+                                f"{c.feature!r} asserts no direction — nothing to flip")
     flipped = Direction.NEGATIVE if c.direction is Direction.POSITIVE else Direction.POSITIVE
     claims[i] = ClaimTuple(c.feature, flipped, c.rank, c.magnitude)
     return CorruptionResult("sign_flip", "corrupted", _replace(cs, tuple(claims)),

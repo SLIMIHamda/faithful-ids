@@ -113,7 +113,7 @@ def test_extractor_version_is_stamped_current():
         feature_vocabulary=["Flow Duration"],
     )
     claims = ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased."))
-    assert claims.extractor_version == "1.5.0"
+    assert claims.extractor_version == "2.0.0"
 
 
 def test_rule_assisted_recovers_paraphrased_feature_names():
@@ -195,9 +195,10 @@ def test_rule_assisted_nearest_direction_cue_wins():
          for c in ext.extract(ExplanationRecord("i0", "b3_dte_style", text)).claims}
     assert d["Flow Duration"] is Direction.POSITIVE     # nearest cue: "increases"
     # window ends at "stayed in range." — the next sentence's "increases" must
-    # not be attributed to it; no cue + no number => default POSITIVE, which is
-    # exactly the case option 1b would turn into direction=None.
-    assert d["SYN Flag Count"] is Direction.POSITIVE
+    # not be attributed to it. No cue and no number in the window, so extractor
+    # 2.0.0 asserts NO direction (prereg amendment 0004) rather than guessing
+    # POSITIVE. The claim is still made: the feature IS mentioned.
+    assert d["SYN Flag Count"] is None
 
 
 def test_rule_assisted_stamps_direction_evidence():
@@ -266,3 +267,49 @@ def test_direction_cues_exclude_polarity_transparent_connectives():
     assert d["Flow Duration"] is Direction.NEGATIVE
     # and the widened positive stems do fire
     assert d["Flow Bytes/s"] is Direction.POSITIVE
+
+
+def test_extractor_asserts_no_direction_without_evidence():
+    """Extractor 2.0.0 (prereg amendment 0004). Where the text gives no direction
+    cue and no signed value, the extractor asserts NOTHING rather than falling
+    back to POSITIVE.
+
+    The fallback was right often enough to look harmless — "+" is the base rate —
+    which is why it survived three instrument revisions until the 300-item
+    EXP-G-001 audit scored it against gold: 49 of b2_zeroshot's fallbacks were
+    directions the text never asserted, and they counted as claims because the
+    artifact had no way to say "the text does not say".
+
+    The claim is still EMITTED: the feature is mentioned, and Layer-1 mention
+    precision/recall depend on that. Only the invented sign is withdrawn.
+    """
+    from faithfulids.framework import ClaimTuple
+
+    ext = build_extractor(
+        _rule_only(), llm_client=None, model_config=None,
+        feature_vocabulary=["PSH Flag Count", "Flow Duration"],
+    )
+    # value description with no stated effect on the score — b2's dominant style
+    text = ("A high **PSH Flag Count** (1.0) suggests potential payload manipulation "
+            "typical of botnet activity. **Flow Duration** increased the Bot score.")
+    claims = {c.feature: c for c in ext.extract(
+        ExplanationRecord("i0", "b2_zeroshot", text)).claims}
+
+    assert claims["PSH Flag Count"].direction is None
+    assert claims["PSH Flag Count"].direction_evidence == "default"
+    # the mention survives — only the sign is withdrawn
+    assert set(claims) == {"PSH Flag Count", "Flow Duration"}
+    assert claims["Flow Duration"].direction is Direction.POSITIVE
+    assert claims["Flow Duration"].direction_evidence == "word"
+
+    # the invariant is enforced, not merely documented, in both directions
+    import pytest
+
+    with pytest.raises(ValueError, match="direction is None exactly when"):
+        ClaimTuple("X", Direction.POSITIVE, direction_evidence="default")
+    with pytest.raises(ValueError, match="direction is None exactly when"):
+        ClaimTuple("X", None, direction_evidence="word")
+    # and a null direction round-trips through JSON
+    c = ClaimTuple("X", None, rank=1, direction_evidence="default")
+    assert c.to_dict()["direction"] is None
+    assert ClaimTuple.from_dict(c.to_dict()) == c

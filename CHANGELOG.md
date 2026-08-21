@@ -705,6 +705,45 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   from their object and mis-sign "contributing to a *reduced* risk"; a first
   draft included them and a regression test caught it.
 
+- **Extractor 2.0.0 — the extractor no longer invents a direction it has no
+  evidence for (prereg amendment 0004).** Where the text carries no cue and no
+  signed value, `_direction_of` returned `Direction.POSITIVE` with
+  `direction_evidence: "default"`. The fallback was right often enough to look
+  harmless — `+` is the base rate — which is why it survived three instrument
+  revisions until EXP-G-001 scored it against dual-annotated gold: 49 of
+  b2_zeroshot's fallbacks were directions the text never asserted, counted as
+  claims because the artifact had no way to say *the text does not say*.
+  **BREAKING:** `ClaimTuple.direction` is now `Direction | None`, and an
+  invariant enforced in `__post_init__` — not merely documented — makes
+  `direction is None` hold **exactly** when `direction_evidence == "default"`,
+  so neither a null direction from some other cause nor a `"default"` that still
+  carries a sign can slip back in. The claim is still emitted: the feature *is*
+  mentioned and Layer-1 mention precision/recall depend on it; only the invented
+  sign is withdrawn. `direction_evidence` keeps the string `"default"` so every
+  existing filter and cached artifact stays valid. `sign_flip` now skips a claim
+  that asserts no direction — manufacturing one would produce exactly the
+  unevidenced claim the amendment exists to exclude. The hand-computed Layer-1
+  fixture's **expected values do not move**: the guessed `+` was already graded
+  wrong by `dsa` and already excluded from `dsa_asserted`.
+- **EXP-G-001 attempts 2 and 3 logged (amendment 0004(D)): both FAILED at F1
+  0.879.** Re-elicited gold under the revised prompt moved inter-annotator
+  Krippendorff alpha **0.707 → 0.981**; the litmus stratum is clean (b0 and b1
+  both 1.000/1.000/1.000) so the gold holds, and adjudicating the 22 disputed
+  cells cannot change the verdict (extremes give F1 ∈ [0.871, 0.879]). Attempt 3
+  scores identically to attempt 2 by construction — the scorer already excluded
+  defaults, so 2.0.0 made the artifact honest without moving the number, and is
+  logged anyway because an unchanged score is a result about the change. The
+  failure is **not** mis-signing (5 wrong signs in 883 gold claims). It is
+  **recall 0.832** — 140 cells where two annotators read explicit evidence and
+  the rule engine found no cue (b4 64, b1ℓ 53, b5 30) — plus a precision defect
+  registered but **not fixed**: `_NUM_AFTER_EQ` reads `Feature = 1.0` (b2 writing
+  a measured *value*) as a signed attribution, because that is how b0 dumps SHAP
+  (`=+1.0998`). Requiring an explicit sign would separate them; it is held as the
+  candidate for attempt 4 rather than adopted, since it was found by scoring
+  against this audit set and 0004(E) binds the instrument against iteration on
+  evaluation data. Its arithmetic is stated in the amendment: F1 would reach
+  ≈0.90, still short — **precision is not where this gate is lost.**
+
 ### Metric formula versions / schema
 
 - `configs/metrics/layer2_erasure.yaml`: `1.0.0 → 1.1.0` (additive — new ε_model
@@ -722,7 +761,7 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `llm.v1.json` requires `weights.revision` to be a 40-char commit hash (enforced
   going forward; satisfied by the now-pinned configs).
 
-All 233 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
+All 234 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
 firewall-audit, validate-configs, data-integrity, manifest-audit,
 mapping-completeness, release-closure, prereg-freeze, and doc-links are green.
 

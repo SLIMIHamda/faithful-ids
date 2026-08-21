@@ -225,9 +225,12 @@ def reextract(items: list[dict], key: dict, vocab: dict[str, list[str]]) -> str:
         iid = it["item_id"]
         claims = ext.extract(ExplanationRecord(
             iid, key[iid]["generator_id"], it["explanation_text"])).claims
+        # to_dict(), not c.direction.value — extractor 2.0.0 leaves direction
+        # None where the text asserts none, and the dataclass already serialises
+        # that correctly.
         key[iid][f"extractor_claims_{version.replace('.', '_')}"] = [
-            {"feature": c.feature, "direction": c.direction.value,
-             "direction_evidence": c.direction_evidence} for c in claims
+            {k: v for k, v in c.to_dict().items()
+             if k in ("feature", "direction", "direction_evidence")} for c in claims
         ]
     return version
 
