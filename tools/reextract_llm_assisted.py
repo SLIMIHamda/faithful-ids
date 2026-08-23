@@ -42,6 +42,44 @@ from faithfulids.llm import CallLedger, LLMClient  # noqa: E402
 from faithfulids.orchestration.config_loader import load_config  # noqa: E402
 
 
+def preflight(repo_id: str, headroom_gib: float) -> None:
+    """Refuse to start unless the GPUs can actually hold the model.
+
+    The first Kaggle attempt spent ~2.2 hours downloading ~50 GB of weights and
+    THEN failed in ``validate_environment`` because ``device_map="auto"`` had
+    spilled modules to CPU, which bnb-4bit rejects. The check costs a second and
+    is worth having before the download, not after it.
+    """
+    try:
+        import torch
+    except Exception as exc:  # ImportError, but a broken install raises OSError
+        print(f"preflight: torch unavailable ({type(exc).__name__}) — skipping the check")
+        return
+    if not torch.cuda.is_available():
+        raise SystemExit(
+            "preflight: no CUDA device. This needs a GPU session — on Kaggle set "
+            "Accelerator to 'GPU T4 x2'."
+        )
+    n = torch.cuda.device_count()
+    per = [torch.cuda.get_device_properties(i).total_memory / 2**30 for i in range(n)]
+    usable = sum(max(0.0, g - headroom_gib) for g in per)
+    names = ", ".join(f"{torch.cuda.get_device_name(i)} {per[i]:.1f}GiB" for i in range(n))
+    print(f"preflight: {n} GPU(s) — {names}")
+    print(f"preflight: usable after {headroom_gib} GiB/GPU headroom = {usable:.1f} GiB")
+    # nf4 is ~0.55 bytes/param once quantisation constants and embeddings are
+    # counted; 26B -> ~14.5 GiB, plus room for activations and the KV cache.
+    need = 16.0
+    if usable < need:
+        raise SystemExit(
+            f"preflight: {usable:.1f} GiB usable is below the ~{need:.0f} GiB "
+            f"that {repo_id} needs in nf4. "
+            "On Kaggle set Accelerator to 'GPU T4 x2' (2 x 16 GiB) — a single "
+            "T4 or P100 cannot hold this model. Or lower the reserve with "
+            "FAITHFULIDS_GPU_HEADROOM_GIB=1.0. Refusing to download ~50 GB of "
+            "weights that cannot then be loaded."
+        )
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -69,8 +107,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.mode == "replay":
         client = LLMClient(None, ledger, mode="replay")
     else:
+        import os as _os
+
         from faithfulids.llm.providers import TransformersProvider
 
+        preflight(cfg["model"]["weights"]["hf_repo"],
+                  float(_os.environ.get("FAITHFULIDS_GPU_HEADROOM_GIB", "2.0")))
         client = LLMClient(TransformersProvider(), ledger, mode="live")
     model = {**cfg["model"], "id": cfg["id"]}
     ext = build_extractor(cfg, llm_client=client, model_config=model,
