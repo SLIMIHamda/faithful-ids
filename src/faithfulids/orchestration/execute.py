@@ -36,9 +36,16 @@ from faithfulids.llm import CallLedger, LLMClient
 from faithfulids.metrics.cost import cost_accounting
 from faithfulids.metrics.layer2 import build_erasure
 from faithfulids.orchestration.config_loader import load_config
+from faithfulids.orchestration.extractor_gate import extractor_model_ref
 from faithfulids.orchestration.references import resolve_reference
 from faithfulids.orchestration.registry import load_experiment
-from faithfulids.orchestration.runner import Components, InstanceCase, run_cells, write_run
+from faithfulids.orchestration.runner import (
+    Components,
+    InstanceCase,
+    generate_only,
+    run_cells,
+    write_run,
+)
 from faithfulids.provenance import (
     ArtifactRef,
     CodeVersion,
@@ -49,6 +56,37 @@ from faithfulids.provenance import (
     sha256_file,
     sha256_json,
 )
+
+#: Reply cap for the LLM extractor (amendment 0005). The generators' 160-token
+#: default cuts a 5+-claim JSON array short (~25-30 tokens per claim), and an
+#: unparsable reply silently falls back to the rule engine.
+EXTRACTION_MAX_NEW_TOKENS = 1024
+
+#: How a run extracts claims. "rule": the pilot's rule-assisted engine (no
+#: model). "llm": the registered LLM-assisted extractor that EXP-G-001
+#: certifies. "none": generate only, no claims or metrics, no run written (the
+#: first step of a split Tier-A run).
+EXTRACTION_MODES = ("rule", "llm", "none")
+
+
+def llm_extraction_client(extcfg: dict, ledger_dir: str | Path, *, mode: str = "live",
+                          provider: Any | None = None) -> LLMClient:
+    """The ledger-backed client the registered extractor runs through.
+
+    The provider follows the extraction config: ``runtime: ollama`` serves the
+    pinned GGUF (amendment 0005), anything else loads through transformers.
+    Replay needs no provider: every extraction comes from the ledger.
+    """
+    ledger = CallLedger(Path(ledger_dir))
+    if mode == "replay":
+        return LLMClient(None, ledger, mode="replay")
+    if provider is None:
+        from faithfulids.llm.providers import OllamaProvider, TransformersProvider
+
+        provider = (OllamaProvider(max_new_tokens=EXTRACTION_MAX_NEW_TOKENS)
+                    if extcfg["model"].get("runtime") == "ollama"
+                    else TransformersProvider(max_new_tokens=EXTRACTION_MAX_NEW_TOKENS))
+    return LLMClient(provider, ledger, mode="live")
 
 def _prediction_view(detector, instances):
     """(score, class-name) per instance for the GenerationContext (queue #5.5).
@@ -156,11 +194,35 @@ def run_pilot(
     llm_mode: str = "live",
     llm_cache_dir: str | Path | None = None,
     erasure_operator: str | None = None,
-) -> Path:
-    """Execute the pilot vertical slice on real data and return the run dir."""
+    extraction: str = "rule",
+    extraction_cache_dir: str | Path | None = None,
+    extraction_provider: Any | None = None,
+    generation_budget_s: float | None = None,
+) -> Path | None:
+    """Execute the vertical slice on real data and return the run dir.
+
+    ``extraction`` picks the claim extractor (see ``EXTRACTION_MODES``). A
+    Tier-A experiment refuses ``"rule"``: EXP-G-001 certifies the LLM-assisted
+    extractor, and the rule engine failed that gate. Tier-A splits in two
+    because a generator and the extractor model do not fit one 2x T4 session:
+    ``extraction="none"`` generates into the ledger and returns ``None`` (no
+    run; call again to resume, ``generation_budget_s`` stops before a session
+    limit), then ``llm_mode="replay", extraction="llm"`` serves the generations
+    from that ledger, extracts, scores, and writes the run.
+    """
     from faithfulids.detectors import get_trainer, load_frozen  # lazy (no torch/xgb import)
 
     exp = load_experiment(experiment_id)
+    if extraction not in EXTRACTION_MODES:
+        raise ValueError(f"extraction must be one of {EXTRACTION_MODES}, got {extraction!r}")
+    if exp["tier"] == "tier_a" and extraction == "rule":
+        raise ValueError(
+            f"{experiment_id} is Tier-A: claims must come from the registered LLM-assisted "
+            "extractor that EXP-G-001 certifies, not the rule engine (which failed that "
+            "gate). Generate with extraction='none', then score with extraction='llm'."
+        )
+    if extraction == "none" and llm_mode != "live":
+        raise ValueError("extraction='none' only generates; it needs llm_mode='live'")
     axes = exp["design"]["axes"]
     dataset_id = axes["datasets"][0]
     # One detector per run; detector_id_override selects the K-way detector
@@ -440,9 +502,34 @@ def run_pilot(
         else:
             generators.append((gid, get_generator(gcfg, llm_client=client, model_config=llmcfg)))
 
-    # -- extractor (rule-assisted, no model) + erasure (fitted on train) ---- #
+    if extraction == "none":
+        # Step 1 of a split Tier-A run: the ledger is the product. Same context
+        # builder as run_cells, so step 2's replay hits every call.
+        done, total = generate_only(
+            cases, generators, dataset_id=dataset_id,
+            binary=len(tuple(detector.class_names)) == 2, seed=gen_seed,
+            budget_s=generation_budget_s,
+        )
+        print(f"generation {'COMPLETE' if done == total else 'PARTIAL'}: {done}/{total} "
+              f"(llm {llm_id}, ledger {ledger.path.parent})", flush=True)
+        return None
+
+    # -- extractor + erasure (fitted on train) ------------------------------ #
+    # "rule": the pilot's rule-assisted engine, no model. "llm": the registered
+    # LLM-assisted extractor (EXP-G-001), on its own ledger so a re-score
+    # replays extraction too.
     extcfg = load_config("extraction", "eval_extractor")
-    extractor = build_extractor(extcfg, llm_client=None, model_config=None, feature_vocabulary=feature_names)
+    if extraction == "llm":
+        ext_client = llm_extraction_client(
+            extcfg, extraction_cache_dir or Path(runs_root) / "_extraction_llm_cache",
+            provider=extraction_provider,
+        )
+        extractor = build_extractor(extcfg, llm_client=ext_client,
+                                    model_config={**extcfg["model"], "id": extcfg["id"]},
+                                    feature_vocabulary=feature_names)
+    else:
+        extractor = build_extractor(extcfg, llm_client=None, model_config=None,
+                                    feature_vocabulary=feature_names)
     # Removal semantics R are a REPORTED PARAMETER of every Layer-2 number, not
     # an implementation detail (prereg amendment 0003): with correlated features
     # a "gentle" conditional imputation can restore an erased feature's signal
@@ -499,7 +586,12 @@ def run_pilot(
         "max_rows": max_rows, "rows_per_file": rows_per_file,
         "layer1_top_k": top_k, "layer2_k_values": _LAYER2_K,
         "layer2_erasure_operator": erasure_operator, "seed": gen_seed,
-        "extractor": "rule_assisted", "verifier": "rule_verifier", "llm_mode": llm_mode,
+        "extractor": "rule_assisted" if extraction == "rule" else {
+            "mode": "llm_assisted", "id": extcfg["id"], "version": extcfg["version"],
+            "prompt": dict(extcfg["prompt"]), "runtime": extcfg["model"].get("runtime"),
+            "weights": dict(extcfg["model"].get("weights") or {}),
+        },
+        "verifier": "rule_verifier", "llm_mode": llm_mode,
         "detector_competence": {
             "evaluation_set": "competence_holdout",  # NOT the explained set (amendment 0001)
             "n_competence": int(len(competence_df)),
@@ -514,8 +606,20 @@ def run_pilot(
             "exemptions": list(comp.exemptions),
             "contingency": decision.as_record() if decision is not None else None,
         },
-        "pilot_note": "pilot-grade cleaning + rule-assisted extractor/verifier; NON-CITABLE",
     }
+    if exp["tier"] == "tier_a":
+        # Deviations from the registered instruments, recorded on the run until
+        # each is resolved (each needs its own decision, not a silent default).
+        resolved_config["instrument_gaps"] = [
+            "B4/B5 verifier is rule-based: the registered phi-family verifier has no "
+            "pinned model",
+            "plausibility judge not computed: H1 cannot be scored from this run",
+            "data: pilot-grade cleaning; the full Engelen/Lanvin correction is not "
+            "applied by the loader",
+        ]
+    else:
+        resolved_config["pilot_note"] = (
+            "pilot-grade cleaning + rule-assisted extractor/verifier; NON-CITABLE")
     run_id = mint_run_id(experiment_id, code_version)
     inputs = _data_input_refs(Path(data_dir))
     model_sha = sha256_file(model_dir / "model.bin") if (model_dir / "model.bin").is_file() else "0" * 64
@@ -523,9 +627,12 @@ def run_pilot(
         ModelRef("detector", f"{family}@{model_sha[:12]}"),
         ModelRef("llm", f"{llm_id}@{(llmcfg.get('weights') or {}).get('revision','?')}",
                  quantisation=llmcfg.get("quantisation")),
-        ModelRef("extractor", "rule_assisted@deterministic"),
+        extractor_model_ref(extcfg) if extraction == "llm"
+        else ModelRef("extractor", "rule_assisted@deterministic"),
     ]
-    environment = {"environment_hash": sha256_json({"pilot": True, "family": family})}
+    environment = {"environment_hash": sha256_json(
+        {"pilot": True, "family": family} if exp["tier"] == "pilot"
+        else {"tier": exp["tier"], "family": family, "extraction": extraction})}
     return write_run(
         runs_root, run_id=run_id, experiment_id=experiment_id, artifacts=artifacts,
         resolved_config=resolved_config, code_version=code_version, environment=environment,

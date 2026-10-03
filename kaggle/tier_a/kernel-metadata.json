@@ -1,0 +1,18 @@
+{
+  "id": "slimihamda/faithfulids-tier-a",
+  "title": "faithfulids-tier-a",
+  "code_file": "tier_a_launcher.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [
+    "chethuhn/network-intrusion-dataset"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

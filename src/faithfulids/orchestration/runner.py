@@ -82,6 +82,68 @@ class CellArtifacts:
     metric_rows: list[dict[str, Any]] = field(default_factory=list)
 
 
+def generation_context(case: InstanceCase, *, dataset_id: str, binary: bool,
+                       seed: int) -> GenerationContext:
+    """The one place a generation's inputs are assembled.
+
+    ``run_cells`` and ``generate_only`` both build their contexts here, so a
+    split Tier-A run (generate in one session, replay + score in another) sends
+    byte-identical prompts and every replayed call hits the ledger. Binary
+    detectors keep the frozen literal "attack" score label (request-hash
+    continuity); a K-way detector's attribution explains the PREDICTED class,
+    so that is the score the rendered directions are about (#5.3 semantics).
+    """
+    return GenerationContext(
+        instance_id=case.instance_id,
+        feature_values=case.feature_values,
+        attribution=case.attribution,
+        detector_prediction=case.detector_prediction,
+        predicted_class=case.predicted_class,
+        dataset_id=dataset_id,
+        metadata={"seed": seed},
+        score_label=("attack" if binary
+                     else case.attribution.explained_class or case.predicted_class),
+    )
+
+
+def generate_only(
+    cases: Sequence[InstanceCase],
+    generators: Sequence[tuple[str, Generator]],
+    *,
+    dataset_id: str,
+    binary: bool,
+    seed: int,
+    budget_s: float | None = None,
+) -> tuple[int, int]:
+    """Generate every (generator, instance) explanation and nothing else.
+
+    The generation step of a split Tier-A run: the LLM client's ledger is the
+    product, and no claims or metrics are computed (the extractor needs the GPU
+    the generator is using). Calls already in the ledger are served from it, so
+    a later session resumes where an earlier one stopped. ``budget_s`` stops
+    cleanly before a session's time limit. Returns ``(done, total)``; the step
+    is complete when they are equal.
+    """
+    import time
+
+    t0 = time.monotonic()
+    total = len(generators) * len(cases)
+    done = 0
+    for gen_id, generator in generators:
+        for case in cases:
+            if budget_s is not None and time.monotonic() - t0 >= budget_s:
+                print(f"[generate] time budget reached: {done}/{total} done; "
+                      "run the generate step again to continue", flush=True)
+                return done, total
+            generator.generate(generation_context(case, dataset_id=dataset_id,
+                                                  binary=binary, seed=seed))
+            done += 1
+            if done == 1 or done % 25 == 0 or done == total:
+                print(f"[generate] {done}/{total} (current: {gen_id}, "
+                      f"{(time.monotonic() - t0) / 60:.0f} min)", flush=True)
+    return done, total
+
+
 def run_cells(
     cases: Sequence[InstanceCase],
     generators: Sequence[tuple[str, Generator]],
@@ -130,24 +192,12 @@ def run_cells(
                     })
 
     # Generation → extraction → Layer-1 per (instance, generator).
-    # Binary detectors keep the frozen literal "attack" score label (request-hash
-    # continuity); a K-way detector's attribution explains the PREDICTED class,
-    # so that is the score the rendered directions are about (#5.3 semantics).
     total = len(generators) * len(cases)
     done = 0
     for gen_id, generator in generators:
         for case in cases:
-            ctx = GenerationContext(
-                instance_id=case.instance_id,
-                feature_values=case.feature_values,
-                attribution=case.attribution,
-                detector_prediction=case.detector_prediction,
-                predicted_class=case.predicted_class,
-                dataset_id=components.dataset_id,
-                metadata={"seed": seed},
-                score_label=("attack" if binary
-                             else case.attribution.explained_class or case.predicted_class),
-            )
+            ctx = generation_context(case, dataset_id=components.dataset_id,
+                                     binary=binary, seed=seed)
             record = generator.generate(ctx)
             claimset = components.extractor.extract(record)
             art.explanations.append(record)

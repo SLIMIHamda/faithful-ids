@@ -40,14 +40,8 @@ sys.path.insert(0, str(REPO / "src"))
 
 from faithfulids.extraction import build as build_extractor  # noqa: E402
 from faithfulids.framework import ExplanationRecord  # noqa: E402
-from faithfulids.llm import CallLedger, LLMClient  # noqa: E402
 from faithfulids.orchestration.config_loader import load_config  # noqa: E402
-
-# The providers' 160-token default is sized for generator prose. One extracted
-# claim is ~25-30 tokens of JSON and 117/300 audit texts carry 5+ claims, so 160
-# cuts the array short, the JSON fails to parse and the item silently falls
-# back to the rule engine. 1024 holds the longest text (7 claims) many times.
-EXTRACTION_MAX_NEW_TOKENS = 1024
+from faithfulids.orchestration.execute import llm_extraction_client  # noqa: E402
 
 
 def preflight(repo_id: str, headroom_gib: float) -> None:
@@ -111,25 +105,15 @@ def main(argv: list[str] | None = None) -> int:
 
     cfg = load_config("extraction", "eval_extractor")
     version = cfg["version"]
-    ledger = CallLedger(args.ledger or (batch / "_llm_extraction_cache"))
-    if args.mode == "replay":
-        client = LLMClient(None, ledger, mode="replay")
-    elif cfg["model"].get("runtime") == "ollama":
-        # Amendment 0005: pinned GGUF on a running Ollama server; Ollama places
-        # layers across GPUs itself, so the nf4 preflight does not apply.
-        from faithfulids.llm.providers import OllamaProvider
-
-        client = LLMClient(OllamaProvider(max_new_tokens=EXTRACTION_MAX_NEW_TOKENS),
-                           ledger, mode="live")
-    else:
+    if args.mode == "live" and cfg["model"].get("runtime") != "ollama":
+        # The nf4 preflight is for the transformers path only: Ollama (amendment
+        # 0005) places a pinned GGUF across GPUs itself.
         import os as _os
-
-        from faithfulids.llm.providers import TransformersProvider
 
         preflight(cfg["model"]["weights"]["hf_repo"],
                   float(_os.environ.get("FAITHFULIDS_GPU_HEADROOM_GIB", "2.0")))
-        client = LLMClient(TransformersProvider(max_new_tokens=EXTRACTION_MAX_NEW_TOKENS),
-                           ledger, mode="live")
+    client = llm_extraction_client(cfg, args.ledger or (batch / "_llm_extraction_cache"),
+                                   mode=args.mode)
     model = {**cfg["model"], "id": cfg["id"]}
     ext = build_extractor(cfg, llm_client=client, model_config=model,
                           feature_vocabulary=vocab)

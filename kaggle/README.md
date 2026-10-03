@@ -1,5 +1,14 @@
 # Kaggle pilot launcher
 
+> **Tier-A (EXP-A-001):** `tier_a/` holds its own notebook and
+> `kernel-metadata.json`. Tier-A runs in two steps because a generator and the
+> certified extractor (Gemma via Ollama) do not fit one 2x T4 session:
+> `PHASE='generate'` (one model per session, resumable, repeat until the log says
+> `generation COMPLETE`), then `PHASE='score'` (EXP-G-001 token, EXP-G-002,
+> replay + LLM extraction + metrics + run). Carry `tier_a/ledgers/` between
+> sessions as a private dataset input. Budget: ~2,000 generation calls per model
+> at N=400, i.e. one to several 12 h sessions per model on T4s.
+>
 > **Extractor re-gate (EXP-G-001):** `extractor_regate/` holds its own notebook
 > and `kernel-metadata.json`. It needs no dataset: 2x T4, Internet on. Push it
 > from a terminal with `kaggle kernels push -p kaggle/extractor_regate`. See

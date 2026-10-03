@@ -799,6 +799,21 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   extraction config declares, so changing the extractor needs a new gate run.
   A dirty worktree is recorded (non-citable), as for every run writer. The
   scorer now writes `gate_result.json` with LF on every platform.
+- **Tier-A runs with the certified extractor, in two steps; launcher
+  `kaggle/tier_a/`.** Until now the Tier-A driver (`run_pilot`) always extracted
+  with the rule engine (which failed EXP-G-001) and stamped runs "pilot". It now
+  takes `extraction=` `rule` | `llm` | `none` and a Tier-A experiment refuses
+  `rule`. A generator and Gemma do not fit one 2x T4 session, so Tier-A splits:
+  `FAITHFULIDS_PHASE=generate` fills the generation ledger with one model
+  (`runner.generate_only`, resumable from the ledger, with a time budget; no gate
+  check, since it computes no metrics), then `FAITHFULIDS_PHASE=score` replays it,
+  extracts through `llm_extraction_client` (Ollama, on its own ledger), computes
+  the metrics and writes the run after `enforce_gates`. Both steps build each
+  generation's inputs through `runner.generation_context`, so the replay hits
+  every call. Tier-A runs record the extractor (version, prompt, weights) and
+  `instrument_gaps`: rule verifier for B4/B5 (phi verifier unpinned), no
+  plausibility judge (H1), pilot-grade cleaning. `reextract_llm_assisted.py`
+  now shares the client helper.
 
 ### Metric formula versions / schema
 

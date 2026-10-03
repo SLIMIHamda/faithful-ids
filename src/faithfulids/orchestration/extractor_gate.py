@@ -42,6 +42,19 @@ def llm_claims_key(version: str) -> str:
     return f"extractor_claims_{version.replace('.', '_')}_llm"
 
 
+def extractor_model_ref(extractor_cfg: Mapping[str, Any]) -> ModelRef:
+    """The manifest entry naming the extractor's pinned weights (repo/file@sha)."""
+    model = extractor_cfg["model"]
+    weights = model.get("weights") or {}
+    identity = weights.get("hf_repo") or extractor_cfg["id"]
+    if weights.get("file"):
+        identity += f"/{weights['file']}"
+    if weights.get("sha256"):
+        identity += f"@{weights['sha256'][:12]}"
+    return ModelRef("extractor", identity, quantisation=model.get("quantisation"),
+                    revision=weights.get("revision"))
+
+
 def _ref(path: Path, kind: str) -> ArtifactRef:
     try:
         name = path.resolve().relative_to(repo_root()).as_posix()
@@ -154,11 +167,6 @@ def write_extractor_gate_run(
     if ledger.is_dir():
         inputs += [_ref(p, "llm_ledger") for p in sorted(ledger.iterdir()) if p.is_file()]
 
-    identity = weights.get("hf_repo") or extractor_cfg["id"]
-    if weights.get("file"):
-        identity += f"/{weights['file']}"
-    if weights.get("sha256"):
-        identity += f"@{weights['sha256'][:12]}"
     return write_run(
         runs_root, run_id=mint_run_id(GATE_ID, code_version, now),
         experiment_id=GATE_ID, artifacts=art, resolved_config=resolved_config,
@@ -166,7 +174,6 @@ def write_extractor_gate_run(
         environment={"environment_hash": sha256_json(
             {"gate": "extractor_audit", "extractor_version": version})},
         seeds={"extraction/llm": 0}, inputs=inputs,
-        models=[ModelRef("extractor", identity, quantisation=model.get("quantisation"),
-                         revision=weights.get("revision"))],
+        models=[extractor_model_ref(extractor_cfg)],
         gate="PASSED" if verdict["passed"] else "FAILED",
     )

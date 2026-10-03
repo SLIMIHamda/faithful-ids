@@ -30,7 +30,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         # Real vertical slice on real data (CICIDS2017 CSVs mounted at
         # $FAITHFULIDS_DATA_DIR). The pilot has no gate dependencies; Tier-A
         # experiments declare EXP-G-001/EXP-G-002 and enforce_gates below
-        # refuses to run until PASSED gate runs exist under runs/. One LLM per
+        # refuses to score until PASSED gate runs exist under runs/. One LLM per
         # run (Kaggle memory): the launcher loops FAITHFULIDS_PILOT_LLM over
         # the experiment's roster; N comes from the experiment's sampling ref.
         from faithfulids.orchestration.execute import run_pilot
@@ -43,7 +43,36 @@ def cmd_run(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
             return 2
-        enforce_gates(exp, runs_root)
+        # Tier-A runs in two steps (a generator and the registered extractor do
+        # not fit one 2x T4 session): "generate" fills the ledger with the
+        # generator LLM, resumably; "score" replays it, extracts with the
+        # extractor EXP-G-001 certifies, computes the metrics, writes the run.
+        phase = None
+        tier_kwargs: dict = {}
+        if exp["tier"] == "tier_a":
+            phase = os.environ.get("FAITHFULIDS_PHASE")
+            if phase not in ("generate", "score"):
+                print(
+                    "ERROR: Tier-A runs in two steps. Set FAITHFULIDS_PHASE=generate "
+                    "(the generator LLM fills the ledger; repeat until it reports "
+                    "COMPLETE), then FAITHFULIDS_PHASE=score (replay, LLM extraction, "
+                    "metrics, run). See kaggle/tier_a/.",
+                    file=sys.stderr,
+                )
+                return 2
+            budget = os.environ.get("FAITHFULIDS_GENERATION_BUDGET_MIN")
+            tier_kwargs = dict(
+                llm_cache_dir=os.environ.get("FAITHFULIDS_LLM_CACHE_DIR")
+                or runs_root / "_tier_a_llm_cache",
+                extraction_cache_dir=os.environ.get("FAITHFULIDS_EXTRACTION_CACHE_DIR")
+                or runs_root / "_tier_a_extraction_cache",
+                **({"extraction": "none", "llm_mode": "live",
+                    "generation_budget_s": float(budget) * 60 if budget else None}
+                   if phase == "generate" else {"extraction": "llm", "llm_mode": "replay"}),
+            )
+        # Gates guard metric computation; the generate step computes none.
+        if phase != "generate":
+            enforce_gates(exp, runs_root)
         n = os.environ.get("FAITHFULIDS_PILOT_N")
         max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
         # Per-FILE row cap (evenly-spaced subsample): unlike the global MAX_ROWS —
@@ -67,18 +96,32 @@ def cmd_run(args: argparse.Namespace) -> int:
         # Competence gate on by default; set FAITHFULIDS_ENFORCE_COMPETENCE=0 to
         # REPORT the per-family table without halting (exploratory pilot).
         enforce = os.environ.get("FAITHFULIDS_ENFORCE_COMPETENCE", "1") != "0"
-        run_dir = run_pilot(
-            exp["id"], data_dir=data_dir, runs_root=runs_root,
-            n_explain=int(n) if n else None,
-            max_rows=int(max_rows) if max_rows else None,
-            rows_per_file=int(rows_per_file) if rows_per_file else None,
-            llm_id_override=llm_override,
-            detector_id_override=detector_override,
-            generator_ids_override=gens_override,
-            erasure_operator=erasure_op,
-            enforce_competence=enforce,
-        )
-        print(f"pilot run complete: {run_dir}")
+        from faithfulids.llm import ReplayMiss
+
+        try:
+            run_dir = run_pilot(
+                exp["id"], data_dir=data_dir, runs_root=runs_root,
+                n_explain=int(n) if n else None,
+                max_rows=int(max_rows) if max_rows else None,
+                rows_per_file=int(rows_per_file) if rows_per_file else None,
+                llm_id_override=llm_override,
+                detector_id_override=detector_override,
+                generator_ids_override=gens_override,
+                erasure_operator=erasure_op,
+                enforce_competence=enforce,
+                **tier_kwargs,
+            )
+        except ReplayMiss as exc:
+            if phase != "score":
+                raise
+            print(f"ERROR: the generation ledger is incomplete for this model ({exc}). "
+                  "Run FAITHFULIDS_PHASE=generate until it reports COMPLETE, with the "
+                  "same model, N, data and FAITHFULIDS_LLM_CACHE_DIR.", file=sys.stderr)
+            return 4
+        if run_dir is None:
+            print("generate step finished; no run is written until the score step")
+            return 0
+        print(f"{'Tier-A' if phase else 'pilot'} run complete: {run_dir}")
         return 0
 
     if exp["id"] == "EXP-G-002":
