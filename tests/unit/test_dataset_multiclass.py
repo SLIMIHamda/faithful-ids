@@ -25,7 +25,10 @@ def test_canonical_class_coarsens_variants_and_excludes_rare():
     assert canonical_class("Web Attack \x96 XSS") == "Web Attack"
     assert canonical_class("  benign ") == "BENIGN"  # normalised
     assert canonical_class("PortScan") == "PortScan"
-    assert canonical_class("Bot") == "Bot"
+    # Bot failed the competence recall floor; the applied contingency (amendment
+    # 0001, rung 3, taxonomy 2.0.0) excludes it from the task vocabulary
+    assert canonical_class("Bot") is None
+    assert load_taxonomy("cicids2017")["version"] == "2.0.0"
     # rare / unknown -> excluded (None)
     assert canonical_class("Infiltration") is None
     assert canonical_class("Heartbleed") is None
@@ -36,7 +39,7 @@ def test_class_index_map_is_stable_over_the_full_taxonomy():
     m = class_index_map()
     classes = canonical_classes()
     assert m["BENIGN"] == 0 and set(m) == set(classes)
-    assert len(m) == len(classes) == 8
+    assert len(m) == len(classes) == 7  # 8 until the contingency excluded Bot
 
 
 def test_kb_attack_classes_all_map_in_the_taxonomy():
@@ -88,7 +91,7 @@ def test_committed_parent_map_offers_only_the_brute_force_fold():
     from faithfulids.datasets.loaders.cicids2017 import parent_of
 
     assert parent_of("FTP-Patator") == parent_of("SSH-Patator") == "Brute Force"
-    for cls in ("BENIGN", "DoS", "DDoS", "PortScan", "Web Attack", "Bot"):
+    for cls in ("BENIGN", "DoS", "DDoS", "PortScan", "Web Attack"):
         assert parent_of(cls) == cls, f"{cls} must have no lineage sibling"
 
 
@@ -106,7 +109,7 @@ def test_merged_taxonomy_yields_the_rung_two_vocabulary():
 
     merged = merged_taxonomy()
     assert merged["canonical_classes"] == [
-        "BENIGN", "DoS", "DDoS", "PortScan", "Brute Force", "Web Attack", "Bot",
+        "BENIGN", "DoS", "DDoS", "PortScan", "Brute Force", "Web Attack",
     ]
     # raw labels retarget through the merge; exclusions stay excluded
     assert merged["label_map"]["ftp patator"] == "Brute Force"
@@ -134,7 +137,7 @@ def test_parent_map_guard_rejects_partial_reassigned_and_benign_merges():
         return c
 
     partial = dict(tax)
-    partial["parents"] = {k: v for k, v in tax["parents"].items() if k != "Bot"}
+    partial["parents"] = {k: v for k, v in tax["parents"].items() if k != "PortScan"}
     assert any("not total" in e for e in _parent_map_errors(partial, canon, "w"))
 
     extra = mutated(**{"Infiltration": "Infiltration"})
@@ -145,7 +148,7 @@ def test_parent_map_guard_rejects_partial_reassigned_and_benign_merges():
     assert any("NEW parent name" in e for e in _parent_map_errors(reassigned, canon, "w"))
 
     # a new name with a single child is a rename, not a merge
-    renamed = mutated(Bot="Botnet")
+    renamed = mutated(PortScan="Scanning")
     assert any("rename, not a merge" in e for e in _parent_map_errors(renamed, canon, "w"))
 
     benign_merged = mutated(BENIGN="Normal-ish", PortScan="Normal-ish")

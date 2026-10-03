@@ -814,6 +814,20 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `instrument_gaps`: rule verifier for B4/B5 (phi verifier unpinned), no
   plausibility judge (H1), pilot-grade cleaning. `reextract_llm_assisted.py`
   now shares the client helper.
+- **Class-handling contingency applied (amendment 0001): taxonomy 1.1.0 -> 2.0.0,
+  Bot excluded, 8 -> 7 classes.** Source: the K-way smoke run
+  `EXP-PILOT-001__5377b81__2026-08-23T1801Z`, competence holdout n=113,403.
+  Bot recall 0.774 against the 0.80 floor (n=137); every other class 0.979-1.000.
+  1 of 7 attack classes failing is under the 50% trigger and Bot has no
+  documented lineage parent, so the ladder lands on rung 3: exclude Bot, 6 attack
+  classes survive. `tools/apply_contingency.py` re-derived the Decision from the
+  competence table with the current taxonomy and frozen thresholds and it
+  matched the recorded one. Existing artifacts are not relabelled; every number
+  from the 8-class pilots is superseded. The 7-class detector still needs its
+  own fit, competence re-check and SHAP before generation: the Tier-A generate
+  step does all three before its first token and stops if a class fails. The
+  Tier-A notebook now exports `competence.json`. Report the exclusion in the
+  main text (amendment 0001).
 
 ### Metric formula versions / schema
 

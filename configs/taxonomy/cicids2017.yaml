@@ -2,7 +2,24 @@ id: cicids2017
 schema_version: v1
 kind: class_taxonomy
 dataset: cicids2017
-version: 1.1.0
+version: 2.0.0
+# APPLIED CONTINGENCY (prereg amendment 0001,
+# configs/statistics/amendments/0001-multiclass-class-handling-contingency.md).
+# Superseded v1.1.0. Materialised by tools/apply_contingency.py from the K-way
+# smoke run EXP-PILOT-001__5377b81__2026-08-23T1801Z (Kaggle, commit 5377b81):
+# runs/_pilot_models/xgboost__cicids2017_corrected/competence.json,
+# sha256 08521a44603f487f22cb727737092b1e2dc2b23263f145d415a9327f6bf86d7e
+#   rung 3 (parent_merged_minus_excluded)
+#   failed the competence gate: Bot
+#   excluded: Bot
+#   merged:   (none)
+# The verdict came from the held-out COMPETENCE split, never the explained
+# set. This vocabulary requires its own detector fit, competence
+# re-evaluation and SHAP re-attribution before generation; no existing
+# artifact is relabelled to it.
+#   1/7 attack classes fail (14% < 50%). One pass: Bot have no documented
+#   lineage parent and are excluded from the task vocabulary (reported in the
+#   main text). 6 attack classes survive (minimum 3).
 # SINGLE SOURCE OF TRUTH for the multi-class target (queue #5.1b). Both the
 # dataset loader (raw Label -> canonical) and the attack-class KB read/validate
 # against this file, so the two taxonomies cannot drift silently. validate-configs
@@ -13,7 +30,7 @@ version: 1.1.0
 # DoS variants collapse to "DoS" (DDoS stays separate); the three Web Attack
 # variants collapse to "Web Attack"; Infiltration/Heartbleed are excluded (too
 # rare for a per-class recall floor). Tier-A may revise this (version bump).
-canonical_classes: [BENIGN, DoS, DDoS, PortScan, FTP-Patator, SSH-Patator, Web Attack, Bot]
+canonical_classes: [BENIGN, DoS, DDoS, PortScan, FTP-Patator, SSH-Patator, Web Attack]
 # Keys are NORMALISED raw labels: lowercased, every run of non-alphanumeric chars
 # (spaces, '-', the non-ASCII separator CICIDS uses in "Web Attack \x96 ...")
 # collapsed to a single space, stripped. Values are a canonical class or "excluded".
@@ -28,7 +45,7 @@ label_map:
   portscan: PortScan
   ftp patator: FTP-Patator
   ssh patator: SSH-Patator
-  bot: Bot
+  bot: excluded
   web attack: Web Attack
   web attack brute force: Web Attack
   web attack xss: Web Attack
@@ -60,4 +77,3 @@ parents:
   FTP-Patator: Brute Force
   SSH-Patator: Brute Force
   Web Attack: Web Attack
-  Bot: Bot
