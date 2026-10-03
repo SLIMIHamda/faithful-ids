@@ -69,13 +69,21 @@ EXTRACTION_MAX_NEW_TOKENS = 1024
 EXTRACTION_MODES = ("rule", "llm", "none")
 
 
-def llm_extraction_client(extcfg: dict, ledger_dir: str | Path, *, mode: str = "live",
-                          provider: Any | None = None) -> LLMClient:
-    """The ledger-backed client the registered extractor runs through.
+#: Verifier choices. "rule": the pilot's model-free checker. "llm": the
+#: registered phi verifier on its pinned model (amendment 0008), which Tier-A
+#: scoring requires.
+VERIFIER_MODES = ("rule", "llm")
 
-    The provider follows the extraction config: ``runtime: ollama`` serves the
-    pinned GGUF (amendment 0005), anything else loads through transformers.
-    Replay needs no provider: every extraction comes from the ledger.
+
+def instrument_client(model: dict, ledger_dir: str | Path, *, mode: str = "live",
+                      provider: Any | None = None) -> LLMClient:
+    """The ledger-backed client a pinned instrument model runs through.
+
+    The instruments are the extractor, the B4/B5 verifier and the plausibility
+    judge; each keeps its own ledger, so a re-score replays it. The provider
+    follows ``model['runtime']``: ``ollama`` serves pinned blobs (amendments
+    0005, 0008, 0009), anything else loads through transformers. Replay needs
+    no provider: every call comes from the ledger.
     """
     ledger = CallLedger(Path(ledger_dir))
     if mode == "replay":
@@ -84,9 +92,75 @@ def llm_extraction_client(extcfg: dict, ledger_dir: str | Path, *, mode: str = "
         from faithfulids.llm.providers import OllamaProvider, TransformersProvider
 
         provider = (OllamaProvider(max_new_tokens=EXTRACTION_MAX_NEW_TOKENS)
-                    if extcfg["model"].get("runtime") == "ollama"
+                    if model.get("runtime") == "ollama"
                     else TransformersProvider(max_new_tokens=EXTRACTION_MAX_NEW_TOKENS))
     return LLMClient(provider, ledger, mode="live")
+
+
+def llm_extraction_client(extcfg: dict, ledger_dir: str | Path, *, mode: str = "live",
+                          provider: Any | None = None) -> LLMClient:
+    """The ledger-backed client the registered extractor runs through."""
+    return instrument_client(extcfg["model"], ledger_dir, mode=mode, provider=provider)
+
+
+def instrument_model(block: dict) -> dict:
+    """A verifier/judge block's pinned model, as the client and ledger need it.
+
+    These families have no entry in ``configs/llms`` by design (the firewall
+    reads that directory as the generator roster), so the model lives inside
+    the instrument's own config, like the extractor's.
+    """
+    if not block.get("model"):
+        raise ValueError(f"{block.get('model_family')!r} instrument has no pinned model")
+    return {**block["model"], "model_family": block["model_family"]}
+
+
+def _model_ref(role: str, model: dict) -> ModelRef:
+    w = model["weights"]
+    return ModelRef(role, f"{w['ref']}@{w['sha256'][:12]}",
+                    quantisation=model.get("quantisation"), revision=w.get("revision"))
+
+
+def _ollama_version(extcfg: dict, extraction: str, provider: Any | None) -> str | None:
+    """The Ollama version that served the LLM extractor (amendment 0005(C)).
+
+    The verifier and judge run on the same server. None when no Ollama ran.
+    """
+    if extraction != "llm" or extcfg["model"].get("runtime") != "ollama":
+        return None
+    if provider is not None:
+        v = getattr(provider, "version", None)
+        return str(v()) if callable(v) else None
+    from faithfulids.llm.providers import OllamaProvider
+
+    try:
+        return OllamaProvider().version()
+    except OSError as exc:  # recorded, never fatal: the calls already succeeded
+        return f"unknown ({type(exc).__name__})"
+
+
+class _FallbackCounter:
+    """Wraps the LLM extractor and counts the items whose reply did not parse.
+
+    Those items fall back to the rule engine; amendment 0005(C) requires every
+    result from the LLM extractor to report how many there were.
+    """
+
+    def __init__(self, inner) -> None:
+        self._inner = inner
+        self.items = 0
+        self.fallbacks = 0
+
+    def extract(self, explanation):
+        claims = self._inner.extract(explanation)
+        parsed = getattr(self._inner, "last_llm_parsed", None)
+        if parsed is not None:
+            self.items += 1
+            self.fallbacks += parsed is False
+        return claims
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
 
 def _prediction_view(detector, instances):
     """(score, class-name) per instance for the GenerationContext (queue #5.5).
@@ -198,6 +272,12 @@ def run_pilot(
     extraction_cache_dir: str | Path | None = None,
     extraction_provider: Any | None = None,
     generation_budget_s: float | None = None,
+    verifier: str | None = None,
+    verifier_cache_dir: str | Path | None = None,
+    verifier_provider: Any | None = None,
+    judge: bool | None = None,
+    judge_cache_dir: str | Path | None = None,
+    judge_provider: Any | None = None,
 ) -> Path | None:
     """Execute the vertical slice on real data and return the run dir.
 
@@ -209,6 +289,12 @@ def run_pilot(
     run; call again to resume, ``generation_budget_s`` stops before a session
     limit), then ``llm_mode="replay", extraction="llm"`` serves the generations
     from that ledger, extracts, scores, and writes the run.
+
+    ``verifier`` picks B4/B5's checker (see ``VERIFIER_MODES``) and ``judge``
+    turns the plausibility judge on. Both default to the registered instruments
+    in a Tier-A score step (amendments 0008, 0009) and stay off elsewhere. The
+    verifier reads the draft AFTER its one generation call, so verifying at score
+    time is the same instrument, and the generation ledger does not depend on it.
     """
     from faithfulids.detectors import get_trainer, load_frozen  # lazy (no torch/xgb import)
 
@@ -223,6 +309,20 @@ def run_pilot(
         )
     if extraction == "none" and llm_mode != "live":
         raise ValueError("extraction='none' only generates; it needs llm_mode='live'")
+    tier_a_score = exp["tier"] == "tier_a" and extraction == "llm"
+    verifier = verifier or ("llm" if tier_a_score else "rule")
+    if verifier not in VERIFIER_MODES:
+        raise ValueError(f"verifier must be one of {VERIFIER_MODES}, got {verifier!r}")
+    if tier_a_score and verifier == "rule":
+        raise ValueError(
+            f"{experiment_id} is Tier-A: B4/B5 must be checked by the registered phi "
+            "verifier (amendment 0008), not the pilot's rule checker."
+        )
+    if extraction == "none":
+        # The generate step stores drafts only; no verdict is kept, so the
+        # model-free checker stands in and no verifier model is loaded.
+        verifier = "rule"
+    judge = tier_a_score if judge is None else (judge and extraction != "none")
     axes = exp["design"]["axes"]
     dataset_id = axes["datasets"][0]
     # One detector per run; detector_id_override selects the K-way detector
@@ -476,6 +576,27 @@ def run_pilot(
     kb_name = (dcfg.get("kb_ref") or f"kb:{dataset_id}@").split(":", 1)[1].split("@", 1)[0]
     kb = load_feature_semantics(kb_name if multiclass else dataset_id)
 
+    # B4/B5's checker. "llm": the phi verifier on its pinned model, on its own
+    # ledger (live; a re-score with the ledger attached makes no new calls).
+    verifier_record: Any = "rule_verifier"
+    verifier_models: dict[str, dict] = {}
+    vclient = None
+
+    def _verifier_for(gcfg: dict):
+        nonlocal vclient
+        if verifier == "rule":
+            return RuleVerifier()
+        from faithfulids.generation.b4_vte.verifier.verifier import Verifier
+
+        vmodel = instrument_model(gcfg["verifier"])
+        if vclient is None:
+            vclient = instrument_client(
+                vmodel, verifier_cache_dir or Path(runs_root) / "_verifier_llm_cache",
+                provider=verifier_provider,
+            )
+        verifier_models[gcfg["id"]] = {"model": vmodel, "prompt": dict(gcfg["verifier"]["prompt"])}
+        return Verifier(gcfg["verifier"], vclient, vmodel)
+
     generators = []
     for gid in generator_ids:
         gcfg = load_config("generator", gid)
@@ -484,14 +605,14 @@ def run_pilot(
         elif gcfg["code"] == "b4_vte":
             generators.append((gid, get_generator(
                 gcfg, llm_client=client, model_config=llmcfg,
-                kb_feature_semantics=kb, verifier=RuleVerifier(),
+                kb_feature_semantics=kb, verifier=_verifier_for(gcfg),
             )))
         elif gcfg["code"] == "b5_narrative_vte":
             generators.append((gid, get_generator(
                 gcfg, llm_client=client, model_config=llmcfg,
                 kb_feature_semantics=kb,
                 kb_class_semantics=_class_semantics(kb_name),
-                verifier=RuleVerifier(),
+                verifier=_verifier_for(gcfg),
             )))
         elif gcfg["code"] == "b3_dte_style":
             # B3 (grounded-natural) drafts from the SAME evidence as B4 — the ranked
@@ -501,6 +622,18 @@ def run_pilot(
             )))
         else:
             generators.append((gid, get_generator(gcfg, llm_client=client, model_config=llmcfg)))
+    if verifier_models:
+        # B5's checker is deliberately the SAME instrument as B4's, so the B4->B5
+        # delta is narrative synthesis alone.
+        if len({json.dumps(v, sort_keys=True) for v in verifier_models.values()}) > 1:
+            raise ValueError(f"B4 and B5 must share one verifier instrument: {verifier_models}")
+        v = next(iter(verifier_models.values()))
+        verifier_record = {
+            "mode": "llm", "model_family": v["model"]["model_family"], "model": v["model"]["id"],
+            "runtime": v["model"]["runtime"], "base_model": v["model"]["base_model"],
+            "weights": dict(v["model"]["weights"]), "prompt": v["prompt"],
+            "generators": sorted(verifier_models),
+        }
 
     if extraction == "none":
         # Step 1 of a split Tier-A run: the ledger is the product. Same context
@@ -524,9 +657,10 @@ def run_pilot(
             extcfg, extraction_cache_dir or Path(runs_root) / "_extraction_llm_cache",
             provider=extraction_provider,
         )
-        extractor = build_extractor(extcfg, llm_client=ext_client,
-                                    model_config={**extcfg["model"], "id": extcfg["id"]},
-                                    feature_vocabulary=feature_names)
+        extractor = _FallbackCounter(build_extractor(
+            extcfg, llm_client=ext_client, model_config={**extcfg["model"], "id": extcfg["id"]},
+            feature_vocabulary=feature_names,
+        ))
     else:
         extractor = build_extractor(extcfg, llm_client=None, model_config=None,
                                     feature_vocabulary=feature_names)
@@ -550,6 +684,66 @@ def run_pilot(
         layer2_delta_spaces=tuple(delta_spaces),
     )
     artifacts = run_cells(cases, generators, components, seed=gen_seed)
+
+    # -- instrument health (amendments 0005(C), 0008, 0009) ------------------ #
+    # Share of LLM-extracted items whose reply did not parse and fell back to the
+    # rule engine; share of verifier replies with no verdict token (read as
+    # UNSUPPORTED, so they abstain); share of judge replies that did not parse.
+    def _health(metric: str, bad: int, n: int, **grouping) -> None:
+        if n:
+            artifacts.metric_rows.append({
+                "instance_id": "__aggregate__", "layer": "instrument", "metric": metric,
+                "value": bad / n, "grouping": {"n_items": n, "n_bad": bad, **grouping},
+            })
+
+    if isinstance(extractor, _FallbackCounter):
+        _health("extractor_rule_fallback_rate", extractor.fallbacks, extractor.items)
+    traces = [e.metadata.get("verifier_trace") for e in artifacts.explanations
+              if e.generator_id in verifier_models]
+    _health("verifier_no_verdict_rate",
+            sum(1 for t in traces if t and t.get("reason") == "no_verdict_token"), len(traces),
+            generators=sorted(verifier_models))
+
+    # -- plausibility judge (amendment 0009) -------------------------------- #
+    # Rates the text each generator finally SHOWS (a B4/B5 abstention is rated as
+    # its B1 fallback). Plausibility only: the judge never sees the attribution.
+    # Each call is independent; the order is still shuffled with the run seed,
+    # as the registered harness specifies.
+    judge_record: Any = None
+    judge_model: dict | None = None
+    if judge:
+        import random
+
+        from faithfulids.metrics.plausibility.judge import PlausibilityJudge
+
+        pcfg = load_config("metric", "plausibility_judge")
+        judge_model = instrument_model(pcfg["judge"])
+        jclient = instrument_client(
+            judge_model, judge_cache_dir or Path(runs_root) / "_judge_llm_cache",
+            provider=judge_provider,
+        )
+        pj = PlausibilityJudge(pcfg, jclient, judge_model)
+        expl = list(artifacts.explanations)
+        unparsed = 0
+        for i in random.Random(gen_seed).sample(range(len(expl)), len(expl)):
+            e = expl[i]
+            scores = pj.rate(e.text, seed=gen_seed)
+            if scores is None:
+                unparsed += 1
+                continue
+            for dim, value in scores.items():
+                artifacts.metric_rows.append({
+                    "instance_id": e.instance_id, "layer": "plausibility", "metric": dim,
+                    "value": value,
+                    "grouping": {"instance_id": e.instance_id, "generator_id": e.generator_id},
+                })
+        _health("judge_unparsed_rate", unparsed, len(expl))
+        judge_record = {
+            "model_family": judge_model["model_family"], "model": judge_model["id"],
+            "runtime": judge_model["runtime"], "base_model": judge_model["base_model"],
+            "weights": dict(judge_model["weights"]), "prompt": dict(pcfg["judge"]["prompt"]),
+            "validation": dict(pcfg["judge"]["validation"]), "validated": False,
+        }
 
     # -- cost accounting ---------------------------------------------------- #
     # tokens/latency/$ are run-global; coverage/abstention_rate belong ONLY to
@@ -606,7 +800,9 @@ def run_pilot(
             "prompt": dict(extcfg["prompt"]), "runtime": extcfg["model"].get("runtime"),
             "weights": dict(extcfg["model"].get("weights") or {}),
         },
-        "verifier": "rule_verifier", "llm_mode": llm_mode,
+        "verifier": verifier_record, "plausibility_judge": judge_record,
+        "ollama_version": _ollama_version(extcfg, extraction, extraction_provider),
+        "llm_mode": llm_mode,
         "detector_competence": {
             "evaluation_set": "competence_holdout",  # NOT the explained set (amendment 0001)
             "n_competence": int(len(competence_df)),
@@ -626,9 +822,9 @@ def run_pilot(
         # Deviations from the registered instruments, recorded on the run until
         # each is resolved (each needs its own decision, not a silent default).
         resolved_config["instrument_gaps"] = [
-            "B4/B5 verifier is rule-based: the registered phi-family verifier has no "
-            "pinned model",
-            "plausibility judge not computed: H1 cannot be scored from this run",
+            ("plausibility judge awaits validation against human ratings (Spearman "
+             "rho >= 0.6, amendment 0009): its scores may not enter H1 until it passes"
+             if judge else "plausibility judge not computed: H1 cannot be scored from this run"),
             "data: pilot-grade cleaning; the full Engelen/Lanvin correction is not "
             "applied by the loader",
         ]
@@ -645,6 +841,10 @@ def run_pilot(
         extractor_model_ref(extcfg) if extraction == "llm"
         else ModelRef("extractor", "rule_assisted@deterministic"),
     ]
+    if verifier_models:
+        models.append(_model_ref("verifier", next(iter(verifier_models.values()))["model"]))
+    if judge_model is not None:
+        models.append(_model_ref("judge", judge_model))
     environment = {"environment_hash": sha256_json(
         {"pilot": True, "family": family} if exp["tier"] == "pilot"
         else {"tier": exp["tier"], "family": family, "extraction": extraction})}

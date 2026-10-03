@@ -14,7 +14,9 @@ research_question: >-
   pinned scale ladder (the pilot roster confounded family with size); B5
   narrative VtE added. Detector/dataset generality lives in the spoke
   experiments at the anchor LLM (fractional design).
-hypothesis_family: [H1, H2]
+# H3 joined by amendment 0008 (2026-10-03), with the phi verifier pinned; it
+# tests B3 vs B4/B5 on verifier-independent signals, which this factorial has.
+hypothesis_family: [H1, H2, H3]
 design:
   mode: factorial
   axes:

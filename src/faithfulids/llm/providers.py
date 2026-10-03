@@ -241,7 +241,7 @@ class OllamaProvider:
         with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
             return json.loads(resp.read().decode("utf-8"))
 
-    def _verify(self, name: str, sha256: str | None) -> None:
+    def _verify(self, name: str, sha256: str | None, template_sha256: str | None = None) -> None:
         if name in self._verified:
             return
         if not sha256:
@@ -249,31 +249,54 @@ class OllamaProvider:
                 f"ollama model {name!r}: weights.sha256 is not pinned — refusing to "
                 "run weights that cannot be tied to a file."
             )
+        import hashlib
         import json
 
-        shown = json.dumps(self._post("/api/show", {"model": name}))
-        if sha256 not in shown:
+        info = self._post("/api/show", {"model": name})
+        if sha256 not in json.dumps(info):
             raise RuntimeError(
                 f"ollama model {name!r} is not the pinned file: blob sha256-{sha256} "
                 "is absent from /api/show. Re-create it from the pinned GGUF."
             )
+        # Library builds (amendments 0008, 0009) bring their own chat template,
+        # which shapes every prompt: Ollama stores it as a blob named by its
+        # sha256 and /api/show returns that text verbatim.
+        if template_sha256:
+            got = hashlib.sha256(str(info.get("template", "")).encode("utf-8")).hexdigest()
+            if got != template_sha256:
+                raise RuntimeError(
+                    f"ollama model {name!r}: chat template sha256 {got[:12]}… is not the "
+                    f"pinned {template_sha256[:12]}…. Pull the pinned build again."
+                )
         print(f"[OllamaProvider] {name}: serving pinned blob sha256-{sha256[:12]}…")
         self._verified.add(name)
+
+    def version(self) -> str:
+        """The serving Ollama's version (amendment 0005(C): reported with every result)."""
+        import json
+        import urllib.request
+
+        with urllib.request.urlopen(self.base_url + "/api/version", timeout=30) as resp:
+            return str(json.loads(resp.read().decode("utf-8"))["version"])
 
     def complete(
         self, prompt: str, params: Mapping[str, Any], *, model: Mapping[str, Any]
     ) -> tuple[str, dict[str, Any]]:
-        name = (model.get("ollama") or {}).get("model_name")
+        ocfg = model.get("ollama") or {}
+        name = ocfg.get("model_name")
         if not name:
             raise ValueError(f"model {model.get('id', '<?>')}: no ollama.model_name")
-        self._verify(name, (model.get("weights") or {}).get("sha256"))
+        self._verify(name, (model.get("weights") or {}).get("sha256"), ocfg.get("template_sha256"))
         body = {
             "model": name,
             "messages": [{"role": "user", "content": prompt}],
             "stream": False,
             # The registered transformers path applied the chat template with no
             # thinking turn; keep it that way so the instrument stays the same.
-            "think": False,
+            # ``think: null`` in the config = a model with no thinking mode: the
+            # field is left out rather than sent to a model that cannot honour it.
+            **({} if "think" in ocfg and ocfg["think"] is None
+               else {"think": bool(ocfg.get("think", False))}),
             "options": {
                 "temperature": float(params.get("temperature", 0.0)),
                 "seed": int(params.get("seed", 0)),

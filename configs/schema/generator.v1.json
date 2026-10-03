@@ -36,7 +36,8 @@
         "model_family": {"type": "string", "pattern": "^[a-z0-9_]+$"},
         "prompt": {"$ref": "#/$defs/prompt_ref"},
         "threshold_ref": {"type": "string", "pattern": "^statistics:decision_thresholds:[a-z0-9_]+$"},
-        "threshold_scope": {"const": "dev_split"}
+        "threshold_scope": {"const": "dev_split"},
+        "model": {"$ref": "#/$defs/pinned_ollama_model"}
       }
     },
     "abstention": {
@@ -59,6 +60,43 @@
         "name": {"type": "string"},
         "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
         "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "pinned_ollama_model": {
+      "type": "object",
+      "description": "The pinned model the verifier runs (amendment 0008): an Ollama-library 4-bit build of base_model. The run refuses to start unless the blobs Ollama serves match these sha256s.",
+      "additionalProperties": false,
+      "required": ["id", "provider", "quantisation", "runtime", "base_model", "weights", "ollama"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "provider": {"const": "local_open_weights"},
+        "quantisation": {"enum": ["none", "4bit"]},
+        "runtime": {"const": "ollama"},
+        "base_model": {"type": "string"},
+        "licence": {"type": "string"},
+        "weights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "ref", "revision", "sha256"],
+          "properties": {
+            "source": {"const": "ollama_library"},
+            "ref": {"type": "string", "pattern": "^[a-z0-9._-]+:[A-Za-z0-9._-]+$"},
+            "revision": {"type": "string", "description": "Ledger snapshot id: the weights blob digest (a library tag can move; the digest cannot)."},
+            "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        },
+        "ollama": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["model_name", "template_sha256", "min_version"],
+          "properties": {
+            "model_name": {"type": "string", "pattern": "^[a-z0-9._-]+:[A-Za-z0-9._-]+$"},
+            "template_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "params_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+            "min_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+            "think": {"type": ["boolean", "null"], "description": "Sent as the chat request's 'think' field; null = not sent (models without a thinking mode). Absent = false."}
+          }
+        }
       }
     }
   }

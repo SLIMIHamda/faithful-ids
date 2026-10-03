@@ -90,7 +90,7 @@
         "additionalProperties": false,
         "required": ["role", "identity"],
         "properties": {
-          "role": {"enum": ["detector", "llm", "extractor", "judge", "imputation"]},
+          "role": {"enum": ["detector", "llm", "extractor", "verifier", "judge", "imputation"]},
           "identity": {"type": "string", "minLength": 1},
           "quantisation": {"type": ["string", "null"]},
           "revision": {"type": ["string", "null"]}

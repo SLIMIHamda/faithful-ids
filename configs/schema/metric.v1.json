@@ -73,6 +73,7 @@
       "properties": {
         "model_family": {"type": "string", "pattern": "^[a-z0-9_]+$"},
         "scope": {"const": "plausibility_only"},
+        "model": {"$ref": "#/$defs/pinned_ollama_model"},
         "prompt": {
           "type": "object",
           "additionalProperties": false,
@@ -106,5 +107,44 @@
   "allOf": [
     {"if": {"properties": {"family": {"const": "layer2"}}}, "then": {"required": ["erasure"]}},
     {"if": {"properties": {"family": {"const": "plausibility"}}}, "then": {"required": ["judge"]}}
-  ]
+  ],
+  "$defs": {
+    "pinned_ollama_model": {
+      "type": "object",
+      "description": "The pinned model the judge runs (amendment 0009): an Ollama-library 4-bit build of base_model. The run refuses to start unless the blobs Ollama serves match these sha256s. Same shape as generator.v1.json#/$defs/pinned_ollama_model.",
+      "additionalProperties": false,
+      "required": ["id", "provider", "quantisation", "runtime", "base_model", "weights", "ollama"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "provider": {"const": "local_open_weights"},
+        "quantisation": {"enum": ["none", "4bit"]},
+        "runtime": {"const": "ollama"},
+        "base_model": {"type": "string"},
+        "licence": {"type": "string"},
+        "weights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "ref", "revision", "sha256"],
+          "properties": {
+            "source": {"const": "ollama_library"},
+            "ref": {"type": "string", "pattern": "^[a-z0-9._-]+:[A-Za-z0-9._-]+$"},
+            "revision": {"type": "string"},
+            "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        },
+        "ollama": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["model_name", "template_sha256", "min_version"],
+          "properties": {
+            "model_name": {"type": "string", "pattern": "^[a-z0-9._-]+:[A-Za-z0-9._-]+$"},
+            "template_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "params_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+            "min_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+            "think": {"type": ["boolean", "null"]}
+          }
+        }
+      }
+    }
+  }
 }

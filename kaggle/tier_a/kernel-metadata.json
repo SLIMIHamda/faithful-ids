@@ -10,7 +10,8 @@
   "enable_internet": true,
   "machine_shape": "NvidiaTeslaT4",
   "dataset_sources": [
-    "chethuhn/network-intrusion-dataset"
+    "chethuhn/network-intrusion-dataset",
+    "slimihamda/faithfulids-tier-a-ledgers"
   ],
   "competition_sources": [],
   "kernel_sources": [],

@@ -841,6 +841,26 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `DEFAULT_MAX_NEW_TOKENS`). Runs now report `reply_cap_hit_rate` (layer
   `cost`). Pilot numbers for B3-B5, including the H2 recall drop and the H3
   precision result, are truncation-confounded.
+- **Amendments 0008 + 0009 — the verifier and the plausibility judge get pinned
+  models; H3 joins EXP-A-001.** Neither registered instrument had a model, so
+  Tier-A recorded both as gaps. Verifier (B4/B5, `phi`): Ollama's 4-bit library
+  build of Phi-4-mini-instruct (`phi4-mini:3.8b-q4_K_M`). Judge (`command_r`):
+  Ollama's build of Command R7B (`command-r7b:7b-12-2024-q4_K_M`). Both are pinned
+  by blob sha256 (weights, chat template, params) in their own instrument configs
+  (`verifier.model`, `judge.model`), not in `configs/llms/`, which the firewall
+  reads as the generator roster. Both run in the Tier-A score step beside Gemma,
+  each on its own ledger (`FAITHFULIDS_VERIFIER_CACHE_DIR`,
+  `FAITHFULIDS_JUDGE_CACHE_DIR`). B4/B5 make one draft call and the verdict only
+  picks draft vs B1, so the generation ledgers do not change. Tier-A scoring
+  refuses the rule checker. The judge rates every shown explanation (layer
+  `plausibility`); runs record it as `validated: false` until amendment 0009's
+  human validation (120 items, 2 raters, ρ ≥ 0.6) passes. New instrument-health
+  rows (layer `instrument`): `extractor_rule_fallback_rate` (owed since
+  amendment 0005(C)), `verifier_no_verdict_rate`, `judge_unparsed_rate`; runs
+  also record `ollama_version`. EXP-A-001's hypotheses become [H1, H2, H3]. The
+  `verifier_threshold` sweep is void (the verifier emits a verdict token, not a
+  score). The Tier-A notebook pulls both builds, checks their manifests against
+  the pins, and attaches the ledger dataset `slimihamda/faithfulids-tier-a-ledgers`.
 
 ### Metric formula versions / schema
 
@@ -858,6 +878,10 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `detector.v1.json` gains optional `competence_gate`;
   `llm.v1.json` requires `weights.revision` to be a 40-char commit hash (enforced
   going forward; satisfied by the now-pinned configs).
+- Schema (backward-compatible, amendments 0008/0009): `generator.v1.json`
+  `verifier.model` and `metric.v1.json` `judge.model` (optional pinned
+  Ollama-library model: weights/template/params sha256); the run manifest's model
+  roles gain `verifier`. The plausibility metrics keep `formula_version` 1.0.0.
 
 All 234 unit/contract/smoke/determinism tests pass; import-linter (8 contracts),
 firewall-audit, validate-configs, data-integrity, manifest-audit,

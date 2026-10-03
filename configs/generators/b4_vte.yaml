@@ -34,6 +34,31 @@ verifier:
     sha256: cb7f40facd0a874dfa9f567513747204021d2a27564f68411cc4bd87b3f8fc2a
   threshold_ref: statistics:decision_thresholds:verifier_threshold
   threshold_scope: dev_split
+  # AMENDMENT 0008 (2026-10-03): the phi verifier's pinned model. Microsoft
+  # publishes no 4-bit file, so this is Ollama's library build of the official
+  # weights, pinned by blob sha256 (a moved tag is refused, not followed). It
+  # runs in the Tier-A SCORE step: B4 makes one draft call, then the verifier
+  # reads it, so verifying after generation is the same instrument. The verdict
+  # is a token (SUPPORTED/UNSUPPORTED) — there is no score for threshold_ref's
+  # three levels to cut; amendment 0008 records that.
+  model:
+    id: vte_verifier_phi4_mini
+    provider: local_open_weights
+    quantisation: 4bit
+    runtime: ollama
+    base_model: microsoft/Phi-4-mini-instruct
+    licence: MIT
+    weights:
+      source: ollama_library
+      ref: phi4-mini:3.8b-q4_K_M
+      revision: sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db
+      sha256: 3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db
+    ollama:
+      model_name: phi4-mini:3.8b-q4_K_M
+      template_sha256: 813f53fdc6e58d35bb1c3853c93266380e9ca918a993e8eab193e8ede5d3a603
+      params_sha256: null
+      min_version: 0.30.5
+      think: null
 abstention:
   enabled: true
   fallback_generator: b1_template

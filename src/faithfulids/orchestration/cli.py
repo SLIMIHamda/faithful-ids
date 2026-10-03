@@ -66,6 +66,12 @@ def cmd_run(args: argparse.Namespace) -> int:
                 or runs_root / "_tier_a_llm_cache",
                 extraction_cache_dir=os.environ.get("FAITHFULIDS_EXTRACTION_CACHE_DIR")
                 or runs_root / "_tier_a_extraction_cache",
+                # score step only: the phi verifier (amendment 0008) and the
+                # plausibility judge (amendment 0009), each on its own ledger
+                verifier_cache_dir=os.environ.get("FAITHFULIDS_VERIFIER_CACHE_DIR")
+                or runs_root / "_tier_a_verifier_cache",
+                judge_cache_dir=os.environ.get("FAITHFULIDS_JUDGE_CACHE_DIR")
+                or runs_root / "_tier_a_judge_cache",
                 **({"extraction": "none", "llm_mode": "live",
                     "generation_budget_s": float(budget) * 60 if budget else None}
                    if phase == "generate" else {"extraction": "llm", "llm_mode": "replay"}),

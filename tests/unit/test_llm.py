@@ -70,14 +70,15 @@ OLLAMA_MODEL = {
 }
 
 
-def _fake_ollama(monkeypatch, blob_sha):
+def _fake_ollama(monkeypatch, blob_sha, template="{{ .Prompt }}"):
     sent = []
 
     def urlopen(req, timeout=None):
         body = json.loads(req.data.decode("utf-8"))
         sent.append((req.full_url, body))
         if req.full_url.endswith("/api/show"):
-            out = {"modelfile": f"FROM /root/.ollama/models/blobs/sha256-{blob_sha}\n"}
+            out = {"modelfile": f"FROM /root/.ollama/models/blobs/sha256-{blob_sha}\n",
+                   "template": template}
         else:
             out = {"message": {"content": ' [{"feature": "A", "direction": "+"}] '},
                    "eval_count": 12, "done_reason": "stop"}
@@ -114,6 +115,45 @@ def test_ollama_provider_refuses_missing_sha(monkeypatch):
     model = {**OLLAMA_MODEL, "weights": {"revision": "rev-gguf", "sha256": None}}
     with pytest.raises(RuntimeError, match="not pinned"):
         OllamaProvider(base_url="http://h:1").complete("p", {}, model=model)
+
+
+def _library_model(template_text):
+    import hashlib
+
+    return {
+        "id": "vte_verifier", "model_family": "phi", "provider": "local_open_weights",
+        "runtime": "ollama", "weights": {"revision": f"sha256-{PIN}", "sha256": PIN},
+        "ollama": {"model_name": "phi4-mini:3.8b-q4_K_M", "think": None,
+                   "template_sha256": hashlib.sha256(template_text.encode("utf-8")).hexdigest()},
+    }
+
+
+def test_ollama_library_model_checks_its_template_and_sends_no_think(monkeypatch):
+    # amendments 0008/0009: a library build's chat template is pinned too, and a
+    # model with no thinking mode is not sent the field at all
+    sent = _fake_ollama(monkeypatch, PIN, template="<|user|>{{ .Content }}")
+    OllamaProvider(base_url="http://h:1").complete(
+        "check", {"temperature": 0, "seed": 0}, model=_library_model("<|user|>{{ .Content }}"))
+    assert "think" not in sent[-1][1]
+    _fake_ollama(monkeypatch, PIN, template="<|user|>{{ .Content }} changed")
+    with pytest.raises(RuntimeError, match="chat template"):
+        OllamaProvider(base_url="http://h:1").complete(
+            "check", {}, model=_library_model("<|user|>{{ .Content }}"))
+
+
+def test_verifier_and_judge_pin_library_builds():
+    from faithfulids.orchestration.config_loader import load_config
+
+    b4 = load_config("generator", "b4_vte")["verifier"]
+    b5 = load_config("generator", "b5_narrative_vte")["verifier"]
+    judge = load_config("metric", "plausibility_judge")["judge"]
+    assert b4["model"] == b5["model"]  # one verifier instrument for B4 and B5
+    for block, family in ((b4, "phi"), (judge, "command_r")):
+        m = block["model"]
+        assert block["model_family"] == family and m["runtime"] == "ollama"
+        assert m["weights"]["sha256"] in m["weights"]["revision"]
+        assert m["ollama"]["model_name"] == m["weights"]["ref"]
+        assert len(m["ollama"]["template_sha256"]) == 64 and m["ollama"]["think"] is None
 
 
 def test_eval_extractor_pins_the_gguf_it_runs():

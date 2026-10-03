@@ -15,6 +15,29 @@ judge:
   # explainer family (generators, verifier, extractor).
   model_family: command_r
   scope: plausibility_only
+  # AMENDMENT 0009 (2026-10-03): the judge's pinned model. Cohere publishes no
+  # 4-bit file, so this is Ollama's library build of the official weights,
+  # pinned by blob sha256. 5.1 GB: it is served next to the extractor (Gemma)
+  # and the verifier (Phi) in the Tier-A score step. The params blob only sets
+  # Command R's turn stop tokens.
+  model:
+    id: plausibility_judge_command_r7b
+    provider: local_open_weights
+    quantisation: 4bit
+    runtime: ollama
+    base_model: CohereLabs/c4ai-command-r7b-12-2024
+    licence: CC-BY-NC-4.0 (Cohere acceptable-use addendum)
+    weights:
+      source: ollama_library
+      ref: command-r7b:7b-12-2024-q4_K_M
+      revision: sha256-b32d935e114cce540d0d36b093b80ef8e4880c63068147a86e6e19f613a0b6f6
+      sha256: b32d935e114cce540d0d36b093b80ef8e4880c63068147a86e6e19f613a0b6f6
+    ollama:
+      model_name: command-r7b:7b-12-2024-q4_K_M
+      template_sha256: 0d8282caa612c1f8fea92cac270905dcd27403272abdfb4edc58627eb7b0d327
+      params_sha256: d8455b5dce0b7033b50d071d5101110958ee93d681157ae9094aa1b3615d4660
+      min_version: 0.30.5
+      think: null
   prompt:
     name: plausibility
     version: 1.0.0

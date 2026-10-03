@@ -66,7 +66,7 @@ class OutputFile:
 
 @dataclass(frozen=True)
 class ModelRef:
-    role: str  # detector | llm | extractor | judge | imputation
+    role: str  # detector | llm | extractor | verifier | judge | imputation
     identity: str
     quantisation: str | None = None
     revision: str | None = None
