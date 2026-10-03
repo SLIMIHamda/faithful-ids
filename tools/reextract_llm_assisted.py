@@ -10,11 +10,13 @@ the registered instrument.
 
 This runs the registered instrument. It needs a GPU and the extractor model, but
 **nothing else**: no dataset, no detector, no SHAP, no generator tokens. The 300
-explanation texts are already in the batch file. On Kaggle that is one 2xT4
-session; the model is ~14 GB in nf4 and needs `FAITHFULIDS_DEVICE_MAP=auto`.
+explanation texts are already in the batch file.
 
-Gemma 4 requires transformers v5.x, while generator sessions are pinned <5 — so
-this must run in its OWN session with `pip install -U transformers`.
+Since amendment 0005 the model is Google's QAT Q4_0 GGUF of Gemma-4-26B-A4B,
+served by a local Ollama server (`model.runtime: ollama`). The Kaggle notebook
+`kaggle/extractor_regate/` downloads the pinned file, checks its sha256, starts
+Ollama and then calls this tool. Configs without `runtime: ollama` still load
+through transformers.
 
 Every call goes through the ledger, so the extraction is replayable afterwards
 without the GPU: re-scoring never needs to re-run the model.
@@ -40,6 +42,12 @@ from faithfulids.extraction import build as build_extractor  # noqa: E402
 from faithfulids.framework import ExplanationRecord  # noqa: E402
 from faithfulids.llm import CallLedger, LLMClient  # noqa: E402
 from faithfulids.orchestration.config_loader import load_config  # noqa: E402
+
+# The providers' 160-token default is sized for generator prose. One extracted
+# claim is ~25-30 tokens of JSON and 117/300 audit texts carry 5+ claims, so 160
+# cuts the array short, the JSON fails to parse and the item silently falls
+# back to the rule engine. 1024 holds the longest text (7 claims) many times.
+EXTRACTION_MAX_NEW_TOKENS = 1024
 
 
 def preflight(repo_id: str, headroom_gib: float) -> None:
@@ -106,6 +114,13 @@ def main(argv: list[str] | None = None) -> int:
     ledger = CallLedger(args.ledger or (batch / "_llm_extraction_cache"))
     if args.mode == "replay":
         client = LLMClient(None, ledger, mode="replay")
+    elif cfg["model"].get("runtime") == "ollama":
+        # Amendment 0005: pinned GGUF on a running Ollama server; Ollama places
+        # layers across GPUs itself, so the nf4 preflight does not apply.
+        from faithfulids.llm.providers import OllamaProvider
+
+        client = LLMClient(OllamaProvider(max_new_tokens=EXTRACTION_MAX_NEW_TOKENS),
+                           ledger, mode="live")
     else:
         import os as _os
 
@@ -113,7 +128,8 @@ def main(argv: list[str] | None = None) -> int:
 
         preflight(cfg["model"]["weights"]["hf_repo"],
                   float(_os.environ.get("FAITHFULIDS_GPU_HEADROOM_GIB", "2.0")))
-        client = LLMClient(TransformersProvider(), ledger, mode="live")
+        client = LLMClient(TransformersProvider(max_new_tokens=EXTRACTION_MAX_NEW_TOKENS),
+                           ledger, mode="live")
     model = {**cfg["model"], "id": cfg["id"]}
     ext = build_extractor(cfg, llm_client=client, model_config=model,
                           feature_vocabulary=vocab)

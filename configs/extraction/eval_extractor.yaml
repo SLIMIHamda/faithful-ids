@@ -14,7 +14,9 @@ kind: extraction
 # matching (Qwen3-32B smoke: 38/60 B3 instances scored 0 because "the maximum
 # forward packet length" never exact-matched "Fwd Packet Length Max").
 # Prompt asset unchanged (1.0.0).
-version: 2.1.0
+# 2.2.0 = the LLM path's weights: Google's QAT Q4_0 GGUF of the same model,
+# served by Ollama (amendment 0005). Rule engine unchanged from 2.1.0.
+version: 2.2.0
 # FIREWALL SIDE B. model.model_family must be disjoint from every generator LLM
 # family {mistral, llama3, qwen, frontier} AND the VtE verifier family {phi}.
 # gemma-4-26B-A4B-it: latest Gemma generation (MoE, 25.2B total / 3.8B active),
@@ -24,14 +26,27 @@ version: 2.1.0
 # transformers 5.0.0) is fixed in later v5 — LLM-assisted extraction sessions
 # need a recent v5 (`pip install -U transformers`), unlike generator sessions
 # currently pinned <5. Smoke-test on Kaggle before relying on it.
+# AMENDMENT 0005 (2026-10-03): that nf4 load cannot work. transformers stores
+# Gemma-4 MoE experts as fused 3D parameters and bitsandbytes quantises only
+# nn.Linear, so ~91% of the weights stay fp16 (~48 GB > 2x T4). Same model, now
+# Google's own QAT Q4_0 GGUF (14.4 GB), served by Ollama with its gemma4 chat
+# renderer. The provider refuses to run unless the served blob is this sha256.
 model:
   model_family: gemma
   provider: local_open_weights
   quantisation: 4bit
+  runtime: ollama
+  base_model: google/gemma-4-26B-A4B-it
   weights:
-    hf_repo: google/gemma-4-26B-A4B-it
-    revision: 5305c1e72ea29c01f31a81230d52b375ba88b409
-    sha256: null
+    hf_repo: google/gemma-4-26B-A4B-it-qat-q4_0-gguf
+    revision: d1c082be9cf3c8a514acf63b8761f4b41935842e
+    file: gemma-4-26B_q4_0-it.gguf
+    sha256: 3eca3b8f6d7baf218a7dd6bba5fb59a56ee25fe2d567b6f5f589b4f697eca51d
+  ollama:
+    model_name: faithfulids-gemma4-26b-a4b-qat
+    renderer: gemma4
+    parser: gemma4
+    min_version: 0.30.5
 rule_assisted: true
 aliases:
   path: configs/extraction_aliases/feature_aliases.yaml

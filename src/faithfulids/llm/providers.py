@@ -6,7 +6,8 @@ dependencies and are structured but marked TODO so they fail loudly rather than
 returning fabricated text. The deterministic stub is **not a scientific model**:
 it exists solely so the toy pipeline and the L3-replay determinism CI have a
 byte-stable, offline "LLM"; the runner selects it only for EXP-TOY-* and never
-for a citable run.
+for a citable run. ``OllamaProvider`` serves pinned GGUF weights through a local
+Ollama server and needs only the standard library.
 """
 
 from __future__ import annotations
@@ -191,6 +192,93 @@ class TransformersProvider:
         new_tokens = out[0][input_len:]
         text = tok.decode(new_tokens, skip_special_tokens=True).strip()
         return text, {"tokens": int(new_tokens.shape[0])}
+
+
+class OllamaProvider:
+    """Open-weights provider via a local Ollama server serving a pinned GGUF file.
+
+    For models whose pinned weights are a GGUF file (``model['runtime'] ==
+    'ollama'``). The extractor's Gemma-4-26B-A4B is one: transformers stores its
+    MoE experts as fused 3D parameters, and bitsandbytes quantises only
+    ``nn.Linear``, so ``load_in_4bit`` leaves ~91% of the weights in fp16
+    (~48 GB) — more than 2x T4 or a 32 GB card can hold. Google's QAT Q4_0 GGUF
+    of the same model is 14.4 GB.
+
+    The server must already be running with the file loaded under
+    ``model['ollama']['model_name']`` (``kaggle/extractor_regate`` sets that up).
+    Before the first call the provider checks that the served model's blob IS
+    the pinned file: Ollama stores blobs by their sha256, so
+    ``weights.sha256`` must appear in what ``/api/show`` reports. A mismatch
+    is refused, not warned about.
+    """
+
+    def __init__(self, *, base_url: str | None = None, max_new_tokens: int = 1024,
+                 num_ctx: int = 8192, timeout_s: float = 900.0) -> None:
+        import os
+
+        self.base_url = (base_url or os.environ.get("FAITHFULIDS_OLLAMA_URL")
+                         or "http://127.0.0.1:11434").rstrip("/")
+        self.max_new_tokens = max_new_tokens
+        self.num_ctx = num_ctx
+        self.timeout_s = timeout_s
+        self._verified: set[str] = set()
+
+    def _post(self, path: str, body: Mapping[str, Any]) -> dict[str, Any]:
+        import json
+        import urllib.request
+
+        req = urllib.request.Request(
+            self.base_url + path, data=json.dumps(body).encode("utf-8"),
+            headers={"Content-Type": "application/json"}, method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+
+    def _verify(self, name: str, sha256: str | None) -> None:
+        if name in self._verified:
+            return
+        if not sha256:
+            raise RuntimeError(
+                f"ollama model {name!r}: weights.sha256 is not pinned — refusing to "
+                "run weights that cannot be tied to a file."
+            )
+        import json
+
+        shown = json.dumps(self._post("/api/show", {"model": name}))
+        if sha256 not in shown:
+            raise RuntimeError(
+                f"ollama model {name!r} is not the pinned file: blob sha256-{sha256} "
+                "is absent from /api/show. Re-create it from the pinned GGUF."
+            )
+        print(f"[OllamaProvider] {name}: serving pinned blob sha256-{sha256[:12]}…")
+        self._verified.add(name)
+
+    def complete(
+        self, prompt: str, params: Mapping[str, Any], *, model: Mapping[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
+        name = (model.get("ollama") or {}).get("model_name")
+        if not name:
+            raise ValueError(f"model {model.get('id', '<?>')}: no ollama.model_name")
+        self._verify(name, (model.get("weights") or {}).get("sha256"))
+        body = {
+            "model": name,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False,
+            # The registered transformers path applied the chat template with no
+            # thinking turn; keep it that way so the instrument stays the same.
+            "think": False,
+            "options": {
+                "temperature": float(params.get("temperature", 0.0)),
+                "seed": int(params.get("seed", 0)),
+                "num_predict": self.max_new_tokens,
+                "num_ctx": self.num_ctx,
+            },
+        }
+        out = self._post("/api/chat", body)
+        text = ((out.get("message") or {}).get("content") or "").strip()
+        if out.get("done_reason") == "length":
+            print(f"[OllamaProvider] {name}: reply hit num_predict={self.max_new_tokens}")
+        return text, {"tokens": out.get("eval_count")}
 
 
 class FrontierAPIProvider:

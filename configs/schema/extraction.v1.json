@@ -23,6 +23,11 @@
         "model_family": {"type": "string", "pattern": "^[a-z0-9_]+$"},
         "provider": {"enum": ["local_open_weights", "frontier_api"]},
         "quantisation": {"enum": ["none", "4bit"]},
+        "runtime": {
+          "enum": ["transformers", "ollama"],
+          "description": "How the weights are served. Absent = transformers (bnb nf4 when quantisation is 4bit). 'ollama' = a pinned GGUF file on a local Ollama server (amendment 0005)."
+        },
+        "base_model": {"type": "string", "description": "The full-precision model these weights quantise, when weights.hf_repo is a quantised release."},
         "weights": {
           "type": ["object", "null"],
           "additionalProperties": false,
@@ -30,9 +35,26 @@
           "properties": {
             "hf_repo": {"type": "string"},
             "revision": {"type": "string"},
-            "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+            "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+            "file": {"type": "string", "description": "The single weights file inside hf_repo (GGUF runtimes)."}
+          }
+        },
+        "ollama": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["model_name", "renderer", "parser", "min_version"],
+          "properties": {
+            "model_name": {"type": "string", "pattern": "^[a-z0-9._-]+$"},
+            "renderer": {"type": "string"},
+            "parser": {"type": "string"},
+            "min_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}
           }
         }
+      },
+      "if": {"required": ["runtime"], "properties": {"runtime": {"const": "ollama"}}},
+      "then": {
+        "required": ["ollama", "weights"],
+        "properties": {"weights": {"type": "object", "required": ["file"], "properties": {"sha256": {"type": "string"}}}}
       }
     },
     "rule_assisted": {"type": "boolean"},

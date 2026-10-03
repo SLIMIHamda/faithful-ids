@@ -1,5 +1,10 @@
 # Kaggle pilot launcher
 
+> **Extractor re-gate (EXP-G-001):** `extractor_regate/` holds its own notebook
+> and `kernel-metadata.json`. It needs no dataset: 2x T4, Internet on. Push it
+> from a terminal with `kaggle kernels push -p kaggle/extractor_regate`. See
+> amendment 0005 for why it serves the extractor through Ollama.
+
 `kaggle_pilot_launcher.ipynb` is an **execution wrapper only** — it contains no
 experimental logic. It clones this repository at a pinned tag, installs it,
 points it at a CICIDS2017 dataset, and invokes the repository's own CLI. All

@@ -743,6 +743,16 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   against this audit set and 0004(E) binds the instrument against iteration on
   evaluation data. Its arithmetic is stated in the amendment: F1 would reach
   ≈0.90, still short — **precision is not where this gate is lost.**
+- **Amendment 0005 — extractor 2.2.0: Google's QAT GGUF, served by Ollama.**
+  The registered nf4 load of `gemma-4-26B-A4B-it` could never fit: transformers
+  stores its MoE experts as fused 3D parameters and bitsandbytes quantises only
+  `nn.Linear`, so ~91% of the weights stayed fp16 (~48 GB, against 2x16 GB on
+  Kaggle). Same model, now `google/gemma-4-26B-A4B-it-qat-q4_0-gguf` @ `d1c082b`
+  (14.4 GB, sha256 pinned), served by a new `OllamaProvider` that refuses to run
+  unless Ollama serves that exact blob. Extraction replies may now run to 1024
+  tokens (was 160, which cut the JSON for texts with 5+ claims and silently fell
+  back to the rules). Rule engine unchanged. The re-gate moved out of the pilot
+  launcher into its own notebook, `kaggle/extractor_regate/`.
 
 ### Metric formula versions / schema
 

@@ -136,7 +136,7 @@ def test_extractor_version_is_stamped_current():
         feature_vocabulary=["Flow Duration"],
     )
     claims = ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased."))
-    assert claims.extractor_version == "2.1.0"
+    assert claims.extractor_version == "2.2.0"
 
 
 def test_rule_assisted_recovers_paraphrased_feature_names():
