@@ -15,6 +15,11 @@ from __future__ import annotations
 import hashlib
 from typing import Any, Mapping
 
+#: Reply cap when a call declares none. Too short for B3-B5 (amendment 0007),
+#: so every LLM generator now declares its own; kept as the fallback so calls
+#: made before the change keep their meaning.
+DEFAULT_MAX_NEW_TOKENS = 160
+
 
 class DeterministicStubProvider:
     """A byte-stable, offline pseudo-LLM for the toy pipeline / replay CI ONLY.
@@ -49,7 +54,7 @@ class TransformersProvider:
     the orchestration layer) never pulls them in.
     """
 
-    def __init__(self, *, max_new_tokens: int = 160) -> None:
+    def __init__(self, *, max_new_tokens: int = DEFAULT_MAX_NEW_TOKENS) -> None:
         self.max_new_tokens = max_new_tokens
         self._cache: dict[tuple, tuple] = {}
 
@@ -181,7 +186,9 @@ class TransformersProvider:
         input_len = enc["input_ids"].shape[1]
 
         gen_kwargs: dict[str, Any] = {
-            "max_new_tokens": self.max_new_tokens,
+            # A generator's declared cap (amendment 0007) travels in params, and so
+            # in the request hash; the constructor value is only the fallback.
+            "max_new_tokens": int(params.get("max_new_tokens", self.max_new_tokens)),
             "do_sample": temperature > 0,
             "pad_token_id": tok.eos_token_id,
         }

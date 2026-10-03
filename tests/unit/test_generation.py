@@ -407,3 +407,74 @@ def test_class_semantics_aggregates_kb_entries_to_canonical_classes():
     assert not missing, f"canonical classes with no KB profile: {missing}"
     assert "denial-of-service" in m["DoS"]      # from the granular 'DoS Hulk' entry
     assert "Infiltration" not in m and "Heartbleed" not in m  # excluded families
+
+
+class _ParamsClient(_CapturingClient):
+    """Also records the params each call carries."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.params: list[dict] = []
+
+    def complete(self, *, model_config, prompt, params):
+        self.params.append(dict(params))
+        return super().complete(model_config=model_config, prompt=prompt, params=params)
+
+
+def test_every_llm_generator_sends_its_declared_reply_cap():
+    """Amendment 0007: the 160-token provider default cut off every B4/B5 and most
+    B3 explanation. Each LLM generator declares max_new_tokens and sends it with
+    the (draft) call, so it is part of the request hash."""
+    for code in ("b2_zeroshot", "b3_dte_style", "b1l_llm_render", "b4_vte", "b5_narrative_vte"):
+        client = _ParamsClient()
+        _render_llm_generator(code, client)
+        declared = load_config("generator", code)["params"]["max_new_tokens"]
+        assert declared >= 1024, code
+        assert client.params[0]["max_new_tokens"] == declared, code
+
+
+def test_reply_cap_separates_ledger_entries(tmp_path):
+    """Same prompt, different cap -> different request hash: a capped cache entry
+    is never served for an uncapped request (or the reverse)."""
+    client = _client(tmp_path)
+    a = client.complete(model_config=MODEL, prompt="p", params={"seed": 0})
+    b = client.complete(model_config=MODEL, prompt="p", params={"seed": 0, "max_new_tokens": 1024})
+    assert a.request_hash != b.request_hash and b.cached is False
+
+
+def test_transformers_provider_honours_the_cap_it_is_sent():
+    """The provider reads the call's cap before its constructor default (no model
+    is loaded: generate is faked)."""
+    import pytest
+
+    try:
+        import torch
+    except Exception:  # ImportError, or OSError from a broken local torch install
+        pytest.skip("torch unavailable")
+
+    from faithfulids.llm.providers import TransformersProvider
+
+    seen = {}
+
+    class _Tok:
+        eos_token_id = 0
+
+        def apply_chat_template(self, *a, **k):
+            return torch.zeros((1, 3), dtype=torch.long)
+
+        def decode(self, ids, skip_special_tokens=True):
+            return "x"
+
+    class _Mdl:
+        device = "cpu"
+
+        def generate(self, **kw):
+            seen.update(kw)
+            return torch.zeros((1, 4), dtype=torch.long)
+
+    p = TransformersProvider()
+    p._load = lambda model: (_Tok(), _Mdl())
+    p.complete("q", {"temperature": 0, "max_new_tokens": 1024}, model=MODEL)
+    assert seen["max_new_tokens"] == 1024
+    p.complete("q", {"temperature": 0}, model=MODEL)
+    assert seen["max_new_tokens"] == 160

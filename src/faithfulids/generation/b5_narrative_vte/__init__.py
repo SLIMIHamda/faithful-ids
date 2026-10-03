@@ -50,6 +50,10 @@ class B5NarrativeVtE(Generator):
     ) -> None:
         self.top_k = config["params"]["top_k"]
         self.temperature = config["params"]["temperature"]
+        # Reply cap (amendment 0007): sent with every call, so it is part of the
+        # ledger's request hash and capped/uncapped generations never mix.
+        cap = config["params"].get("max_new_tokens")
+        self.reply_cap = {"max_new_tokens": int(cap)} if cap else {}
         p = config["prompt"]
         self.template = load_prompt(p["name"], p["version"], expected_sha256=p["sha256"])
         self.client = llm_client
@@ -74,7 +78,8 @@ class B5NarrativeVtE(Generator):
         seed = int(context.metadata.get("seed", 0))
         draft = self.client.complete(
             model_config=self.model, prompt=prompt,
-            params={"temperature": self.temperature, "top_k": self.top_k, "seed": seed},
+            params={"temperature": self.temperature, "top_k": self.top_k, "seed": seed,
+                    **self.reply_cap},
         )
         verdict = self.verifier.verify(draft.text, rfl, seed=seed)
         call_ids = (draft.request_hash, verdict.call_id)

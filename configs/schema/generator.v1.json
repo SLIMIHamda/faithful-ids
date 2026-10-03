@@ -17,7 +17,11 @@
       "required": ["top_k", "temperature"],
       "properties": {
         "top_k": {"type": "integer", "minimum": 1},
-        "temperature": {"type": "number", "minimum": 0}
+        "temperature": {"type": "number", "minimum": 0},
+        "max_new_tokens": {
+          "type": "integer", "minimum": 1,
+          "description": "Reply cap for LLM generation (amendment 0007). Sent with every call, so it is part of the ledger's request hash: generations under different caps never share a cache entry. Absent = the provider default (160), which truncated B3-B5."
+        }
       }
     },
     "prompt": {"$ref": "#/$defs/prompt_ref"},

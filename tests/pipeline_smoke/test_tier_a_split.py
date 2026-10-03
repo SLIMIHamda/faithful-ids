@@ -87,6 +87,11 @@ def test_generate_then_score_writes_a_tier_a_run(tmp_path, capsys):
     claims = [json.loads(line) for line in
               (run_dir / "artifacts" / "claims.jsonl").read_text(encoding="utf-8").splitlines()]
     assert {c["direction_evidence"] for cs in claims for c in cs["claims"]} == {"llm"}
+    # amendment 0007: every run reports how many generations stopped at the cap
+    metrics = [json.loads(line) for line in
+               (run_dir / "artifacts" / "metrics.jsonl").read_text(encoding="utf-8").splitlines()]
+    cap = [m for m in metrics if m["metric"] == "reply_cap_hit_rate"]
+    assert len(cap) == 1 and cap[0]["grouping"]["n_calls"] > 0
 
     # a re-score replays extraction from its own ledger too: no new model calls
     calls = _CannedExtractor.calls

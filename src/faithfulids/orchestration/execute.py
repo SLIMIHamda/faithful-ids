@@ -576,6 +576,21 @@ def run_pilot(
             "value": float(value), "grouping": grouping,
         })
 
+    # Share of generation calls that stopped AT the reply cap, i.e. were cut off
+    # (amendment 0007 makes this a required report; it should be ~0).
+    from faithfulids.llm.providers import DEFAULT_MAX_NEW_TOKENS
+
+    capped = [
+        (r.get("tokens") or 0) >= int((r.get("params") or {}).get("max_new_tokens", DEFAULT_MAX_NEW_TOKENS))
+        for r in records
+    ]
+    if capped:
+        artifacts.metric_rows.append({
+            "instance_id": "__aggregate__", "layer": "cost", "metric": "reply_cap_hit_rate",
+            "value": sum(capped) / len(capped),
+            "grouping": {"n_calls": len(capped), "cap_hits": sum(capped)},
+        })
+
     # -- write the run ------------------------------------------------------ #
     if code_version is None:
         code_version = resolve_code_version(repo_root(), allow_dirty=True)

@@ -6,6 +6,10 @@ llm_dependent: true
 params:
   top_k: 5
   temperature: 0
+  # Reply cap (amendment 0007). The provider default of 160 tokens cut off every
+  # B4/B5 and most B3 explanation; generation stops at end-of-text, so a high cap
+  # costs time only on texts that are really that long.
+  max_new_tokens: 1024
 # ONE class-aware prompt from birth ({{score_label}} renders the score noun:
 # binary = the literal "attack", K-way = the predicted class). B5 has no cached
 # binary runs to replay, so no prompt_multiclass variant is needed.

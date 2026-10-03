@@ -828,6 +828,19 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   step does all three before its first token and stops if a class fails. The
   Tier-A notebook now exports `competence.json`. Report the exclusion in the
   main text (amendment 0001).
+- **Tier-A smoke (Kaggle, `2968aab`, Qwen3-8B, N=20): 7-class detector passes
+  competence** (macro-F1 0.991, every class recall >= 0.953, contingency rung 1
+  "vocabulary stands"); generation 120/120, ~19 s per call. It also showed every
+  B3/B4/B5 reply stopping at the provider's 160-token default.
+- **Amendment 0007 — generation reply cap declared: 1024 tokens.** No config set
+  a reply length; the provider's 160-token default cut off B3 68/118, B4 59/59,
+  B5 59/59 replies in the K-way pilot (B2 1/59), and 19/19 each in the smoke.
+  Every LLM generator now declares `params.max_new_tokens: 1024` and sends it
+  with the call, so it is part of the request hash (capped and uncapped replies
+  never share a ledger entry); the provider applies it (160 stays the fallback,
+  `DEFAULT_MAX_NEW_TOKENS`). Runs now report `reply_cap_hit_rate` (layer
+  `cost`). Pilot numbers for B3-B5, including the H2 recall drop and the H3
+  precision result, are truncation-confounded.
 
 ### Metric formula versions / schema
 

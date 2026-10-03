@@ -34,6 +34,10 @@ class B1LlmRender(Generator):
     def __init__(self, config: dict, llm_client, model_config: dict) -> None:
         self.top_k = config["params"]["top_k"]
         self.temperature = config["params"]["temperature"]
+        # Reply cap (amendment 0007): sent with every call, so it is part of the
+        # ledger's request hash and capped/uncapped generations never mix.
+        cap = config["params"].get("max_new_tokens")
+        self.reply_cap = {"max_new_tokens": int(cap)} if cap else {}
         self.template, self.template_multiclass = load_prompt_pair(config)
         self.client = llm_client
         self.model = model_config
@@ -48,6 +52,7 @@ class B1LlmRender(Generator):
             "temperature": self.temperature,
             "top_k": self.top_k,
             "seed": int(context.metadata.get("seed", 0)),
+            **self.reply_cap,
         }
         resp = self.client.complete(model_config=self.model, prompt=prompt, params=params)
         return ExplanationRecord(
