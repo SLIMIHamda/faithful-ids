@@ -136,7 +136,7 @@ def test_extractor_version_is_stamped_current():
         feature_vocabulary=["Flow Duration"],
     )
     claims = ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased."))
-    assert claims.extractor_version == "2.2.0"
+    assert claims.extractor_version == "2.3.0"
 
 
 def test_rule_assisted_recovers_paraphrased_feature_names():
@@ -376,3 +376,52 @@ def test_transparent_connective_counts_only_when_no_valenced_cue():
     assert c["Flow Duration"].direction_evidence == "word"
     assert c["Bwd IAT Std"].direction is Direction.NEGATIVE
     assert c["Bwd IAT Std"].direction_evidence == "word"
+
+
+# --- LLM-reply parsing (extractor 2.3.0, prompt 1.1.0, amendment 0006) --------
+
+
+class _FixedReply:
+    """Provider that answers every prompt with one canned reply."""
+
+    def __init__(self, text):
+        self.text = text
+
+    def complete(self, prompt, params, *, model):
+        return self.text, {"tokens": 1}
+
+
+def _llm_extractor(tmp_path, reply):
+    extcfg = load_config("extraction", "eval_extractor")
+    model = {**extcfg["model"], "id": extcfg["id"]}
+    client = LLMClient(_FixedReply(reply), CallLedger(tmp_path), mode="live")
+    return build_extractor(
+        extcfg, llm_client=client, model_config=model,
+        feature_vocabulary=["Flow Duration", "Init_Win_bytes_forward", "PSH Flag Count"],
+    )
+
+
+def test_llm_unclear_is_a_claim_without_direction(tmp_path):
+    ext = _llm_extractor(tmp_path, '```json\n[{"feature": "PSH Flag Count", '
+                         '"direction": "unclear", "rank": null, "magnitude": 1.0}]\n```')
+    (c,) = ext.extract(ExplanationRecord("i0", "b2_zeroshot", "text")).claims
+    assert c.feature == "PSH Flag Count"
+    assert c.direction is None and c.direction_evidence == "default"
+    assert ext.last_llm_parsed is True  # parsed, even with no "llm" evidence
+
+
+def test_llm_names_map_to_vocabulary_or_are_dropped(tmp_path):
+    ext = _llm_extractor(tmp_path, '[{"feature": "init win bytes forward", "direction": "+"},'
+                         ' {"feature": "traffic volume", "direction": "-"},'
+                         ' {"feature": "Flow Duration", "direction": "-"}]')
+    claims = ext.extract(ExplanationRecord("i0", "b3_dte_style", "text")).claims
+    assert [(c.feature, c.direction, c.direction_evidence) for c in claims] == [
+        ("Init_Win_bytes_forward", Direction.POSITIVE, "llm"),
+        ("Flow Duration", Direction.NEGATIVE, "llm"),
+    ]
+
+
+def test_unparsable_llm_reply_falls_back_and_says_so(tmp_path):
+    ext = _llm_extractor(tmp_path, "I cannot help with that.")
+    ext.extract(ExplanationRecord("i0", "b1_template", "Flow Duration increased the score."))
+    assert ext.last_llm_parsed is False

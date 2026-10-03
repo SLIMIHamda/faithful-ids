@@ -154,6 +154,10 @@ class RuleAssistedExtractor(ClaimExtractor):
         self._variants = sorted(variants, key=lambda v: len(v[0]), reverse=True)
 
     def extract(self, explanation: ExplanationRecord) -> ClaimSet:
+        #: True/False once the LLM path ran: did its reply parse? None in
+        #: rule-only mode. "unclear"-only replies carry no "llm" evidence, so
+        #: callers counting rule fallbacks must read this, not the claims.
+        self.last_llm_parsed: bool | None = None
         if self._client is None:
             # rule-only mode (pilot / no extractor model loaded): deterministic
             # regex parse over the canonical feature vocabulary.
@@ -166,6 +170,7 @@ class RuleAssistedExtractor(ClaimExtractor):
                 model_config=self._model, prompt=prompt, params={"temperature": 0, "seed": 0}
             )
             claims = self._parse_json(resp.text)
+            self.last_llm_parsed = claims is not None
             if claims is None:
                 claims = self._rule_assisted(explanation.text)
         return ClaimSet(
@@ -184,19 +189,35 @@ class RuleAssistedExtractor(ClaimExtractor):
             data = json.loads(text[start : end + 1])
         except json.JSONDecodeError:
             return None
+        if not isinstance(data, list):
+            return None
+        # Extractor 2.3.0 (prompt 1.1.0, amendment 0006). Names map onto the
+        # vocabulary the way the rule engine matches them (exact, then
+        # normalised / alias); anything else is not a feature and is dropped,
+        # as the gold protocol only labels vocabulary features. "unclear" is the
+        # gold's "named, no direction": a claim with no sign, stamped "default"
+        # like the rule engine's own no-evidence claims (amendment 0004).
+        canon = {f: f for f in self._vocab}
+        for variant, name in self._variants:
+            canon.setdefault(variant, name)
         out: list[ClaimTuple] = []
         for d in data:
             try:
+                raw = str(d["feature"])
+                feature = canon.get(raw) or canon.get(_norm(raw))
+                if feature is None:
+                    continue
+                unclear = str(d["direction"]).strip().lower() == "unclear"
                 out.append(
                     ClaimTuple(
-                        feature=str(d["feature"]),
-                        direction=Direction.from_str(d["direction"]),
+                        feature=feature,
+                        direction=None if unclear else Direction.from_str(d["direction"]),
                         rank=d.get("rank"),
                         magnitude=d.get("magnitude"),
-                        direction_evidence="llm",
+                        direction_evidence="default" if unclear else "llm",
                     )
                 )
-            except (KeyError, ValueError):
+            except (KeyError, TypeError, ValueError):
                 continue
         return out
 

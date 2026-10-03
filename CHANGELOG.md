@@ -753,6 +753,18 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   tokens (was 160, which cut the JSON for texts with 5+ claims and silently fell
   back to the rules). Rule engine unchanged. The re-gate moved out of the pilot
   launcher into its own notebook, `kaggle/extractor_regate/`.
+- **Amendment 0006 — extractor 2.3.0: prompt 1.1.0 asks the question the gold
+  answers.** The 12-item Kaggle smoke of 2.2.0 worked (model fully on 2x T4,
+  ~3.8 s/item, 12/12 replies parsed) but scored F1 0.82 vs the rule engine's 1.00
+  on those items. Every error came from prompt 1.0.0 (written for the binary
+  detector) disagreeing with the gold protocol: direction relative to "attack
+  likelihood" instead of "the class the text argues for" (BENIGN texts
+  sign-flipped), no `unclear` option (directions guessed), and non-vocabulary
+  phrases emitted as features. Prompt 1.1.0 takes those rules from the gold
+  protocol; the parser reads `unclear` as a no-direction `default` claim and
+  maps names onto the vocabulary or drops them. `score_audit_gate.py` gained
+  `--exclude-first N`, a sensitivity score without the 12 smoke items, reported
+  beside the 300-item verdict.
 
 ### Metric formula versions / schema
 

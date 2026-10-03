@@ -16,7 +16,10 @@ kind: extraction
 # Prompt asset unchanged (1.0.0).
 # 2.2.0 = the LLM path's weights: Google's QAT Q4_0 GGUF of the same model,
 # served by Ollama (amendment 0005). Rule engine unchanged from 2.1.0.
-version: 2.2.0
+# 2.3.0 = prompt 1.1.0 + LLM-reply parsing (amendment 0006): the gold protocol's
+# own direction rule ("the class the text argues for"), an "unclear" option read
+# as no direction, and vocabulary-only feature names. Rule engine unchanged.
+version: 2.3.0
 # FIREWALL SIDE B. model.model_family must be disjoint from every generator LLM
 # family {mistral, llama3, qwen, frontier} AND the VtE verifier family {phi}.
 # gemma-4-26B-A4B-it: latest Gemma generation (MoE, 25.2B total / 3.8B active),
@@ -53,7 +56,7 @@ aliases:
   sha256: 0d5178a94d90a78b9749080c0e707cd1ff0b6cafe3c81da830b5b2e0456bbd8c
 prompt:
   name: eval_extractor
-  version: 1.0.0
-  sha256: 7d1443ffe615656b339bc22aee6de85b66b6f45a0dd4331c5333ec63a8b7924a
+  version: 1.1.0
+  sha256: a6f885c8a63612a904e42e2b09581f4b5065f69cdf500ed17439337ce38566f1
 temperature: 0
 audit_gate_ref: EXP-G-001

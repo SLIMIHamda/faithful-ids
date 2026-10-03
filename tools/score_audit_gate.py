@@ -31,6 +31,12 @@ Run::
 
     python tools/score_audit_gate.py --batch experiments/gates/EXP-G-001_audit_v2 \\
         --pass LLM_1_V2 --pass LLM_2_V2 [--adjudication FILE] [--write-run]
+
+``--exclude-first N`` scores without the batch's first N items and writes
+``gate_result_excl_first<N>.json`` instead. Amendment 0006 registers it for
+attempt 5: the 12-item smoke test (the first 12 items) is where the prompt
+mismatch was seen, so the score on the other 288 is reported beside the
+verdict. It is a sensitivity check and never the verdict itself.
 """
 
 from __future__ import annotations
@@ -88,6 +94,8 @@ def main(argv: list[str] | None = None) -> int:
                     help='JSON {"item_id|feature": "+"|"-"|"unclear"|"absent"}')
     ap.add_argument("--claims-key", default="extractor_claims_1_5_0",
                     help="key in the audit key holding the extractor claims to score")
+    ap.add_argument("--exclude-first", type=int, default=0, metavar="N",
+                    help="leave out the first N items (sensitivity report, not the verdict)")
     ap.add_argument("--write-run", action="store_true",
                     help="write a runs/EXP-G-001/ run stamping manifest.gate")
     args = ap.parse_args(argv)
@@ -98,14 +106,16 @@ def main(argv: list[str] | None = None) -> int:
     batch = args.batch
     items = {it["item_id"]: it for line in (batch / "audit_batch.jsonl").read_text(
         encoding="utf-8").splitlines() if line.strip() for it in [json.loads(line)]}
+    if args.exclude_first:
+        items = dict(list(items.items())[args.exclude_first:])
     key = json.loads((batch / "audit_key_DO_NOT_SHOW_ANNOTATOR.json").read_text(encoding="utf-8"))
     threshold = float(resolve_reference("statistics:decision_thresholds:extractor_f1")["value"])
 
     a_name, b_name = args.passes
     A, B = load_pass(batch, a_name), load_pass(batch, b_name)
 
-    units = sorted({(i, f) for i, it in items.items() for f in it["candidates"]}
-                   | set(A) | set(B))
+    units = sorted(u for u in {(i, f) for i, it in items.items() for f in it["candidates"]}
+                   | set(A) | set(B) if u[0] in items)
     agree, kappa = cohens_kappa(A, B, units)
     alpha = krippendorff_nominal([A, B], units)
     disputed = [u for u in units if A.get(u, ABSENT) != B.get(u, ABSENT)]
@@ -204,8 +214,14 @@ def main(argv: list[str] | None = None) -> int:
         "passed": bool(verdict),
     }
     out = batch / "gate_result.json"
+    if args.exclude_first:
+        payload["excluded_first_n"] = args.exclude_first
+        payload["sensitivity_only"] = True
+        out = batch / f"gate_result_excl_first{args.exclude_first}.json"
     out.write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8")
     print(f"\nwrote {out}")
+    if args.exclude_first:
+        print(f"\nSENSITIVITY ONLY (first {args.exclude_first} items left out): not the verdict")
     print(f"\nGATE {'PASSED' if verdict else 'FAILED'} "
           f"(F1 {results['agreed + adjudicated']['f1']:.3f} vs threshold {threshold})")
 

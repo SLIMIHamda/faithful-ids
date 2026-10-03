@@ -61,6 +61,11 @@
     "frozen": true,
     "path": "prompts/extraction/eval_extractor/v1.0.0.md",
     "sha256": "7d1443ffe615656b339bc22aee6de85b66b6f45a0dd4331c5333ec63a8b7924a"
+   },
+   "1.1.0": {
+    "frozen": true,
+    "path": "prompts/extraction/eval_extractor/v1.1.0.md",
+    "sha256": "a6f885c8a63612a904e42e2b09581f4b5065f69cdf500ed17439337ce38566f1"
    }
   },
   "plausibility": {

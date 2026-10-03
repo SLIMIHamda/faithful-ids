@@ -142,9 +142,9 @@ def main(argv: list[str] | None = None) -> int:
             iid, key[iid]["generator_id"], it["explanation_text"])).claims
         for c in claims:
             ev[c.direction_evidence] += 1
-        # "llm" evidence means the model's JSON was parsed; anything else means
-        # the rule engine handled that claim, i.e. the LLM path did not answer.
-        if claims and not any(c.direction_evidence == "llm" for c in claims):
+        # The extractor says whether the model's reply parsed. Reading it off the
+        # claims no longer works: an all-"unclear" reply has no "llm" evidence.
+        if ext.last_llm_parsed is False:
             fell_back += 1
         key[iid][f"extractor_claims_{version.replace('.', '_')}_llm"] = [
             {k: v for k, v in c.to_dict().items()
