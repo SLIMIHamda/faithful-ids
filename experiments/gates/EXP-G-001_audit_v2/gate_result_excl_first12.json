@@ -4,11 +4,11 @@
   "LLM_1_V2",
   "LLM_2_V2"
  ],
- "n_items": 300,
- "n_cells": 1843,
- "agreement": 0.9880629408572978,
- "cohens_kappa": 0.9809055028187764,
- "krippendorff_alpha": 0.9809097076503164,
+ "n_items": 288,
+ "n_cells": 1774,
+ "agreement": 0.9875986471251409,
+ "cohens_kappa": 0.9802559522273774,
+ "krippendorff_alpha": 0.9802604335702652,
  "n_disputed": 22,
  "disputed_cells": [
   {
@@ -145,36 +145,38 @@
   }
  ],
  "extractor_claims_key": "extractor_claims_2_3_0_llm",
- "n_directional_claims": 867,
+ "n_directional_claims": 826,
  "n_default": 0,
  "default_share": 0.0,
  "threshold": 0.95,
  "results": {
   "agreed + adjudicated": {
-   "precision": 0.9907727797001153,
-   "recall": 0.9728199320498301,
-   "f1": 0.9817142857142857,
-   "tp": 859,
-   "n_gold": 883,
-   "n_pred": 867
+   "precision": 0.9927360774818402,
+   "recall": 0.9715639810426541,
+   "f1": 0.9820359281437127,
+   "tp": 820,
+   "n_gold": 844,
+   "n_pred": 826
   },
   "disputed -> LLM_1_V2": {
-   "precision": 0.9907727797001153,
-   "recall": 0.9544444444444444,
-   "f1": 0.9722693831352576,
-   "tp": 859,
-   "n_gold": 900,
-   "n_pred": 867
+   "precision": 0.9927360774818402,
+   "recall": 0.9523809523809523,
+   "f1": 0.9721398933017191,
+   "tp": 820,
+   "n_gold": 861,
+   "n_pred": 826
   },
   "disputed -> LLM_2_V2": {
-   "precision": 0.9907727797001153,
-   "recall": 0.9728199320498301,
-   "f1": 0.9817142857142857,
-   "tp": 859,
-   "n_gold": 883,
-   "n_pred": 867
+   "precision": 0.9927360774818402,
+   "recall": 0.9715639810426541,
+   "f1": 0.9820359281437127,
+   "tp": 820,
+   "n_gold": 844,
+   "n_pred": 826
   }
  },
  "adjudication_can_change_verdict": false,
- "passed": true
+ "passed": true,
+ "excluded_first_n": 12,
+ "sensitivity_only": true
 }

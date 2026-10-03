@@ -25,6 +25,18 @@
     "feature": "Bwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-39",
@@ -59,6 +71,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
     "feature": "Flow Packets/s"
    },
    {
@@ -129,6 +158,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-32",
@@ -188,6 +244,33 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "FIN Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "FIN Flag Count"
    }
   ],
@@ -253,6 +336,33 @@
     "feature": "Bwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-36",
@@ -292,6 +402,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Flow IAT Max"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Flow IAT Max"
    }
   ],
@@ -337,6 +464,23 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-8",
@@ -376,6 +520,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -431,6 +592,23 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-2",
@@ -460,6 +638,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packet Length Min"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packet Length Min"
    }
   ],
@@ -525,6 +715,33 @@
     "feature": "Fwd IAT Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-56",
@@ -567,6 +784,23 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-19",
@@ -606,6 +840,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Total Backward Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Backward Packets"
    }
   ],
@@ -671,6 +922,33 @@
     "feature": "Fwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-9",
@@ -730,6 +1008,33 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packet Length Std"
    }
   ],
@@ -795,6 +1100,33 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-20",
@@ -857,6 +1189,33 @@
     "feature": "Fwd IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-1",
@@ -891,6 +1250,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Total Length of Bwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Length of Bwd Packets"
    },
    {
@@ -941,6 +1317,23 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-13",
@@ -972,6 +1365,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Fwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -1045,6 +1460,28 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Fwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-32",
@@ -1076,6 +1513,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -1139,6 +1598,23 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-26",
@@ -1168,6 +1644,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_backward"
    }
   ],
@@ -1213,6 +1701,23 @@
     "feature": "Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-41",
@@ -1255,6 +1760,23 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-50",
@@ -1294,6 +1816,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -1359,6 +1898,33 @@
     "feature": "min_seg_size_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-29",
@@ -1398,6 +1964,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "URG Flag Count"
    }
   ],
@@ -1463,6 +2046,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-13",
@@ -1522,6 +2132,33 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "Flow IAT Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
     "feature": "Flow IAT Std"
    }
   ],
@@ -1587,6 +2224,33 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-5",
@@ -1629,6 +2293,23 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-18",
@@ -1665,6 +2346,33 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -1753,6 +2461,33 @@
     "feature": "Bwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "FIN Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-58",
@@ -1802,6 +2537,28 @@
    {
     "direction": "-",
     "direction_evidence": "word",
+    "feature": "Flow Duration"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
     "feature": "Flow Duration"
    }
   ],
@@ -1877,6 +2634,38 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-21",
@@ -1921,6 +2710,28 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Flow Bytes/s"
    },
    {
@@ -1991,6 +2802,33 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd PSH Flags"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-42",
@@ -2035,6 +2873,28 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Bytes/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Header Length"
    },
    {
@@ -2105,6 +2965,33 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-3",
@@ -2139,6 +3026,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packet Length Mean"
    },
    {
@@ -2189,6 +3093,23 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-15",
@@ -2220,6 +3141,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Fwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -2283,6 +3226,23 @@
     "feature": "Fwd IAT Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-55",
@@ -2332,6 +3292,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_backward"
    }
   ],
@@ -2397,6 +3374,33 @@
     "feature": "Packet Length Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-14",
@@ -2446,6 +3450,28 @@
    {
     "direction": "-",
     "direction_evidence": "word",
+    "feature": "Flow Duration"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
     "feature": "Flow Duration"
    }
   ],
@@ -2501,6 +3527,28 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-31",
@@ -2550,6 +3598,28 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    }
   ],
@@ -2615,6 +3685,33 @@
     "feature": "min_seg_size_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-29",
@@ -2654,6 +3751,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Idle Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Idle Mean"
    }
   ],
@@ -2719,6 +3833,33 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-37",
@@ -2758,6 +3899,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packet Length Max"
    }
   ],
@@ -2813,6 +3971,28 @@
     "feature": "Active Min"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-36",
@@ -2854,6 +4034,38 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "RST Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "SYN Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "FIN Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -2947,6 +4159,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Fwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-30",
@@ -3009,6 +4248,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-31",
@@ -3051,6 +4317,23 @@
     "feature": "Idle Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-58",
@@ -3090,6 +4373,23 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "Idle Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Idle Mean"
    }
   ],
@@ -3155,6 +4455,33 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-49",
@@ -3217,6 +4544,33 @@
     "feature": "Bwd IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Packet Length Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-41",
@@ -3246,6 +4600,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packets/s"
    }
   ],
@@ -3288,6 +4659,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    }
   ],
@@ -3343,6 +4731,28 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-51",
@@ -3382,6 +4792,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Bwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packet Length Std"
    }
   ],
@@ -3435,6 +4862,23 @@
     "direction": null,
     "direction_evidence": "default",
     "feature": "Max Packet Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
    }
   ],
   "extractor_version": "1.4.0",
@@ -3499,6 +4943,33 @@
     "feature": "Fwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-17",
@@ -3530,6 +5001,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Total"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -3590,6 +5083,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "URG Flag Count"
    }
   ],
@@ -3655,6 +5165,33 @@
     "feature": "Flow IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-9",
@@ -3697,6 +5234,23 @@
     "feature": "URG Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-27",
@@ -3727,6 +5281,18 @@
     "direction": null,
     "direction_evidence": "default",
     "feature": "Flow IAT Min"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Mean"
    }
   ],
   "extractor_version": "1.4.0",
@@ -3781,6 +5347,28 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-43",
@@ -3820,6 +5408,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd PSH Flags"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
     "feature": "Fwd Packet Length Std"
    }
   ],
@@ -3885,6 +5490,33 @@
     "feature": "Fwd IAT Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-56",
@@ -3947,6 +5579,33 @@
     "feature": "Flow IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-15",
@@ -4006,6 +5665,33 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packets/s"
    }
   ],
@@ -4081,6 +5767,38 @@
     "feature": "Fwd Packet Length Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-12",
@@ -4140,6 +5858,33 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd IAT Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd IAT Mean"
    }
   ],
@@ -4205,6 +5950,33 @@
     "feature": "Flow IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-14",
@@ -4264,6 +6036,33 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Total Length of Bwd Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Length of Bwd Packets"
    }
   ],
@@ -4329,6 +6128,33 @@
     "feature": "Bwd IAT Total"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Down/Up Ratio"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Total"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-2",
@@ -4355,6 +6181,23 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -4413,6 +6256,23 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-19",
@@ -4447,6 +6307,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packets/s"
    },
    {
@@ -4507,6 +6384,23 @@
     "feature": "Average Packet Size"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-23",
@@ -4549,6 +6443,23 @@
     "feature": "Fwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-40",
@@ -4588,6 +6499,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "URG Flag Count"
    }
   ],
@@ -4635,6 +6563,28 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Flow IAT Min"
    },
    {
@@ -4705,6 +6655,33 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-24",
@@ -4767,6 +6744,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-19",
@@ -4801,6 +6805,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Max Packet Length"
    },
    {
@@ -4871,6 +6892,33 @@
     "feature": "Fwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-17",
@@ -4923,6 +6971,28 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-30",
@@ -4962,6 +7032,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "URG Flag Count"
    }
   ],
@@ -5027,6 +7114,33 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-45",
@@ -5089,6 +7203,33 @@
     "feature": "min_seg_size_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "min_seg_size_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-33",
@@ -5099,6 +7240,33 @@
   "abstained": false,
   "extractor_claims": [],
   "extractor_claims_2_1_0": [],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "ACK Flag Count"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "RST Flag Count"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-8",
@@ -5161,6 +7329,33 @@
     "feature": "Flow IAT Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-55",
@@ -5200,6 +7395,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Total Backward Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Backward Packets"
    }
   ],
@@ -5245,6 +7457,23 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-52",
@@ -5287,6 +7516,23 @@
     "feature": "Total Backward Packets"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-1",
@@ -5316,6 +7562,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Header Length"
    }
   ],
@@ -5381,6 +7639,33 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Bwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-2",
@@ -5443,6 +7728,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-27",
@@ -5479,6 +7791,33 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Avg Fwd Segment Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -5567,6 +7906,33 @@
     "feature": "Bwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Down/Up Ratio"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-0",
@@ -5629,6 +7995,33 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-38",
@@ -5665,6 +8058,33 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -5733,6 +8153,23 @@
     "feature": "Bwd Packet Length Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-7",
@@ -5775,6 +8212,23 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-8",
@@ -5814,6 +8268,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packets/s"
    }
   ],
@@ -5866,6 +8337,28 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packets/s"
    }
   ],
@@ -5931,6 +8424,33 @@
     "feature": "Subflow Bwd Packets"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "ACK Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Fwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Bwd Packets"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-34",
@@ -5960,6 +8480,18 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_backward"
    }
   ],
@@ -6002,6 +8534,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -6077,6 +8626,38 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Bwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Fwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-48",
@@ -6103,6 +8684,23 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Max Packet Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -6181,6 +8779,33 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-39",
@@ -6223,6 +8848,23 @@
     "feature": "Fwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-38",
@@ -6262,6 +8904,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packet Length Std"
    }
   ],
@@ -6320,6 +8979,43 @@
     "direction": null,
     "direction_evidence": "default",
     "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
    },
    {
     "direction": null,
@@ -6389,6 +9085,33 @@
     "feature": "Fwd IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-59",
@@ -6428,6 +9151,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -6503,6 +9243,38 @@
     "feature": "ACK Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "ACK Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-22",
@@ -6539,6 +9311,33 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Avg Fwd Segment Size"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Total"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -6607,6 +9406,23 @@
     "feature": "PSH Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-12",
@@ -6649,6 +9465,23 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-55",
@@ -6678,6 +9511,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_backward"
    }
   ],
@@ -6733,6 +9578,28 @@
     "feature": "Average Packet Size"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-41",
@@ -6762,6 +9629,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd IAT Min"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd IAT Min"
    }
   ],
@@ -6827,6 +9706,33 @@
     "feature": "Total Length of Bwd Packets"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Bwd Packets"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-16",
@@ -6866,6 +9772,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packet Length Max"
    }
   ],
@@ -6921,6 +9844,28 @@
     "feature": "Active Min"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-36",
@@ -6963,6 +9908,23 @@
     "feature": "Fwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd PSH Flags"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-35",
@@ -7002,6 +9964,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd PSH Flags"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packet Length Std"
    }
   ],
@@ -7057,6 +10036,28 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-29",
@@ -7096,6 +10097,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "URG Flag Count"
    }
   ],
@@ -7161,6 +10179,33 @@
     "feature": "Flow IAT Min"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-54",
@@ -7190,6 +10235,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Total Length of Bwd Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Length of Bwd Packets"
    }
   ],
@@ -7255,6 +10312,33 @@
     "feature": "Average Packet Size"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-34",
@@ -7294,6 +10378,23 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "Idle Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Idle Mean"
    }
   ],
@@ -7349,6 +10450,28 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-32",
@@ -7401,6 +10524,28 @@
     "feature": "Active Min"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-59",
@@ -7440,6 +10585,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packets/s"
    }
   ],
@@ -7485,6 +10647,23 @@
     "feature": "Bwd Packet Length Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packet Length Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-0",
@@ -7516,6 +10695,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -7609,6 +10810,38 @@
     "feature": "Bwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-19",
@@ -7648,6 +10881,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Header Length"
    }
   ],
@@ -7693,6 +10943,23 @@
     "feature": "URG Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-48",
@@ -7729,6 +10996,33 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Total"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -7817,6 +11111,33 @@
     "feature": "Flow Bytes/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-15",
@@ -7858,6 +11179,38 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -7931,6 +11284,23 @@
     "feature": "Max Packet Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Max Packet Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-33",
@@ -7983,6 +11353,28 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-26",
@@ -8025,6 +11417,23 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-34",
@@ -8064,6 +11473,23 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "Flow Bytes/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Flow Bytes/s"
    }
   ],
@@ -8119,6 +11545,28 @@
     "feature": "Flow Bytes/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-12",
@@ -8158,6 +11606,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -8213,6 +11678,28 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-53",
@@ -8252,6 +11739,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "URG Flag Count"
    }
   ],
@@ -8317,6 +11821,33 @@
     "feature": "Fwd IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-1",
@@ -8369,6 +11900,28 @@
     "feature": "PSH Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-14",
@@ -8408,6 +11961,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_backward"
    }
   ],
@@ -8473,6 +12043,33 @@
     "feature": "Average Packet Size"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-50",
@@ -8507,6 +12104,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packet Length Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_backward"
    },
    {
@@ -8557,6 +12171,23 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-34",
@@ -8596,6 +12227,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Flow IAT Max"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Flow IAT Max"
    }
   ],
@@ -8648,6 +12296,28 @@
    {
     "direction": "-",
     "direction_evidence": "word",
+    "feature": "Flow IAT Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
     "feature": "Flow IAT Mean"
    }
   ],
@@ -8713,6 +12383,33 @@
     "feature": "min_seg_size_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Bwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-46",
@@ -8747,6 +12444,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packets/s"
    },
    {
@@ -8817,6 +12531,33 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-3",
@@ -8856,6 +12597,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Bwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packet Length Std"
    }
   ],
@@ -8931,6 +12689,38 @@
     "feature": "Total Fwd Packets"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Total Fwd Packets"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-5",
@@ -8970,6 +12760,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Total Backward Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Backward Packets"
    }
   ],
@@ -9035,6 +12842,28 @@
     "feature": "Fwd IAT Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-23",
@@ -9074,6 +12903,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packet Length Std"
    }
   ],
@@ -9119,6 +12965,23 @@
     "feature": "Idle Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-58",
@@ -9148,6 +13011,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Total Length of Bwd Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Length of Bwd Packets"
    }
   ],
@@ -9193,6 +13068,23 @@
     "feature": "Fwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd PSH Flags"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-42",
@@ -9232,6 +13124,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    }
   ],
@@ -9297,6 +13206,33 @@
     "feature": "min_seg_size_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-26",
@@ -9331,6 +13267,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Bytes/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    },
    {
@@ -9381,6 +13334,23 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-34",
@@ -9410,6 +13380,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packets/s"
    }
   ],
@@ -9462,6 +13449,28 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    }
   ],
@@ -9527,6 +13536,33 @@
     "feature": "Bwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-20",
@@ -9586,6 +13622,33 @@
    {
     "direction": "-",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_backward"
    }
   ],
@@ -9661,6 +13724,38 @@
     "feature": "ACK Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "ACK Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-17",
@@ -9723,6 +13818,33 @@
     "feature": "Fwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-22",
@@ -9764,6 +13886,38 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -9847,6 +14001,28 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-25",
@@ -9886,6 +14062,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Packet Length Std"
    }
   ],
@@ -9941,6 +14134,28 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-11",
@@ -9983,6 +14198,23 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-55",
@@ -10022,6 +14254,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Total Backward Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Backward Packets"
    }
   ],
@@ -10087,6 +14336,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-30",
@@ -10129,6 +14405,23 @@
     "feature": "Bwd Packet Length Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packet Length Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-7",
@@ -10163,6 +14456,23 @@
    {
     "direction": null,
     "direction_evidence": "default",
+    "feature": "Total Length of Bwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Length of Bwd Packets"
    },
    {
@@ -10233,6 +14543,38 @@
     "feature": "ACK Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "ACK Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-57",
@@ -10269,6 +14611,33 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "SYN Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd PSH Flags"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "FIN Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -10337,6 +14706,23 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-22",
@@ -10376,6 +14762,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packets/s"
    }
   ],
@@ -10441,6 +14844,33 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-25",
@@ -10503,6 +14933,33 @@
     "feature": "Bwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Down/Up Ratio"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Total"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-3",
@@ -10542,6 +14999,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -10599,6 +15073,33 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "PSH Flag Count"
    },
    {
@@ -10669,6 +15170,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-19",
@@ -10708,6 +15236,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "URG Flag Count"
    }
   ],
@@ -10753,6 +15298,23 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-17",
@@ -10792,6 +15354,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    }
   ],
@@ -10837,6 +15416,23 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-2",
@@ -10876,6 +15472,23 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "Idle Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Idle Mean"
    }
   ],
@@ -10941,6 +15554,33 @@
     "feature": "Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-28",
@@ -11003,6 +15643,33 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd PSH Flags"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-42",
@@ -11045,6 +15712,23 @@
     "feature": "Bwd Packet Length Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-7",
@@ -11074,6 +15758,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Header Length"
    }
   ],
@@ -11116,6 +15812,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "PSH Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "PSH Flag Count"
    }
   ],
@@ -11171,6 +15884,23 @@
     "feature": "Fwd IAT Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-20",
@@ -11202,6 +15932,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -11265,6 +16017,23 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-17",
@@ -11304,6 +16073,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -11389,6 +16175,43 @@
     "feature": "URG Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "URG Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-18",
@@ -11428,6 +16251,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    }
   ],
@@ -11493,6 +16333,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-13",
@@ -11532,6 +16399,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Idle Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Idle Mean"
    }
   ],
@@ -11597,6 +16481,33 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-48",
@@ -11641,6 +16552,28 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    },
    {
@@ -11711,6 +16644,33 @@
     "feature": "Flow IAT Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-55",
@@ -11770,6 +16730,33 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -11835,6 +16822,33 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-43",
@@ -11897,6 +16911,33 @@
     "feature": "Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd PSH Flags"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-35",
@@ -11928,6 +16969,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -11988,6 +17051,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Average Packet Size"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Average Packet Size"
    }
   ],
@@ -12053,6 +17133,33 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-48",
@@ -12084,6 +17191,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Active Min"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -12147,6 +17276,23 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-59",
@@ -12199,6 +17345,28 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-31",
@@ -12233,6 +17401,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    },
    {
@@ -12283,6 +17468,23 @@
     "feature": "Average Packet Size"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-24",
@@ -12325,6 +17527,23 @@
     "feature": "URG Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-48",
@@ -12364,6 +17583,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Idle Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Idle Mean"
    }
   ],
@@ -12429,6 +17665,33 @@
     "feature": "Average Packet Size"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-34",
@@ -12460,6 +17723,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -12543,6 +17828,33 @@
     "feature": "Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-28",
@@ -12603,6 +17915,33 @@
     "direction": "+",
     "direction_evidence": "connective",
     "feature": "Fwd Packet Length Max"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
    }
   ],
   "extractor_version": "1.4.0",
@@ -12667,6 +18006,33 @@
     "feature": "Bwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-45",
@@ -12716,6 +18082,28 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packets/s"
    }
   ],
@@ -12781,6 +18169,33 @@
     "feature": "Init_Win_bytes_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-3",
@@ -12833,6 +18248,28 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-28",
@@ -12875,6 +18312,23 @@
     "feature": "Fwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-37",
@@ -12904,6 +18358,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Idle Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Idle Mean"
    }
   ],
@@ -12969,6 +18435,33 @@
     "feature": "PSH Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-10",
@@ -13003,6 +18496,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packet Length Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packet Length Max"
    },
    {
@@ -13053,6 +18563,23 @@
     "feature": "Fwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-40",
@@ -13092,6 +18619,23 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_forward"
    }
   ],
@@ -13157,6 +18701,33 @@
     "feature": "Flow IAT Min"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-54",
@@ -13199,6 +18770,23 @@
     "feature": "Idle Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b4_vte",
   "instance_id": "cic-57",
@@ -13238,6 +18826,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Packet Length Std"
    }
   ],
@@ -13293,6 +18898,28 @@
     "feature": "PSH Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-10",
@@ -13342,6 +18969,28 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packets/s"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packets/s"
    }
   ],
@@ -13407,6 +19056,33 @@
     "feature": "Fwd IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Active Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-59",
@@ -13469,6 +19145,33 @@
     "feature": "Flow Bytes/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Max"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-23",
@@ -13513,6 +19216,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
     "feature": "Bwd Packet Length Mean"
    },
    {
@@ -13583,6 +19303,33 @@
     "feature": "Packet Length Mean"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Mean"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-14",
@@ -13619,6 +19366,33 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Active Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -13707,6 +19481,33 @@
     "feature": "Flow Duration"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Average Packet Size"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-41",
@@ -13748,6 +19549,38 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packet Length Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Packet Length Std"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -13821,6 +19654,23 @@
     "feature": "URG Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "URG Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b5_narrative_vte",
   "instance_id": "cic-48",
@@ -13860,6 +19710,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Header Length"
    }
   ],
@@ -13905,6 +19772,23 @@
     "feature": "Bwd IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-16",
@@ -13941,6 +19825,33 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Mean"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -14019,6 +19930,28 @@
     "feature": "PSH Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-23",
@@ -14048,6 +19981,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Header Length"
    }
   ],
@@ -14100,6 +20045,23 @@
    {
     "direction": "+",
     "direction_evidence": "connective",
+    "feature": "Total Backward Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
     "feature": "Total Backward Packets"
    }
   ],
@@ -14165,6 +20127,33 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-8",
@@ -14214,6 +20203,28 @@
    {
     "direction": "-",
     "direction_evidence": "number",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Init_Win_bytes_backward"
    }
   ],
@@ -14279,6 +20290,33 @@
     "feature": "Init_Win_bytes_backward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-43",
@@ -14341,6 +20379,33 @@
     "feature": "min_seg_size_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Bwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-44",
@@ -14372,6 +20437,28 @@
    }
   ],
   "extractor_claims_2_1_0": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
    {
     "direction": null,
     "direction_evidence": "default",
@@ -14445,6 +20532,28 @@
     "feature": "Fwd Packet Length Max"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-0",
@@ -14507,6 +20616,33 @@
     "feature": "Fwd IAT Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Max"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1_template",
   "instance_id": "cic-1",
@@ -14541,6 +20677,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Init_Win_bytes_forward"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Packet Length Std"
    },
    {
@@ -14611,6 +20764,43 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-53",
@@ -14670,6 +20860,33 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "FIN Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Idle Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "FIN Flag Count"
    }
   ],
@@ -14735,6 +20952,33 @@
     "feature": "Flow Bytes/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow Bytes/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-18",
@@ -14797,6 +21041,33 @@
     "feature": "min_seg_size_forward"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Min"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "min_seg_size_forward"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b1l_llm_render",
   "instance_id": "cic-33",
@@ -14837,6 +21108,18 @@
     "direction": null,
     "direction_evidence": "default",
     "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
    }
   ],
   "extractor_version": "1.4.0",
@@ -14901,6 +21184,48 @@
     "feature": "URG Flag Count"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "ACK Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "URG Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "SYN Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "FIN Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "RST Flag Count"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-24",
@@ -14946,6 +21271,53 @@
     "direction": null,
     "direction_evidence": "default",
     "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Total Length of Fwd Packets"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Max"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Min"
    },
    {
     "direction": null,
@@ -15035,6 +21407,33 @@
     "feature": "Fwd Packets/s"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Total Length of Fwd Packets"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Flow IAT Mean"
+   },
+   {
+    "direction": "-",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packets/s"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-9",
@@ -15074,6 +21473,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Fwd Header Length"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Fwd Header Length"
    }
   ],
@@ -15119,6 +21535,23 @@
     "feature": "Fwd Packet Length Std"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Packet Length Std"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b3_dte_style",
   "instance_id": "cic-38",
@@ -15158,6 +21591,23 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "URG Flag Count"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_backward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "URG Flag Count"
    }
   ],
@@ -15223,6 +21673,33 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Duration"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow IAT Std"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Flow Packets/s"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-1",
@@ -15267,6 +21744,28 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Total Backward Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Packet Length Max"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "act_data_pkt_fwd"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Total Backward Packets"
    },
    {
@@ -15337,6 +21836,33 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Max Packet Length"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Packet Length Std"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Bwd Packets/s"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b0_raw_shap",
   "instance_id": "cic-25",
@@ -15389,6 +21915,28 @@
     "feature": "Fwd Header Length"
    }
   ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "PSH Flag Count"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Subflow Fwd Packets"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Bwd Header Length"
+   },
+   {
+    "direction": null,
+    "direction_evidence": "default",
+    "feature": "Fwd Header Length"
+   }
+  ],
   "extractor_version": "1.4.0",
   "generator_id": "b2_zeroshot",
   "instance_id": "cic-26",
@@ -15418,6 +21966,18 @@
    {
     "direction": "+",
     "direction_evidence": "word",
+    "feature": "Bwd Packet Length Min"
+   }
+  ],
+  "extractor_claims_2_3_0_llm": [
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
+    "feature": "Init_Win_bytes_forward"
+   },
+   {
+    "direction": "+",
+    "direction_evidence": "llm",
     "feature": "Bwd Packet Length Min"
    }
   ],

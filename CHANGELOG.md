@@ -765,6 +765,19 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   maps names onto the vocabulary or drops them. `score_audit_gate.py` gained
   `--exclude-first N`, a sensitivity score without the 12 smoke items, reported
   beside the 300-item verdict.
+- **EXP-G-001 attempt 5: PASSED at F1 0.982 (extractor 2.3.0, LLM-assisted).**
+  Kaggle 2x T4, commit `5a1ad90`, Ollama 0.35.1; all 300 replies parsed, none
+  fell back to the rules, ~4.5 s/item. Against agreed gold: precision 0.991,
+  recall 0.973 (attempt 4, rule engine: 0.953 / 0.904 / F1 0.928). Adjudication
+  cannot change the verdict (F1 0.972-0.982 across both extremes). Without the 12
+  smoke-test items (amendment 0006 sensitivity check, not the verdict): F1 0.982.
+  No wrong signs; the errors are 7 directions read off b2 value descriptions
+  (the rule engine made 31 there) and 24 misses in b4/b5 narrative prose. 325 of
+  1192 claims are `unclear` (no direction). Replaying the committed ledger
+  (`_llm_extraction_cache/`) reproduces all 300 claim sets without a GPU.
+  Caveat for every report of this result: the gold is two LLM annotators, and
+  prompt 1.1.0 gives the extractor their instructions, so this measures
+  agreement under one shared rulebook; the planned human check anchors it.
 
 ### Metric formula versions / schema
 
