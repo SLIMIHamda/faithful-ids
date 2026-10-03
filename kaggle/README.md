@@ -33,6 +33,17 @@ per-generator faithfulness table.
    runs the pilot, and displays the results inline; artifacts are zipped to
    `/kaggle/working/pilot_artifacts.zip`.
 
+## Python version on Kaggle
+
+Kaggle's image runs Python 3.13. `pyproject.toml` keeps `>=3.11,<3.13`, because
+that range describes the exact pinned stack, and two of its pins (pyarrow 17.0.0,
+shap 0.46.0) have no 3.13 builds. All three notebooks install the repo with
+`--no-deps --ignore-requires-python`, so they run on Kaggle's own library
+versions; the pilot launcher records what actually ran in `env-fingerprint.json`
+and `environment.txt`. Their install cells use `set -o pipefail` and import
+`faithfulids` right after the install, so a failed pip step stops the session
+instead of scrolling past.
+
 ## Knobs (set in the notebook's first code cell)
 
 | Env var | Meaning | Default |

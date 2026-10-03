@@ -778,6 +778,16 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   Caveat for every report of this result: the gold is two LLM annotators, and
   prompt 1.1.0 gives the extractor their instructions, so this measures
   agreement under one shared rulebook; the planned human check anchors it.
+- **Kaggle launchers: Python 3.13, and a failed pip step now stops the cell.**
+  Kaggle's image moved to Python 3.13.15, and `pip install -e .` refused it
+  (pyproject says `<3.13`). Each pip line pipes into `tail`, whose exit status (0)
+  is what the cell saw, so the 2026-10-03 re-gate smoke ran without the repo
+  installed. It only worked because that notebook puts `src/` on the path itself;
+  the pilot and re-score launchers need the install. All three install cells now
+  use `set -e` + `set -o pipefail`, install with `--ignore-requires-python`, and
+  import `faithfulids` right after. pyproject keeps `<3.13`: that range describes
+  the exact pinned stack, and pyarrow 17.0.0 and shap 0.46.0 have no 3.13 builds.
+  Kaggle already runs its own library versions (`--no-deps`).
 
 ### Metric formula versions / schema
 
