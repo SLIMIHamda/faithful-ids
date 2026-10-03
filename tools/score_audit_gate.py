@@ -32,6 +32,13 @@ Run::
     python tools/score_audit_gate.py --batch experiments/gates/EXP-G-001_audit_v2 \\
         --pass LLM_1_V2 --pass LLM_2_V2 [--adjudication FILE] [--write-run]
 
+``--write-run`` also writes the gate token, ``runs/EXP-G-001/<run_id>/``, whose
+manifest carries ``gate: PASSED`` or ``FAILED`` (``orchestration.extractor_gate``).
+It needs the current extractor's LLM claims (``extractor_claims_<version>_llm``)
+and records whether the worktree was clean (dirty = non-citable, as for every
+run). Scoring is GPU-free, so a Tier-A session mints its token from the
+committed audit key in seconds.
+
 ``--exclude-first N`` scores without the batch's first N items and writes
 ``gate_result_excl_first<N>.json`` instead. Amendment 0006 registers it for
 attempt 5: the 12-item smoke test (the first 12 items) is where the prompt
@@ -64,15 +71,19 @@ ABSENT = "absent"
 DEFAULT_EVIDENCE = "default"
 
 
-def load_pass(batch: Path, name: str) -> dict[tuple[str, str], str]:
+def pass_files(batch: Path, name: str) -> list[Path]:
     d = batch / "llm_annotation" / "responses" / name
     if not d.is_dir():
         raise SystemExit(f"no such pass: {d}")
-    labels: dict[tuple[str, str], str] = {}
     files = sorted(f for f in d.glob("*.jsonl") if "chunk" in f.name.lower())
     if not files:
         raise SystemExit(f"{d}: no chunk_NN.jsonl replies")
-    for f in files:
+    return files
+
+
+def load_pass(batch: Path, name: str) -> dict[tuple[str, str], str]:
+    labels: dict[tuple[str, str], str] = {}
+    for f in pass_files(batch, name):
         labels.update(load_llm(f))
     return labels
 
@@ -97,11 +108,37 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--exclude-first", type=int, default=0, metavar="N",
                     help="leave out the first N items (sensitivity report, not the verdict)")
     ap.add_argument("--write-run", action="store_true",
-                    help="write a runs/EXP-G-001/ run stamping manifest.gate")
+                    help="write the gate token: a runs/EXP-G-001/ run stamping manifest.gate")
     args = ap.parse_args(argv)
 
     if len(args.passes) != 2:
         raise SystemExit("the gate registers TWO annotators; give exactly two --pass")
+
+    # Everything --write-run needs is checked BEFORE scoring writes anything, so
+    # the code version is read off a worktree this run has not touched yet.
+    code_version = extractor_cfg = None
+    if args.write_run:
+        from faithfulids.orchestration.config_loader import load_config
+        from faithfulids.orchestration.extractor_gate import llm_claims_key
+        from faithfulids.provenance import repo_root, resolve_code_version
+
+        if args.exclude_first:
+            raise SystemExit("--write-run writes the verdict; --exclude-first is a "
+                             "sensitivity check and never the verdict")
+        extractor_cfg = load_config("extraction", "eval_extractor")
+        want = llm_claims_key(str(extractor_cfg["version"]))
+        if args.claims_key != want:
+            raise SystemExit(
+                f"--write-run certifies the registered extractor "
+                f"{extractor_cfg['version']} through its LLM path: score "
+                f"--claims-key {want} (got {args.claims_key})")
+        # As for every other run writer (EXP-G-002 included): a dirty worktree is
+        # recorded, not refused. A session's own earlier runs (runs/EXP-G-002/...)
+        # are untracked files, so refusing would make gate order matter.
+        code_version = resolve_code_version(repo_root(), allow_dirty=True)
+        if code_version.dirty:
+            print("WARNING: dirty worktree - the gate token records dirty=true "
+                  "(NON-CITABLE). Mint it from a clean commit for the record.\n")
 
     batch = args.batch
     items = {it["item_id"]: it for line in (batch / "audit_batch.jsonl").read_text(
@@ -218,7 +255,9 @@ def main(argv: list[str] | None = None) -> int:
         payload["excluded_first_n"] = args.exclude_first
         payload["sensitivity_only"] = True
         out = batch / f"gate_result_excl_first{args.exclude_first}.json"
-    out.write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8")
+    # LF on every platform (.gitattributes eol=lf): a CRLF rewrite of identical
+    # content would mark the worktree dirty and stamp the token NON-CITABLE.
+    out.write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8", newline="\n")
     print(f"\nwrote {out}")
     if args.exclude_first:
         print(f"\nSENSITIVITY ONLY (first {args.exclude_first} items left out): not the verdict")
@@ -226,8 +265,17 @@ def main(argv: list[str] | None = None) -> int:
           f"(F1 {results['agreed + adjudicated']['f1']:.3f} vs threshold {threshold})")
 
     if args.write_run:
-        print("\n--write-run: not yet wired — the run writer needs the artifact shape "
-              "agreed first; gate_result.json holds the verdict meanwhile.")
+        from faithfulids.orchestration.extractor_gate import write_extractor_gate_run
+
+        run_dir = write_extractor_gate_run(
+            REPO / "runs", batch=batch, items=items, key=key, claims_key=args.claims_key,
+            extractor_cfg=extractor_cfg, verdict=payload,
+            pass_files=pass_files(batch, a_name) + pass_files(batch, b_name),
+            adjudication=args.adjudication, code_version=code_version,
+        )
+        print(f"\ngate token: {run_dir.relative_to(REPO).as_posix()} "
+              f"(manifest gate: {'PASSED' if verdict else 'FAILED'}, "
+              f"extractor {extractor_cfg['version']})")
     return 0
 
 

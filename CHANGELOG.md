@@ -788,6 +788,17 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   import `faithfulids` right after. pyproject keeps `<3.13`: that range describes
   the exact pinned stack, and pyarrow 17.0.0 and shap 0.46.0 have no 3.13 builds.
   Kaggle already runs its own library versions (`--no-deps`).
+- **EXP-G-001 gate token: `score_audit_gate.py --write-run`.** Writes
+  `runs/EXP-G-001/<run_id>/` the way EXP-G-002 does (write-once, manifest
+  `gate: PASSED`/`FAILED`), via `orchestration.extractor_gate`: the 300 texts,
+  the scored claims, P/R/F1 per gold resolution, and hashed inputs (batch, key,
+  both annotation passes, ledger). It certifies only the current extractor
+  through its LLM path (`extractor_claims_<version>_llm`) and refuses a
+  `--exclude-first` sensitivity score. `enforce_gates` now accepts a G-001 token
+  only if its extractor version equals the one the dependent experiment's
+  extraction config declares, so changing the extractor needs a new gate run.
+  A dirty worktree is recorded (non-citable), as for every run writer. The
+  scorer now writes `gate_result.json` with LF on every platform.
 
 ### Metric formula versions / schema
 
