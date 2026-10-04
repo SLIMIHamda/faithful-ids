@@ -276,9 +276,16 @@ class OllamaProvider:
 
         The score step runs its instrument models one after another: Ollama's
         scheduler misjudged free memory when two shared a GPU (smoke v2 put 22 of
-        the judge's 33 layers on the CPU: 28 s per call).
+        the judge's 33 layers on the CPU: 28 s per call). A model this server
+        does not hold (the verify step pulls only the verifier) is skipped.
         """
-        self._post("/api/generate", {"model": name, "keep_alive": 0})
+        import urllib.error
+
+        try:
+            self._post("/api/generate", {"model": name, "keep_alive": 0})
+        except urllib.error.HTTPError as exc:
+            if exc.code != 404:
+                raise
 
     def version(self) -> str:
         """The serving Ollama's version (amendment 0005(C): reported with every result)."""

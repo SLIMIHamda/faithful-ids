@@ -887,6 +887,23 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   then judge — unloading the others first (`OllamaProvider.unload`); the notebook
   keeps one model loaded (`OLLAMA_MAX_LOADED_MODELS=1`) and warms each up with
   `keep_alive: 0`. `read_verdict` factored out of the verifier for the re-check.
+- **Amendment 0011 — the verifier's verdict is read from its verdict line; Phi-4
+  stands.** The re-check (`faithfulids-verifier-recheck` v1, `1394569`) first read
+  38/38 Phi-4 replies as UNSUPPORTED, but every reply ends with the line
+  `SUPPORTED` after correct answers to the three checks: the reader searched the
+  whole reply for the word, and Phi-4 repeats check 3 ("Are there unsupported ...
+  claims?"). `read_verdict` now takes the last line holding only the verdict token
+  (no such line: still unsupported). Re-read from the recorded ledger with no model
+  call: 38 SUPPORTED, 0 rejections, so under amendment 0010(B) Phi-4 is the Tier-A
+  verifier. Phi-4-mini's 38 rejections are unchanged under the fixed reader.
+  Record: `experiments/verifier_recheck/amendment_0010/`.
+- **Tier-A gets a third step, `PHASE='verify'`.** Phi-4 takes ~28 s per verdict
+  (~6 h per generator model at N=400), too long to share a 12 h score session.
+  `run_pilot(verify_only=True, verification_budget_s=...)` runs the verifier pass
+  alone (`generate_only` on B4/B5, label `verify`), resumable, and prints
+  `verification COMPLETE|PARTIAL`; the CLI and notebook accept the phase (no gate
+  check: no metrics). The verify session pulls only Phi-4; `OllamaProvider.unload`
+  skips models the server lacks.
 
 ### Metric formula versions / schema
 

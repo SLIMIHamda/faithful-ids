@@ -1,0 +1,18 @@
+{
+  "old_model": "vte_verifier_phi4_mini",
+  "new_model": "vte_verifier_phi4_14b",
+  "new_weights": {
+    "source": "ollama_library",
+    "ref": "phi4:14b-q4_K_M",
+    "revision": "sha256-fd7b6731c33c57f61767612f56517460ec2d1e2e5a3f0163e0eb3d8d8cb5df20",
+    "sha256": "fd7b6731c33c57f61767612f56517460ec2d1e2e5a3f0163e0eb3d8d8cb5df20"
+  },
+  "n_drafts": 38,
+  "old_verdicts": {
+    "unsupported_token": 38
+  },
+  "new_verdicts": {
+    "supported": 38
+  },
+  "rule": "amendment 0010(B): unusable if more than half of the new rejections are wrong"
+}

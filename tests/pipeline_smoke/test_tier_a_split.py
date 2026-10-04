@@ -178,6 +178,33 @@ def test_generate_then_score_writes_a_tier_a_run(tmp_path, capsys):
     assert (_CannedExtractor.calls, _CannedVerifier.calls, _CannedJudge.calls) == calls
 
 
+def test_verify_step_fills_the_verifier_ledger_and_score_reuses_it(tmp_path, capsys):
+    common = _common(tmp_path)
+    run_pilot("EXP-A-001", extraction="none", llm_provider=DeterministicStubProvider(), **common)
+    capsys.readouterr()
+    step = dict(llm_mode="replay", extraction="llm", verify_only=True,
+                verifier_provider=_CannedVerifier(), **common)
+
+    # a zero budget stops before the first verdict; nothing is lost, no run is written
+    assert run_pilot("EXP-A-001", verification_budget_s=0, **step) is None
+    assert "verification PARTIAL: 0/" in capsys.readouterr().out
+    _CannedVerifier.calls = 0
+    assert run_pilot("EXP-A-001", **step) is None
+    out = capsys.readouterr().out
+    assert "verification COMPLETE" in out and "[verify]" in out
+    n_verdicts = _ledger_lines(tmp_path / "ver_ledger")
+    assert n_verdicts == _CannedVerifier.calls > 0
+    assert not (tmp_path / "runs" / "EXP-A-001").exists()
+
+    # the score step reads every verdict from the ledger: no verifier call
+    calls = _CannedVerifier.calls
+    run_dir = run_pilot("EXP-A-001", llm_mode="replay", extraction="llm",
+                        extraction_provider=_CannedExtractor(), verifier_provider=_CannedVerifier(),
+                        judge_provider=_CannedJudge(), **common)
+    assert read_status(run_dir) is Status.COMPLETE
+    assert _CannedVerifier.calls == calls and _ledger_lines(tmp_path / "ver_ledger") == n_verdicts
+
+
 def test_tier_a_scoring_refuses_the_rule_verifier(tmp_path):
     with pytest.raises(ValueError, match="amendment 0008"):
         run_pilot("EXP-A-001", data_dir=tmp_path, runs_root=tmp_path / "runs",
@@ -195,7 +222,7 @@ def test_cli_needs_a_step_and_scoring_needs_the_gates(tmp_path, monkeypatch, cap
     args = argparse.Namespace(experiment="EXP-A-001")
     monkeypatch.delenv("FAITHFULIDS_PHASE", raising=False)
     assert cli.cmd_run(args) == 2
-    assert "two steps" in capsys.readouterr().err
+    assert "runs in steps" in capsys.readouterr().err
     monkeypatch.setenv("FAITHFULIDS_PHASE", "score")
     with pytest.raises(GateNotPassed):
         cli.cmd_run(args)

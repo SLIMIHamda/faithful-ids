@@ -9,6 +9,10 @@
 > sessions as a private dataset input. Budget: ~2,000 generation calls per model
 > at N=400, i.e. one to several 12 h sessions per model on T4s.
 >
+> Since amendment 0011 there is a third step between them: `PHASE='verify'` runs
+> only the B4/B5 verifier over the replayed drafts (~6 h per model at N=400,
+> resumable; repeat until `verification COMPLETE`).
+>
 > The score step serves three pinned models under Ollama, one at a time: the
 > B4/B5 verifier (Phi-4, amendments 0008 + 0010), the extractor (Gemma, 0005) and
 > the plausibility judge (Command R7B, 0009). Each keeps its own ledger under

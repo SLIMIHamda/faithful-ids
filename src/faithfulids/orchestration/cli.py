@@ -43,24 +43,30 @@ def cmd_run(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
             return 2
-        # Tier-A runs in two steps (a generator and the registered extractor do
+        # Tier-A runs in steps (a generator and the registered instruments do
         # not fit one 2x T4 session): "generate" fills the ledger with the
-        # generator LLM, resumably; "score" replays it, extracts with the
-        # extractor EXP-G-001 certifies, computes the metrics, writes the run.
+        # generator LLM, resumably; "verify" runs the B4/B5 verifier over the
+        # replayed drafts, resumably (amendment 0010: ~6 h per model at N=400);
+        # "score" replays both, extracts with the extractor EXP-G-001 certifies,
+        # judges plausibility, computes the metrics and writes the run.
         phase = None
         tier_kwargs: dict = {}
         if exp["tier"] == "tier_a":
             phase = os.environ.get("FAITHFULIDS_PHASE")
-            if phase not in ("generate", "score"):
+            if phase not in ("generate", "verify", "score"):
                 print(
-                    "ERROR: Tier-A runs in two steps. Set FAITHFULIDS_PHASE=generate "
+                    "ERROR: Tier-A runs in steps. Set FAITHFULIDS_PHASE=generate "
                     "(the generator LLM fills the ledger; repeat until it reports "
-                    "COMPLETE), then FAITHFULIDS_PHASE=score (replay, LLM extraction, "
-                    "metrics, run). See kaggle/tier_a/.",
+                    "COMPLETE), then FAITHFULIDS_PHASE=verify (the verifier judges "
+                    "every B4/B5 draft; repeat until COMPLETE), then "
+                    "FAITHFULIDS_PHASE=score (replay, LLM extraction, judge, metrics, "
+                    "run). See kaggle/tier_a/.",
                     file=sys.stderr,
                 )
                 return 2
+            # generate and verify stop cleanly after this many minutes
             budget = os.environ.get("FAITHFULIDS_GENERATION_BUDGET_MIN")
+            budget_s = float(budget) * 60 if budget else None
             tier_kwargs = dict(
                 llm_cache_dir=os.environ.get("FAITHFULIDS_LLM_CACHE_DIR")
                 or runs_root / "_tier_a_llm_cache",
@@ -72,12 +78,13 @@ def cmd_run(args: argparse.Namespace) -> int:
                 or runs_root / "_tier_a_verifier_cache",
                 judge_cache_dir=os.environ.get("FAITHFULIDS_JUDGE_CACHE_DIR")
                 or runs_root / "_tier_a_judge_cache",
-                **({"extraction": "none", "llm_mode": "live",
-                    "generation_budget_s": float(budget) * 60 if budget else None}
+                **({"extraction": "none", "llm_mode": "live", "generation_budget_s": budget_s}
                    if phase == "generate" else {"extraction": "llm", "llm_mode": "replay"}),
+                **({"verify_only": True, "verification_budget_s": budget_s}
+                   if phase == "verify" else {}),
             )
-        # Gates guard metric computation; the generate step computes none.
-        if phase != "generate":
+        # Gates guard metric computation; the generate and verify steps compute none.
+        if phase not in ("generate", "verify"):
             enforce_gates(exp, runs_root)
         n = os.environ.get("FAITHFULIDS_PILOT_N")
         max_rows = os.environ.get("FAITHFULIDS_MAX_ROWS")
@@ -118,14 +125,14 @@ def cmd_run(args: argparse.Namespace) -> int:
                 **tier_kwargs,
             )
         except ReplayMiss as exc:
-            if phase != "score":
+            if phase not in ("verify", "score"):
                 raise
             print(f"ERROR: the generation ledger is incomplete for this model ({exc}). "
                   "Run FAITHFULIDS_PHASE=generate until it reports COMPLETE, with the "
                   "same model, N, data and FAITHFULIDS_LLM_CACHE_DIR.", file=sys.stderr)
             return 4
         if run_dir is None:
-            print("generate step finished; no run is written until the score step")
+            print(f"{phase} step finished; no run is written until the score step")
             return 0
         print(f"{'Tier-A' if phase else 'pilot'} run complete: {run_dir}")
         return 0

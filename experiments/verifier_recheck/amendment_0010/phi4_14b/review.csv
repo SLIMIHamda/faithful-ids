@@ -1,0 +1,1819 @@
+﻿item,evidence,draft,old_model,old_verdict,old_reply,new_model,new_verdict,new_reply,author_reasons_checked,author_rejection_wrong
+1,"1. act_data_pkt_fwd (increases DDoS score, magnitude 1.2414)
+2. Bwd Packet Length Mean (increases DDoS score, magnitude 1.0446)
+3. Fwd Packet Length Max (increases DDoS score, magnitude 0.9458)
+4. Init_Win_bytes_backward (increases DDoS score, magnitude 0.9235)
+5. Average Packet Size (increases DDoS score, magnitude 0.8276)","The model predicts the class **DDoS** based on the following features, each of which contributes to increasing the DDoS score:
+
+1. **act_data_pkt_fwd**: This feature indicates the presence of forward packets carrying actual payload data. A non-zero value suggests that data is being actively transmitted, which is characteristic of DDoS attacks where large volumes of traffic are sent to overwhelm a target.
+
+2. **Bwd Packet Length Mean**: The mean size of backward packets is elevated, which can indicate responses to scan probes or ongoing communication. Near-zero values are typically associated with unanswered probes, but in this case, the increased magnitude suggests active interaction consistent with DDoS activity.
+
+3. **Fwd Packet Length Max**: The largest forward packet size is increased, suggesting that larger packets are being sent, which is typical in DDoS attacks where the goal is to overwhelm the target with high-volume traffic.
+
+4. **Init_Win_bytes_backward**: The server's initial TCP window size is non-zero, indicating that a handshake was completed. This is consistent with DDoS attacks where the attacker establishes connections and then floods the target with traffic.
+
+5. **Average Packet Size**: The mean packet size is increased, suggesting that the traffic involves larger data transfers, which is often seen in DDoS attacks where the objective is to saturate network resources.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_backward"" is mentioned in the draft but not in the evidence.
+- The direction for ""Bwd Packet Length Mean"" is incorrect; it should be an increase, not a decrease.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: `act_data_pkt_fwd`, `Bwd Packet Length Mean`, `Fwd Packet Length Max`, `Init_Win_bytes_backward`, and `Average Packet Size`.
+   - All these features are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - `act_data_pkt_fwd`: Increases DDoS score (matches evidence).
+   - `Bwd Packet Length Mean`: Increases DDoS score (matches evidence).
+   - `Fwd Packet Length Max`: Increases DDoS score (matches evidence).
+   - `Init_Win_bytes_backward`: Increases DDoS score (matches evidence).
+   - `Average Packet Size`: Increases DDoS score (matches evidence).
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features, only their direction of influence (increasing the DDoS score). Therefore, there are no unsupported or invented magnitude claims.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+2,"1. act_data_pkt_fwd (increases DDoS score, magnitude 1.2214)
+2. Bwd Packet Length Mean (increases DDoS score, magnitude 1.0439)
+3. Fwd Packet Length Max (increases DDoS score, magnitude 0.9466)
+4. Average Packet Size (increases DDoS score, magnitude 0.8301)
+5. Init_Win_bytes_backward (increases DDoS score, magnitude 0.7464)","The model predicts the class **DDoS** based on the following features, each of which contributes to increasing the DDoS score:
+
+1. **act_data_pkt_fwd**: This feature indicates the presence of forward packets carrying actual payload data. A non-zero value suggests that data is being actively transmitted, which is characteristic of DDoS attacks where large volumes of traffic are sent to overwhelm a target.
+
+2. **Bwd Packet Length Mean**: The mean size of backward packets is elevated, which can indicate responses to scan probes or ongoing communication. Near-zero values are typically associated with unanswered probes, but in this case, the increased magnitude suggests active interaction consistent with DDoS activity.
+
+3. **Fwd Packet Length Max**: The largest forward packet size is increased, suggesting that larger packets are being sent by the source. This is typical in DDoS attacks where the attacker sends large payloads to overwhelm the target's bandwidth.
+
+4. **Average Packet Size**: The average packet size is increased, indicating that the flow involves larger data transfers. This is consistent with DDoS attacks that involve high-volume traffic rather than small control or probe packets.
+
+5. **Init_Win_bytes_backward**: The server's initial TCP window size is non-zero, indicating that a handshake was completed. This suggests that the traffic is not just probes or unanswered attempts, but actual communication, which aligns with the behavior of DDoS attacks that establish connections to flood the target.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The magnitude for Bwd Packet Length Mean is invented.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: `act_data_pkt_fwd`, `Bwd Packet Length Mean`, `Fwd Packet Length Max`, `Average Packet Size`, and `Init_Win_bytes_backward`.
+   - All these features are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - `act_data_pkt_fwd`: Increases DDoS score (matches evidence).
+   - `Bwd Packet Length Mean`: Increases DDoS score (matches evidence).
+   - `Fwd Packet Length Max`: Increases DDoS score (matches evidence).
+   - `Average Packet Size`: Increases DDoS score (matches evidence).
+   - `Init_Win_bytes_backward`: Increases DDoS score (matches evidence).
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features, only their direction of influence (increasing the DDoS score). Therefore, there are no unsupported or invented magnitude claims.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+3,"1. act_data_pkt_fwd (increases DDoS score, magnitude 1.2209)
+2. Bwd Packet Length Mean (increases DDoS score, magnitude 1.0468)
+3. Fwd Packet Length Max (increases DDoS score, magnitude 0.9463)
+4. Init_Win_bytes_backward (increases DDoS score, magnitude 0.9312)
+5. Average Packet Size (increases DDoS score, magnitude 0.8271)","The model predicts the class **DDoS** based on the following features, each of which contributes to increasing the DDoS score:
+
+1. **act_data_pkt_fwd**: This feature indicates the presence of forward packets carrying actual payload data. A non-zero value suggests that data is being actively transmitted, which is characteristic of DDoS attacks where large volumes of traffic are sent to overwhelm a target.
+
+2. **Bwd Packet Length Mean**: The mean size of backward packets is elevated, which can indicate responses to scan probes or ongoing communication. Near-zero values are typically associated with unanswered probes, but in this case, the increased magnitude suggests active interaction consistent with DDoS activity.
+
+3. **Fwd Packet Length Max**: The largest forward packet size is increased, suggesting that larger packets are being sent, which is typical in DDoS attacks where the goal is to overwhelm the target with high-volume traffic.
+
+4. **Init_Win_bytes_backward**: The server's initial TCP window size is non-zero, indicating that a handshake was completed. This is consistent with DDoS attacks where the attacker establishes connections and then floods the target with traffic.
+
+5. **Average Packet Size**: The mean packet size is increased, suggesting that the traffic involves larger data transfers, which is often seen in DDoS attacks where the objective is to saturate network resources.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The magnitude for ""Bwd Packet Length Mean"" is invented.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: `act_data_pkt_fwd`, `Bwd Packet Length Mean`, `Fwd Packet Length Max`, `Init_Win_bytes_backward`, and `Average Packet Size`.
+   - All these features are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - `act_data_pkt_fwd`: Increases DDoS score (matches evidence).
+   - `Bwd Packet Length Mean`: Increases DDoS score (matches evidence).
+   - `Fwd Packet Length Max`: Increases DDoS score (matches evidence).
+   - `Init_Win_bytes_backward`: Increases DDoS score (matches evidence).
+   - `Average Packet Size`: Increases DDoS score (matches evidence).
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features, only their direction of influence (increasing the DDoS score). Therefore, there are no unsupported or invented magnitude claims.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+4,"1. Total Length of Fwd Packets (increases PortScan score, magnitude 2.0036)
+2. Flow Bytes/s (increases PortScan score, magnitude 1.6570)
+3. Bwd Packets/s (increases PortScan score, magnitude 1.6476)
+4. Flow IAT Min (increases PortScan score, magnitude 1.1730)
+5. Flow Duration (increases PortScan score, magnitude 1.0966)","The model's prediction of **PortScan** is supported by several key features that align with the characteristics of scanning behavior:
+
+- **Total Length of Fwd Packets** increases the PortScan score. This feature reflects the total bytes sent from source to destination. Large values suggest bulk data transfer, which can be associated with exfiltration or scanning activities, both of which are indicative of PortScan.
+
+- **Flow Bytes/s** increases the PortScan score. High byte throughput is often linked to volumetric traffic, such as DDoS attacks, which can include scanning behavior as part of a broader attack strategy.
+
+- **Bwd Packets/s** increases the PortScan score. A high forward packet rate with a lower backward rate suggests one-sided traffic, which is characteristic of scanning or probing activities where the source initiates a large number of requests without receiving significant responses.
+
+- **Flow IAT Min** increases the PortScan score. A short minimum inter-arrival time between packets indicates bursty traffic, which is typical of flood-like behavior or rapid scanning, both of which are consistent with PortScan.
+
+- **Flow Duration** increases the PortScan score. Unusually short or long flow durations can signal scanning or flooding behavior, as these activities often involve rapid initiation and termination of network flows.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The direction of the impact for Total Length of Fwd Packets is incorrect; it should increase the PortScan score, not decrease it.
+- The magnitude for Total Length of Fwd Packets is invented and not supported by the evidence.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: Total Length of Fwd Packets, Flow Bytes/s, Bwd Packets/s, Flow IAT Min, and Flow Duration.
+   - The evidence lists: Total Length of Fwd Packets, Flow Bytes/s, Bwd Packets/s, Flow IAT Min, and Flow Duration.
+   - All features mentioned in the draft are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Total Length of Fwd Packets: Increases PortScan score (matches evidence).
+   - Flow Bytes/s: Increases PortScan score (matches evidence).
+   - Bwd Packets/s: Increases PortScan score (matches evidence).
+   - Flow IAT Min: Increases PortScan score (matches evidence).
+   - Flow Duration: Increases PortScan score (matches evidence).
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention any specific magnitudes for the features, only the direction of their impact on the PortScan score.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+5,"1. Total Length of Fwd Packets (increases PortScan score, magnitude 2.0245)
+2. Bwd Packets/s (increases PortScan score, magnitude 1.9783)
+3. Flow Duration (increases PortScan score, magnitude 1.2232)
+4. min_seg_size_forward (increases PortScan score, magnitude 1.0139)
+5. Flow Bytes/s (increases PortScan score, magnitude 0.8425)","The model's prediction of **PortScan** is supported by several key features that align with the characteristics of scanning behavior in network flows.
+
+- **Total Length of Fwd Packets** increases the PortScan score. This feature reflects the total bytes sent from the source to the destination. Large values suggest bulk data transfer, which can be associated with exfiltration or scanning activities, as these often involve significant data movement during probing.
+  
+- **Bwd Packets/s** also increases the PortScan score. This feature measures the packet rate from the destination. A high forward rate with a low backward rate indicates one-sided traffic, which is typical of scanning behavior where the attacker sends probes but receives minimal responses.
+
+- **Flow Duration** increases the PortScan score. The total duration of the flow can be unusually short or long in scanning activities. Short durations may indicate rapid probing, while long durations could suggest sustained scanning or flooding.
+
+- **min_seg_size_forward** increases the PortScan score. This feature represents the minimum size of forward segments observed. Constant minimal values suggest uniform packet crafting, which is often used in automated scanning tools to maintain consistency in probe packets.
+
+- **Flow Bytes/s** increases the PortScan score. This feature indicates the byte throughput of the flow. High values are typically associated with volumetric traffic, which can be a sign of distributed denial-of-service (D)DoS attacks or scanning activities involving large data transfers.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The magnitude for ""Total Length of Fwd Packets"" is invented.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: Total Length of Fwd Packets, Bwd Packets/s, Flow Duration, min_seg_size_forward, and Flow Bytes/s.
+   - All these features are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Total Length of Fwd Packets: Increases the PortScan score. (Matches evidence)
+   - Bwd Packets/s: Increases the PortScan score. (Matches evidence)
+   - Flow Duration: Increases the PortScan score. (Matches evidence)
+   - min_seg_size_forward: Increases the PortScan score. (Matches evidence)
+   - Flow Bytes/s: Increases the PortScan score. (Matches evidence)
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention any specific magnitudes for the features, only the direction of their impact on the PortScan score.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+6,"1. Total Length of Fwd Packets (increases PortScan score, magnitude 2.0198)
+2. Bwd Packets/s (increases PortScan score, magnitude 1.3595)
+3. min_seg_size_forward (increases PortScan score, magnitude 1.0676)
+4. Init_Win_bytes_forward (increases PortScan score, magnitude 0.9625)
+5. Flow Bytes/s (increases PortScan score, magnitude 0.8211)","The model predicts **PortScan** based on the following features:
+
+1. **Total Length of Fwd Packets** increases the PortScan score. This feature reflects the total bytes sent from the source to the destination. A high value suggests bulk data transfer, which is often associated with scanning activity as it may indicate probing or exfiltration behavior.
+
+2. **Bwd Packets/s** increases the PortScan score. This feature measures the packet rate from the destination. A high forward rate with a low backward rate indicates one-sided traffic, which is characteristic of scanning activity where the source initiates a large number of probes while receiving minimal responses.
+
+3. **min_seg_size_forward** increases the PortScan score. This feature represents the minimum size of forward segments observed. Constant minimal values suggest uniform packet sizes, which are indicative of crafted packets from a single tool, commonly seen in scanning activities.
+
+4. **Init_Win_bytes_forward** increases the PortScan score. This feature indicates the client's initial TCP window size. Fixed, unusual values can reveal crafted traffic, as they may signal a lack of proper handshake or the use of specific tools that generate consistent window sizes during scanning.
+
+5. **Flow Bytes/s** increases the PortScan score. This feature measures the byte throughput of the flow. High values are associated with volumetric traffic, which can be a sign of scanning or distributed denial-of-service (D)DoS attacks, both of which are related to PortScan.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Total Length of Fwd Packets magnitude claim is unsupported.
+- Bwd Packets/s magnitude claim is unsupported.
+- min_seg_size_forward magnitude claim is unsupported.
+- Init_Win_bytes_forward magnitude claim is unsupported.
+- Flow Bytes/s magnitude claim is unsupported.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: Total Length of Fwd Packets, Bwd Packets/s, min_seg_size_forward, Init_Win_bytes_forward, and Flow Bytes/s.
+   - All these features are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Total Length of Fwd Packets: Increases the score (matches evidence).
+   - Bwd Packets/s: Increases the score (matches evidence).
+   - min_seg_size_forward: Increases the score (matches evidence).
+   - Init_Win_bytes_forward: Increases the score (matches evidence).
+   - Flow Bytes/s: Increases the score (matches evidence).
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention any specific magnitudes for the features, only the direction of their impact (increase in score).
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+7,"1. Bwd Header Length (increases BENIGN score, magnitude 1.1856)
+2. Total Length of Bwd Packets (increases BENIGN score, magnitude 0.8424)
+3. Packet Length Std (increases BENIGN score, magnitude 0.6395)
+4. Packet Length Mean (decreases BENIGN score, magnitude 0.4583)
+5. Flow IAT Min (increases BENIGN score, magnitude 0.3330)","The model predicts the class as **BENIGN**, supported by the following features:
+
+- **Bwd Header Length** increases the BENIGN score. This suggests the presence of header-only reply streams, which are characteristic of acknowledgment or reset traffic without content—common in benign network behavior.
+- **Total Length of Bwd Packets** increases the BENIGN score. This indicates near-zero replies against non-trivial forward traffic, which may suggest unanswered probes or refused services, often associated with benign network activity.
+- **Packet Length Std** increases the BENIGN score. A near-zero deviation in packet sizes indicates uniform machine-generated packets, a pattern typical of benign traffic.
+- **Flow IAT Min** increases the BENIGN score. Near-zero minima in the shortest gap between consecutive packets suggest back-to-back packet bursts, which are characteristic of flood-like behavior but not necessarily malicious in this context.
+
+These features collectively support the prediction of the **BENIGN** class.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Flow IAT Min"" increases the BENIGN score, but the explanation states it suggests back-to-back packet bursts, which are characteristic of flood-like behavior but not necessarily malicious. This is a misinterpretation of the feature's direction.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: Bwd Header Length, Total Length of Bwd Packets, Packet Length Std, Packet Length Mean, and Flow IAT Min.
+   - The evidence lists: Bwd Header Length, Total Length of Bwd Packets, Packet Length Std, Packet Length Mean, and Flow IAT Min.
+   - All features mentioned in the draft are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **Bwd Header Length**: Draft states it increases the BENIGN score. Evidence shows it increases the BENIGN score. (Match)
+   - **Total Length of Bwd Packets**: Draft states it increases the BENIGN score. Evidence shows it increases the BENIGN score. (Match)
+   - **Packet Length Std**: Draft states it increases the BENIGN score. Evidence shows it increases the BENIGN score. (Match)
+   - **Packet Length Mean**: Draft states it decreases the BENIGN score. Evidence shows it decreases the BENIGN score. (Match)
+   - **Flow IAT Min**: Draft states it increases the BENIGN score. Evidence shows it increases the BENIGN score. (Match)
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention specific magnitudes for any of the features. It only discusses the direction of influence (increase or decrease) on the BENIGN score.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+**SUPPORTED**",,
+8,"1. Init_Win_bytes_forward (increases BENIGN score, magnitude 1.9411)
+2. Bwd Packet Length Min (increases BENIGN score, magnitude 0.8581)
+3. Fwd Packet Length Max (increases BENIGN score, magnitude 0.5584)
+4. Total Length of Bwd Packets (increases BENIGN score, magnitude 0.5326)
+5. Flow IAT Min (increases BENIGN score, magnitude 0.5261)","The predicted class is **BENIGN**, supported by the following features:
+
+- **Init_Win_bytes_forward** increases the BENIGN score. This feature reflects the client's initial TCP window size, which is often a fixed value in crafted traffic. A proper handshake is typically required for this value, and its presence suggests a legitimate, non-malicious connection.
+
+- **Bwd Packet Length Min** increases the BENIGN score. This feature indicates the smallest packet sent by the destination. Minimal-only replies are characteristic of acknowledgment or rejection traffic without payload, which is typical of benign communication.
+
+- **Fwd Packet Length Max** increases the BENIGN score. This feature represents the largest packet sent by the source. Small maxima suggest no real payload was carried, which is common in scans or control-only traffic, both of which are generally benign in nature.
+
+- **Total Length of Bwd Packets** increases the BENIGN score. This feature measures the total bytes sent from the destination to the source. Near-zero values in response to non-trivial forward traffic suggest unanswered probes or refused services, which are often benign in context.
+
+- **Flow IAT Min** increases the BENIGN score. This feature captures the shortest gap between consecutive packets. Near-zero minima indicate back-to-back packet bursts, which are characteristic of flood-like traffic but not necessarily malicious, and can occur in benign scenarios.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Flow IAT Min"" mentioned in the draft is not present in the evidence.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: 
+     - Init_Win_bytes_forward
+     - Bwd Packet Length Min
+     - Fwd Packet Length Max
+     - Total Length of Bwd Packets
+     - Flow IAT Min
+
+   - The evidence lists:
+     - Init_Win_bytes_forward
+     - Bwd Packet Length Min
+     - Fwd Packet Length Max
+     - Total Length of Bwd Packets
+     - Flow IAT Min
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Init_Win_bytes_forward: Increases BENIGN score (matches evidence)
+   - Bwd Packet Length Min: Increases BENIGN score (matches evidence)
+   - Fwd Packet Length Max: Increases BENIGN score (matches evidence)
+   - Total Length of Bwd Packets: Increases BENIGN score (matches evidence)
+   - Flow IAT Min: Increases BENIGN score (matches evidence)
+
+   All directions match the evidence.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention specific magnitudes for any of the features. It only states the direction of influence (increase in BENIGN score) without quantifying it.
+
+   Since there are no magnitude claims made in the draft, there are no unsupported or invented magnitude claims.  
+   **Answer: No**
+
+Given that all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+9,"1. Init_Win_bytes_backward (increases Web Attack score, magnitude 4.9303)
+2. Fwd IAT Min (increases Web Attack score, magnitude 4.6244)
+3. Flow IAT Min (increases Web Attack score, magnitude 0.8104)
+4. Fwd IAT Std (increases Web Attack score, magnitude 0.3451)
+5. Flow IAT Mean (increases Web Attack score, magnitude 0.2886)","The model predicts **Web Attack** based on the following features, each of which increases the Web Attack score:
+
+1. **Init_Win_bytes_backward** indicates the server's initial TCP window size. A value of -1 suggests the destination never completed a handshake, which is typical of unanswered or refused probes—common in probing behavior associated with web attacks.
+
+2. **Fwd IAT Min** represents the shortest gap in the source's sending. A near-zero value suggests packet bursts, which are indicative of attack tools sending traffic in rapid succession, a pattern often seen in web attacks.
+
+3. **Flow IAT Min** refers to the shortest gap between consecutive packets. A near-zero minimum indicates back-to-back packet bursts, a characteristic of flooding attacks, which are frequently associated with web-based intrusions.
+
+4. **Fwd IAT Std** measures the jitter of the source's packet timing. A near-zero value suggests automated, fixed-rate sending, which is consistent with botnet or automated attack traffic rather than human-driven behavior.
+
+5. **Flow IAT Mean** is the mean time between consecutive packets in the flow. A very small value indicates flooding, a behavior strongly linked to web attack scenarios.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Flow IAT Min"" is missing in the draft.
+- Magnitude claim for ""Flow IAT Min"" is invented.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: Init_Win_bytes_backward, Fwd IAT Min, Flow IAT Min, Fwd IAT Std, and Flow IAT Mean.
+   - The evidence lists these same features: Init_Win_bytes_backward, Fwd IAT Min, Flow IAT Min, Fwd IAT Std, and Flow IAT Mean.
+   - **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - All features in the draft are described as increasing the Web Attack score.
+   - The evidence confirms that each feature increases the Web Attack score.
+   - **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features; it only describes the qualitative impact of each feature on the Web Attack score.
+   - Since no specific magnitudes are claimed in the draft, there are no unsupported or invented magnitude claims.
+   - **Answer:** No
+
+Based on the evaluation:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+The draft explanation is adequately supported by the evidence.
+
+**Verdict:**
+
+```
+SUPPORTED
+```",,
+10,"1. Init_Win_bytes_backward (increases Web Attack score, magnitude 4.9768)
+2. Fwd IAT Min (increases Web Attack score, magnitude 4.5783)
+3. Flow IAT Min (increases Web Attack score, magnitude 0.8800)
+4. Fwd IAT Std (increases Web Attack score, magnitude 0.3544)
+5. Flow IAT Max (increases Web Attack score, magnitude 0.2741)","The model predicts **Web Attack** based on the following features, each of which increases the Web Attack score:
+
+1. **Init_Win_bytes_backward** indicates the server's initial TCP window size. A value of -1 suggests the destination never completed a handshake, which is typical of unanswered or refused probes—common in probing behavior associated with web attacks.
+
+2. **Fwd IAT Min** represents the shortest gap in the source's sending. A near-zero value suggests packet bursts, which are indicative of attack tools sending traffic in rapid succession, a pattern often seen in web attacks.
+
+3. **Flow IAT Min** refers to the shortest gap between consecutive packets. A near-zero minimum indicates back-to-back packet bursts, a characteristic of flood-like traffic often observed in web-based attacks.
+
+4. **Fwd IAT Std** measures the jitter of the source's packet timing. A near-zero value suggests automated, fixed-rate sending, which is consistent with botnet or automated attack traffic rather than human-driven behavior.
+
+5. **Flow IAT Max** represents the longest gap between consecutive packets. Large gaps may indicate idle-and-resume behavior, which is typical of keep-alive or command-and-control channels used in web attack scenarios.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Flow IAT Max"" is mentioned in the draft but not in the evidence.
+- The direction for ""Flow IAT Max"" is incorrectly stated as increasing the Web Attack score when it should be decreasing.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: Init_Win_bytes_backward, Fwd IAT Min, Flow IAT Min, Fwd IAT Std, and Flow IAT Max.
+   - The evidence lists these same features: Init_Win_bytes_backward, Fwd IAT Min, Flow IAT Min, Fwd IAT Std, and Flow IAT Max.
+   - **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - All features in the draft are described as increasing the Web Attack score.
+   - The evidence confirms that each feature increases the Web Attack score.
+   - **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features; it only describes their impact qualitatively.
+   - Since no specific magnitudes are claimed in the draft, there are no unsupported or invented magnitude claims.
+   - **Answer:** No
+
+Given that checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+- `SUPPORTED`",,
+11,"1. Init_Win_bytes_forward (increases BENIGN score, magnitude 2.0328)
+2. Fwd Packet Length Max (increases BENIGN score, magnitude 0.7386)
+3. Bwd Packet Length Min (increases BENIGN score, magnitude 0.7309)
+4. Total Length of Bwd Packets (increases BENIGN score, magnitude 0.5253)
+5. Average Packet Size (increases BENIGN score, magnitude 0.3668)","The predicted class is **BENIGN**, supported by the following features:
+
+- **Init_Win_bytes_forward** increases the BENIGN score. This feature reflects the client's initial TCP window size, which is often a fixed value in crafted traffic. A proper handshake typically sets this value, and its presence suggests a legitimate, non-malicious connection.
+
+- **Fwd Packet Length Max** increases the BENIGN score. This feature indicates the largest packet sent by the source. Small maxima suggest no real payload was carried, which is typical of scans or control-only traffic, both of which are benign in nature.
+
+- **Bwd Packet Length Min** increases the BENIGN score. This feature represents the smallest packet sent by the destination. Minimal-only replies often indicate acknowledgment or rejection traffic without payload, which is consistent with benign behavior.
+
+- **Total Length of Bwd Packets** increases the BENIGN score. This feature measures the total bytes sent from the destination to the source. Near-zero values against non-trivial forward traffic suggest unanswered probes or refused services, which are common in benign network interactions.
+
+- **Average Packet Size** increases the BENIGN score. This feature reflects the mean bytes per packet across the flow. Small averages are indicative of control or probe traffic, which are typically benign.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Total Length of Bwd Packets"" is missing in the evidence.
+- Magnitude claim for ""Init_Win_bytes_forward"" is unsupported.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: 
+     - Init_Win_bytes_forward
+     - Fwd Packet Length Max
+     - Bwd Packet Length Min
+     - Total Length of Bwd Packets
+     - Average Packet Size
+
+   - All these features are present in the evidence. 
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - The draft states that each feature increases the BENIGN score, which matches the evidence that each feature increases the BENIGN score.
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention any specific magnitudes for the features, only that they increase the BENIGN score. Therefore, there are no unsupported or invented magnitude claims.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+12,"1. Fwd PSH Flags (increases FTP-Patator score, magnitude 4.6172)
+2. Avg Fwd Segment Size (increases FTP-Patator score, magnitude 4.3261)
+3. Init_Win_bytes_forward (increases FTP-Patator score, magnitude 1.7538)
+4. Packet Length Std (increases FTP-Patator score, magnitude 1.3093)
+5. Fwd Packet Length Std (increases FTP-Patator score, magnitude 1.1351)","The prediction of **FTP-Patator** is supported by several key features that align with the behavior of this class:
+
+- **Fwd PSH Flags** increases the FTP-Patator score. This feature reflects the count of TCP PSH flags set by the source, which is typical of interactive tools and credential-stuffing clients—behavior commonly associated with FTP-Patator.
+  
+- **Avg Fwd Segment Size** increases the FTP-Patator score. This feature indicates the mean payload segment size, and small segments are often seen in credential-guessing or command traffic, which is characteristic of FTP-Patator.
+
+- **Init_Win_bytes_forward** increases the FTP-Patator score. This feature represents the client's initial TCP window size, and unusual fixed values can reveal crafted traffic, a sign of automated or malicious tools like FTP-Patator.
+
+- **Packet Length Std** increases the FTP-Patator score. This feature measures the variability of packet sizes over the flow. Near-zero deviation suggests uniform machine-generated packets, a pattern often observed in automated attacks such as those carried out by FTP-Patator.
+
+- **Fwd Packet Length Std** increases the FTP-Patator score. This feature reflects the variability of forward packet sizes, and near-zero deviation indicates uniform packet generation, typical of bots, floods, and brute-force tools like FTP-Patator.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Avg Fwd Segment Size"" is missing in the evidence.
+- Magnitude claim for ""Avg Fwd Segment Size"" is unsupported.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: Fwd PSH Flags, Avg Fwd Segment Size, Init_Win_bytes_forward, Packet Length Std, and Fwd Packet Length Std.
+   - The evidence lists: Fwd PSH Flags, Avg Fwd Segment Size, Init_Win_bytes_forward, Packet Length Std, and Fwd Packet Length Std.
+   - All features mentioned in the draft are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Fwd PSH Flags: Increases score (matches evidence)
+   - Avg Fwd Segment Size: Increases score (matches evidence)
+   - Init_Win_bytes_forward: Increases score (matches evidence)
+   - Packet Length Std: Increases score (matches evidence)
+   - Fwd Packet Length Std: Increases score (matches evidence)
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention any specific magnitudes for the features, only the direction of their impact (increase).
+   - Since no magnitudes are claimed in the draft, there are no unsupported or invented magnitude claims.
+
+   **Answer:** No
+
+Based on the evaluation:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+The draft passes all checks.
+
+**Verdict:** `SUPPORTED`",,
+13,"1. Fwd PSH Flags (increases FTP-Patator score, magnitude 4.6172)
+2. Avg Fwd Segment Size (increases FTP-Patator score, magnitude 4.3261)
+3. Init_Win_bytes_forward (increases FTP-Patator score, magnitude 1.7538)
+4. Packet Length Std (increases FTP-Patator score, magnitude 1.3214)
+5. Fwd Packet Length Std (increases FTP-Patator score, magnitude 1.1351)","The prediction of **FTP-Patator** is supported by several key features that align with the behavior of this class:
+
+- **Fwd PSH Flags** increases the FTP-Patator score. This feature reflects the count of TCP PSH flags set by the source, which is typical of interactive tools and credential-stuffing clients—behavior commonly associated with FTP-Patator.
+  
+- **Avg Fwd Segment Size** increases the FTP-Patator score. This feature indicates the mean payload segment size, and small segments are often seen in credential-guessing or command traffic, which is characteristic of FTP-Patator.
+
+- **Init_Win_bytes_forward** increases the FTP-Patator score. This feature represents the client's initial TCP window size, and unusual fixed values can reveal crafted traffic, a sign of automated or malicious tools like FTP-Patator.
+
+- **Packet Length Std** increases the FTP-Patator score. This feature measures the variability of packet sizes over the flow. Near-zero deviation suggests uniform machine-generated packets, a pattern often observed in automated attacks such as those carried out by FTP-Patator.
+
+- **Fwd Packet Length Std** increases the FTP-Patator score. This feature reflects the variability of forward packet sizes, and near-zero deviation indicates uniform packet generation, typical of bots, floods, and brute-force tools like FTP-Patator.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Avg Fwd Segment Size"" direction mismatch: should increase, not decrease.
+- Invented magnitude claim: no specific magnitude provided for features.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: Fwd PSH Flags, Avg Fwd Segment Size, Init_Win_bytes_forward, Packet Length Std, and Fwd Packet Length Std.
+   - The evidence lists: Fwd PSH Flags, Avg Fwd Segment Size, Init_Win_bytes_forward, Packet Length Std, and Fwd Packet Length Std.
+   - All features mentioned in the draft are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Fwd PSH Flags: Increases score (matches evidence)
+   - Avg Fwd Segment Size: Increases score (matches evidence)
+   - Init_Win_bytes_forward: Increases score (matches evidence)
+   - Packet Length Std: Increases score (matches evidence)
+   - Fwd Packet Length Std: Increases score (matches evidence)
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention any specific magnitudes for the features, only the direction of their impact (increase).
+   - Since no magnitudes are claimed in the draft, there are no unsupported or invented magnitude claims.
+
+   **Answer:** No
+
+Based on the evaluation:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+The draft passes all checks.
+
+**Verdict:** `SUPPORTED`",,
+14,"1. Init_Win_bytes_backward (decreases BENIGN score, magnitude 1.2187)
+2. Init_Win_bytes_forward (decreases BENIGN score, magnitude 0.7701)
+3. Fwd Packet Length Max (increases BENIGN score, magnitude 0.7453)
+4. Packet Length Mean (decreases BENIGN score, magnitude 0.4735)
+5. Bwd Header Length (increases BENIGN score, magnitude 0.4309)","The model predicts the class as **BENIGN**, supported by the following features:
+
+- **Fwd Packet Length Max** increases the BENIGN score. This suggests the flow involves large packets, which is typical of normal, payload-carrying traffic rather than scans or control-only activity.
+- **Bwd Header Length** increases the BENIGN score. This indicates the presence of header-only traffic in the reverse direction, which is characteristic of acknowledgment or reset responses—common in benign, structured communication.
+
+Conversely, features that decrease the BENIGN score include:
+- **Init_Win_bytes_backward** decreases the BENIGN score. This suggests the destination did not complete a proper handshake, which is typical of unanswered or refused probes, often associated with malicious activity.
+- **Init_Win_bytes_forward** decreases the BENIGN score. A fixed or unusual value here may indicate a stack or tool fingerprint, suggesting crafted or non-standard traffic.
+- **Packet Length Mean** decreases the BENIGN score. A small average packet size indicates control or probe traffic, which is less likely to be benign.
+
+These feature effects align with the model's prediction of **BENIGN**, considering both the presence of normal traffic patterns and the absence of strong indicators of malicious behavior.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The magnitude for Fwd Packet Length Max is invented.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - Features mentioned in the draft: 
+     - Fwd Packet Length Max
+     - Bwd Header Length
+     - Init_Win_bytes_backward
+     - Init_Win_bytes_forward
+     - Packet Length Mean
+
+   - Features in the evidence:
+     - Init_Win_bytes_backward
+     - Init_Win_bytes_forward
+     - Fwd Packet Length Max
+     - Packet Length Mean
+     - Bwd Header Length
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Fwd Packet Length Max: Increases BENIGN score (matches evidence)
+   - Bwd Header Length: Increases BENIGN score (matches evidence)
+   - Init_Win_bytes_backward: Decreases BENIGN score (matches evidence)
+   - Init_Win_bytes_forward: Decreases BENIGN score (matches evidence)
+   - Packet Length Mean: Decreases BENIGN score (matches evidence)
+
+   The directions stated in the draft match the signs of the corresponding attributions in the evidence.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft does not make any specific claims about the magnitudes of the feature attributions. It only discusses the direction (increase or decrease) of the impact on the BENIGN score.  
+   **Answer: No**
+
+Since all checks are satisfied, the draft explanation is adequately supported by the evidence.
+
+**Verdict:**
+
+```
+SUPPORTED
+```",,
+15,"1. Init_Win_bytes_backward (increases SSH-Patator score, magnitude 6.4185)
+2. Init_Win_bytes_forward (increases SSH-Patator score, magnitude 5.9789)
+3. URG Flag Count (increases SSH-Patator score, magnitude 3.4302)
+4. Bwd Packets/s (increases SSH-Patator score, magnitude 0.6971)
+5. Flow IAT Min (increases SSH-Patator score, magnitude 0.5204)","The predicted class is **SSH-Patator**, supported by the following features:
+
+- **Init_Win_bytes_backward** increases the SSH-Patator score. This feature reflects the server's initial TCP window size, and a value of -1 indicates a failed or refused handshake, which is typical of probing behavior seen in SSH-Patator attacks.
+  
+- **Init_Win_bytes_forward** increases the SSH-Patator score. This feature represents the client's initial TCP window size. Unusual or fixed values here can indicate crafted traffic, such as that used in SSH-Patator, which often involves tool fingerprints to evade detection.
+
+- **URG Flag Count** increases the SSH-Patator score. A non-zero count of URG flags in both directions is anomalous in modern benign traffic, suggesting deliberate manipulation of TCP headers, a characteristic of SSH-Patator.
+
+- **Bwd Packets/s** increases the SSH-Patator score. A low backward packet rate against a high forward rate indicates one-sided traffic, which is consistent with the behavior of SSH-Patator, where the attacker sends a high volume of packets without receiving a matching response.
+
+- **Flow IAT Min** increases the SSH-Patator score. A near-zero minimum inter-arrival time between consecutive packets indicates back-to-back bursts, a hallmark of flood-based attacks like SSH-Patator.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Magnitude claims for all features are unsupported (check 3).",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: `Init_Win_bytes_backward`, `Init_Win_bytes_forward`, `URG Flag Count`, `Bwd Packets/s`, and `Flow IAT Min`.
+   - All these features are present in the evidence list.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - `Init_Win_bytes_backward`: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+   - `Init_Win_bytes_forward`: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+   - `URG Flag Count`: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+   - `Bwd Packets/s`: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+   - `Flow IAT Min`: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention specific magnitudes for any of the features. It only states that each feature increases the SSH-Patator score without quantifying the magnitude.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+16,"1. Bwd Header Length (increases SSH-Patator score, magnitude 5.7187)
+2. Total Length of Bwd Packets (increases SSH-Patator score, magnitude 4.9447)
+3. Init_Win_bytes_backward (increases SSH-Patator score, magnitude 2.9159)
+4. Fwd IAT Min (increases SSH-Patator score, magnitude 2.1432)
+5. Fwd Packet Length Std (increases SSH-Patator score, magnitude 1.1178)","The prediction of **SSH-Patator** is supported by the following features, each of which contributes to increasing the score for this class:
+
+1. **Bwd Header Length**: The increase in this feature suggests the presence of header-only reply streams, which are indicative of acknowledgment or reset traffic without content. This behavior is commonly observed in SSH-Patator attacks, where the attacker sends probes and receives minimal or no data in response.
+
+2. **Total Length of Bwd Packets**: The increase in this feature indicates near-zero replies against non-trivial forward traffic. This pattern is typical of unanswered probes or refused services, which are characteristic of SSH-Patator's scanning behavior.
+
+3. **Init_Win_bytes_backward**: The increase in this feature implies that the destination never completed a handshake, which is typical of unanswered or refused probes. This aligns with the behavior of SSH-Patator, which often initiates connection attempts that are not properly acknowledged.
+
+4. **Fwd IAT Min**: The increase in this feature indicates near-zero gaps between the source's packet sends, suggesting packet bursts. This is a hallmark of automated attack tools like SSH-Patator, which generate rapid, coordinated traffic patterns.
+
+5. **Fwd Packet Length Std**: The increase in this feature indicates near-zero variability in forward packet sizes, which is typical of machine-generated uniform packets. This is a common signature of bots, floods, and brute-force tools, including SSH-Patator.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_backward"" has an unsupported magnitude claim. (Magnitude 2.9159 is not supported by the evidence provided.)",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: Bwd Header Length, Total Length of Bwd Packets, Init_Win_bytes_backward, Fwd IAT Min, and Fwd Packet Length Std.
+   - All these features are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Bwd Header Length: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+   - Total Length of Bwd Packets: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+   - Init_Win_bytes_backward: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+   - Fwd IAT Min: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+   - Fwd Packet Length Std: The draft states it increases the SSH-Patator score, and the evidence confirms it increases the score.
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention specific magnitudes for the features, only the direction of their impact (increase).
+   - Since no specific magnitudes are claimed in the draft, there are no unsupported or invented magnitude claims.
+
+   **Answer:** No
+
+Based on the evaluation:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+The draft passes all checks.
+
+**Verdict:** `SUPPORTED`",,
+17,"1. Init_Win_bytes_backward (increases DoS score, magnitude 2.3357)
+2. Init_Win_bytes_forward (increases DoS score, magnitude 1.9015)
+3. Idle Min (increases DoS score, magnitude 1.2307)
+4. Idle Mean (increases DoS score, magnitude 0.9355)
+5. Bwd Packet Length Std (increases DoS score, magnitude 0.7757)","The model predicts the class **DoS** based on the following features, each of which contributes to increasing the DoS score:
+
+1. **Init_Win_bytes_backward**: This feature increases the DoS score. A high value suggests the destination host never completed a handshake, which is typical of unanswered or refused probes—common in DoS attacks where the server is overwhelmed with invalid or spoofed traffic.
+
+2. **Init_Win_bytes_forward**: This feature also increases the DoS score. Unusual or fixed values in this feature may indicate a stack or tool fingerprint, which can be a sign of crafted traffic used in DoS attacks to mimic legitimate connections.
+
+3. **Idle Min**: This feature increases the DoS score. A short idle gap between bursts of activity may indicate rapid resumption of traffic, which can be characteristic of aggressive probing or scanning behavior seen in DoS attacks.
+
+4. **Idle Mean**: This feature increases the DoS score. Long, regular idle gaps are often associated with periodic beaconing or keep-alive commands, which can be part of sustained DoS activity to maintain connection or probe for vulnerabilities.
+
+5. **Bwd Packet Length Std**: This feature increases the DoS score. A near-zero deviation in backward packet sizes suggests repeated identical server responses, which is often observed in brute-force login attempts or in scenarios where the server is being flooded with identical requests, a hallmark of certain DoS attacks.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_forward"" incorrectly stated as increasing the DoS score when it should decrease it.
+- Magnitude claims for ""Init_Win_bytes_backward"" and ""Init_Win_bytes_forward"" are invented and not supported by the evidence.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the provided evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: 
+     1. Init_Win_bytes_backward
+     2. Init_Win_bytes_forward
+     3. Idle Min
+     4. Idle Mean
+     5. Bwd Packet Length Std
+
+   - The evidence lists the same features in the same order. Therefore, all features mentioned in the draft are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - The draft states that each feature increases the DoS score. The evidence confirms that each feature increases the DoS score.
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention specific magnitudes for the features. It only states that each feature increases the DoS score without quantifying the magnitude of the increase.
+
+   **Answer:** No
+
+Since checks 1 and 2 are ""yes"" and check 3 is ""no,"" the draft is adequately supported by the evidence.
+
+**Verdict:**  
+`SUPPORTED`",,
+18,"1. Init_Win_bytes_backward (increases DoS score, magnitude 2.3006)
+2. Init_Win_bytes_forward (increases DoS score, magnitude 1.7803)
+3. Idle Min (increases DoS score, magnitude 1.0699)
+4. Idle Mean (increases DoS score, magnitude 0.8888)
+5. Bwd Packet Length Std (increases DoS score, magnitude 0.7847)","The model predicts the class **DoS** based on the following features, each of which contributes to increasing the DoS score:
+
+1. **Init_Win_bytes_backward**: This feature increases the DoS score. A high value suggests the destination host never completed a handshake, which is typical of unanswered or refused probes—common in DoS attacks where the server is overwhelmed with invalid or spoofed traffic.
+
+2. **Init_Win_bytes_forward**: This feature also increases the DoS score. Unusual or fixed values in this feature may indicate a stack or tool fingerprint, which can be a sign of crafted traffic used in DoS attacks to mimic legitimate connections.
+
+3. **Idle Min**: This feature increases the DoS score. A short idle gap between bursts of activity may indicate rapid resumption of traffic, which can be characteristic of aggressive probing or scanning behavior seen in DoS attacks.
+
+4. **Idle Mean**: This feature increases the DoS score. A long and regular idle period between activity bursts may suggest periodic beaconing or keep-alive commands, which are often used in sustained DoS attacks to maintain connection persistence.
+
+5. **Bwd Packet Length Std**: This feature increases the DoS score. A near-zero deviation in backward packet sizes suggests repeated identical server responses, which can be indicative of brute-force login attempts or automated probing, both of which are associated with DoS activity.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_forward"" incorrectly stated as increasing the DoS score when it should decrease it.
+- Magnitude claims for ""Init_Win_bytes_backward"" and ""Init_Win_bytes_forward"" are invented and not supported by the evidence.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the provided evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: 
+     1. Init_Win_bytes_backward
+     2. Init_Win_bytes_forward
+     3. Idle Min
+     4. Idle Mean
+     5. Bwd Packet Length Std
+
+   - The evidence lists the same features in the same order. Therefore, all features mentioned in the draft are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - The draft states that each feature increases the DoS score. The evidence confirms that each feature increases the DoS score with positive magnitudes.
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features. It only states the direction (increase) without mentioning specific magnitudes. Therefore, there are no unsupported or invented magnitude claims in the draft.
+
+   **Answer:** No
+
+Based on the evaluation:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+Since checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+```
+SUPPORTED
+```",,
+19,"1. Init_Win_bytes_backward (increases DoS score, magnitude 3.2126)
+2. Bwd Packet Length Std (increases DoS score, magnitude 1.6314)
+3. Init_Win_bytes_forward (increases DoS score, magnitude 1.3605)
+4. Fwd Packet Length Max (increases DoS score, magnitude 0.8354)
+5. Bwd Packets/s (decreases DoS score, magnitude 0.7829)","The model predicts the class **DoS** based on the following features:
+
+1. **Init_Win_bytes_backward** increases the DoS score. This feature reflects the server's initial TCP window size, where a value of -1 indicates the destination never completed a handshake, a pattern typical of unanswered or refused probes, which are common in DoS attacks.
+
+2. **Bwd Packet Length Std** increases the DoS score. A near-zero deviation in backward packet sizes suggests repeated identical server responses, which is characteristic of brute-force login attempts or coordinated attacks, both of which align with DoS behavior.
+
+3. **Init_Win_bytes_forward** increases the DoS score. This feature represents the client's initial TCP window size. Unusual or fixed values here can indicate crafted traffic, such as that seen in DoS attacks, where the client may be using a tool or stack fingerprint to simulate malicious activity.
+
+4. **Fwd Packet Length Max** increases the DoS score. A small maximum packet size suggests no real payload was carried, which is typical of scans or control-only traffic, both of which are often associated with DoS attacks.
+
+5. **Bwd Packets/s** decreases the DoS score. A low backward packet rate compared to a high forward rate indicates one-sided traffic, which may suggest the attack is focused on overwhelming the target with traffic from the source, a hallmark of DoS activity.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_forward"" direction does not match the sign of the corresponding attribution. (increases, but attribution is negative)
+- Magnitude claims for all features are unsupported. (yes/no)",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: 
+     1. Init_Win_bytes_backward
+     2. Bwd Packet Length Std
+     3. Init_Win_bytes_forward
+     4. Fwd Packet Length Max
+     5. Bwd Packets/s
+
+   - The evidence lists:
+     1. Init_Win_bytes_backward
+     2. Bwd Packet Length Std
+     3. Init_Win_bytes_forward
+     4. Fwd Packet Length Max
+     5. Bwd Packets/s
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Init_Win_bytes_backward: Increases DoS score (matches evidence)
+   - Bwd Packet Length Std: Increases DoS score (matches evidence)
+   - Init_Win_bytes_forward: Increases DoS score (matches evidence)
+   - Fwd Packet Length Max: Increases DoS score (matches evidence)
+   - Bwd Packets/s: Decreases DoS score (matches evidence)
+
+   The directions stated in the draft match the signs of the corresponding attributions in the evidence.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not make any specific claims about the magnitudes of the feature attributions. It only discusses the direction (increase or decrease) of the DoS score based on each feature.
+
+   Since there are no magnitude claims made in the draft, there are no unsupported or invented magnitude claims.  
+   **Answer: No**
+
+Given that all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+20,"1. act_data_pkt_fwd (increases DDoS score, magnitude 1.2414)
+2. Bwd Packet Length Mean (increases DDoS score, magnitude 1.0446)
+3. Fwd Packet Length Max (increases DDoS score, magnitude 0.9458)
+4. Init_Win_bytes_backward (increases DDoS score, magnitude 0.9235)
+5. Average Packet Size (increases DDoS score, magnitude 0.8276)","The traffic in question exhibits a pattern strongly aligned with a DDoS attack, as evidenced by several key features that collectively suggest a coordinated effort to overwhelm a target system with volumetric traffic. The flow begins with a high value in **act_data_pkt_fwd**, indicating that the source is actively sending data packets rather than merely probing or initiating a handshake—this increases the DDoS score by showing real payload transmission, a hallmark of sustained attack activity. Complementing this is the **Bwd Packet Length Mean**, which is near-zero, suggesting that the responses from the target are minimal or nonexistent, a common sign of unanswered scan probes or reflexive traffic typical in DDoS scenarios. This further increases the DDoS score by reinforcing the idea that the traffic is not a normal exchange but rather a one-sided attempt to saturate the target. The **Fwd Packet Length Max** is also relatively small, indicating that the largest packets sent by the source are not carrying substantial data, which is characteristic of scan or control traffic rather than legitimate content transfer—this too increases the DDoS score. Similarly, the **Init_Win_bytes_backward** is set to -1, meaning the destination never completed a handshake, a strong indicator of refused or unanswered probes, which again raises the DDoS score by highlighting the lack of normal communication. Finally, the **Average Packet Size** is small, consistent with control or probe traffic rather than data transfer, further increasing the DDoS score. Together, these features paint a picture of a coordinated attack where the source is sending numerous small packets with minimal payload, many of which go unanswered, all contributing to a flood of traffic that aligns with the class profile of a distributed denial-of-service attack.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_backward"" is mentioned in the draft but not in the evidence.
+- The direction of ""act_data_pkt_fwd"" is stated as increasing the DDoS score but the sign is not specified in the evidence. (""increases DDoS score"" vs. ""increases DDoS score, magnitude 1.2414"")",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - **act_data_pkt_fwd**: Present in evidence.
+   - **Bwd Packet Length Mean**: Present in evidence.
+   - **Fwd Packet Length Max**: Present in evidence.
+   - **Init_Win_bytes_backward**: Present in evidence.
+   - **Average Packet Size**: Present in evidence.
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **act_data_pkt_fwd**: Increases DDoS score (matches evidence).
+   - **Bwd Packet Length Mean**: Increases DDoS score (matches evidence).
+   - **Fwd Packet Length Max**: Increases DDoS score (matches evidence).
+   - **Init_Win_bytes_backward**: Increases DDoS score (matches evidence).
+   - **Average Packet Size**: Increases DDoS score (matches evidence).
+
+   All stated directions match the sign of the corresponding attribution.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft does not specify any magnitudes for the features; it only discusses the direction of their impact on the DDoS score. Therefore, there are no unsupported or invented magnitude claims.  
+   **Answer: No**
+
+Since checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+```
+SUPPORTED
+```",,
+21,"1. act_data_pkt_fwd (increases DDoS score, magnitude 1.2214)
+2. Bwd Packet Length Mean (increases DDoS score, magnitude 1.0439)
+3. Fwd Packet Length Max (increases DDoS score, magnitude 0.9466)
+4. Average Packet Size (increases DDoS score, magnitude 0.8301)
+5. Init_Win_bytes_backward (increases DDoS score, magnitude 0.7464)","The traffic in question exhibits characteristics strongly aligned with a DDoS attack, as evidenced by a series of features that collectively suggest a coordinated effort to overwhelm a target system with volumetric traffic. The flow begins with a high value in **act_data_pkt_fwd**, indicating that the source is actively sending data packets rather than merely probing or handshaking, which increases the DDoS score. This suggests the traffic is not just a scan but an ongoing data transmission, a hallmark of a sustained attack. Complementing this is the **Bwd Packet Length Mean**, which is near zero, pointing to a pattern of unanswered scan probes—responses that are minimal or non-existent, further supporting the idea of a distributed and possibly automated probing effort. As the attack intensifies, the **Fwd Packet Length Max** shows a relatively small maximum packet size, typical of traffic that lacks real payload, often seen in scans or control-only traffic, which again increases the DDoS score. The **Average Packet Size** is also small, reinforcing the notion that the traffic is primarily control or probe-based rather than data-heavy, further contributing to the DDoS classification. Finally, the **Init_Win_bytes_backward** is negative, indicating that the destination never completed a handshake, a common sign of refused or unanswered probes, which again increases the DDoS score. Together, these features paint a picture of a distributed attack where many sources are sending minimal or non-responsive traffic, all of which aligns with the class profile of a DDoS attack, characterized by volumetric traffic from multiple sources.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The magnitude for Bwd Packet Length Mean is invented.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - **act_data_pkt_fwd**: Present in evidence.
+   - **Bwd Packet Length Mean**: Present in evidence.
+   - **Fwd Packet Length Max**: Present in evidence.
+   - **Average Packet Size**: Present in evidence.
+   - **Init_Win_bytes_backward**: Present in evidence.
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **act_data_pkt_fwd**: Increases DDoS score (matches evidence).
+   - **Bwd Packet Length Mean**: Increases DDoS score (matches evidence).
+   - **Fwd Packet Length Max**: Increases DDoS score (matches evidence).
+   - **Average Packet Size**: Increases DDoS score (matches evidence).
+   - **Init_Win_bytes_backward**: Increases DDoS score (matches evidence).
+
+   All stated directions match the sign of the corresponding attribution.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft explanation does not specify any magnitudes for the features; it only discusses the direction of their impact on the DDoS score. Therefore, there are no unsupported or invented magnitude claims.  
+   **Answer: No**
+
+Since checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+```
+SUPPORTED
+```",,
+22,"1. act_data_pkt_fwd (increases DDoS score, magnitude 1.2209)
+2. Bwd Packet Length Mean (increases DDoS score, magnitude 1.0468)
+3. Fwd Packet Length Max (increases DDoS score, magnitude 0.9463)
+4. Init_Win_bytes_backward (increases DDoS score, magnitude 0.9312)
+5. Average Packet Size (increases DDoS score, magnitude 0.8271)","The traffic in question exhibits a pattern strongly aligned with a DDoS attack, as evidenced by several key features that collectively suggest a coordinated effort to overwhelm a target system with volumetric traffic. The feature **act_data_pkt_fwd** indicates that forward packets carried actual payload data, which is a sign of active communication rather than mere probing or scanning, and this increases the DDoS score, suggesting the traffic is not just exploratory but involves real data transfer. Meanwhile, the **Bwd Packet Length Mean** is near zero, which implies that the responses from the target were minimal or nonexistent—consistent with unanswered scan probes or a lack of proper handshakes, further supporting the idea of a distributed attack. The **Fwd Packet Length Max** is relatively small, indicating that the source did not send large packets, a behavior typical of scans or control traffic rather than data-heavy transfers, and this also increases the DDoS score. Similarly, **Init_Win_bytes_backward** is set to -1, meaning the destination never completed a handshake, a common sign of refused or unanswered probes, which again points to a coordinated attempt to test or overwhelm the system without establishing full communication—another factor that raises the DDoS score. Finally, the **Average Packet Size** is small, suggesting that the traffic consists of lightweight packets, often used in control or probe activities, and this too increases the DDoS score. Together, these features paint a picture of a distributed attack where many sources are sending minimal, controlled packets, often without completing full handshakes, all contributing to a surge in traffic volume that aligns with the class profile of a DDoS attack.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The direction of the impact of Bwd Packet Length Mean is incorrect; it should increase the DDoS score, not decrease it.
+- The direction of the impact of Fwd Packet Length Max is incorrect; it should increase the DDoS score, not decrease it.
+- The direction of the impact of Init_Win_bytes_backward is incorrect; it should increase the DDoS score, not decrease it.
+- The direction of the impact of Average Packet Size is incorrect; it should increase the DDoS score, not decrease it.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - **act_data_pkt_fwd**: Present in evidence.
+   - **Bwd Packet Length Mean**: Present in evidence.
+   - **Fwd Packet Length Max**: Present in evidence.
+   - **Init_Win_bytes_backward**: Present in evidence.
+   - **Average Packet Size**: Present in evidence.
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **act_data_pkt_fwd**: Increases DDoS score (matches evidence).
+   - **Bwd Packet Length Mean**: Increases DDoS score (matches evidence).
+   - **Fwd Packet Length Max**: Increases DDoS score (matches evidence).
+   - **Init_Win_bytes_backward**: Increases DDoS score (matches evidence).
+   - **Average Packet Size**: Increases DDoS score (matches evidence).
+
+   All stated directions match the sign of the corresponding attribution.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft explanation does not specify any magnitudes for the features. It only discusses the direction of the impact (increase in DDoS score) and provides qualitative descriptions. Since no specific magnitudes are claimed in the draft, there are no unsupported or invented magnitude claims.  
+   **Answer: No**
+
+Given that checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+```
+SUPPORTED
+```",,
+23,"1. Total Length of Fwd Packets (increases PortScan score, magnitude 2.0036)
+2. Flow Bytes/s (increases PortScan score, magnitude 1.6570)
+3. Bwd Packets/s (increases PortScan score, magnitude 1.6476)
+4. Flow IAT Min (increases PortScan score, magnitude 1.1730)
+5. Flow Duration (increases PortScan score, magnitude 1.0966)","The traffic in question closely aligns with the class profile of PortScan, as it exhibits a pattern of reconnaissance probing through many ports, marked by a series of features that collectively suggest one-sided, probing behavior. The Total Length of Fwd Packets is notably high, which increases the PortScan score, indicating a large volume of data being sent from the source to the destination—consistent with a scan that may be probing for open ports or exfiltrating information. This is further supported by the Flow Bytes/s, which also increases the score, pointing to a high throughput of data, a characteristic often seen in volumetric attacks or scans that involve transmitting small packets at a rapid rate. The Bwd Packets/s, on the other hand, is relatively low, which increases the PortScan score as well, reinforcing the idea of an imbalanced flow where the destination is not responding, suggesting a one-sided attack. The Flow IAT Min is also low, increasing the score, as it indicates that packets are arriving in rapid succession, a sign of bursty traffic typical of scanning or flooding. Finally, the Flow Duration is unusually short, which increases the PortScan score, as it suggests that the flow was brief and possibly aimed at probing multiple ports in quick succession. Together, these features paint a picture of a network flow that is highly suspicious, with a clear pattern of one-sided communication and rapid, short bursts of traffic, all of which align with the behavior expected of a PortScan attack.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Total Length of Fwd Packets magnitude claim is unsupported (magnitude 2.0036 is not mentioned in the evidence);
+- Flow Duration magnitude claim is unsupported (magnitude 1.0966 is not mentioned in the evidence).",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - Features mentioned in the draft:
+     - Total Length of Fwd Packets
+     - Flow Bytes/s
+     - Bwd Packets/s
+     - Flow IAT Min
+     - Flow Duration
+
+   - Features in the evidence:
+     - Total Length of Fwd Packets
+     - Flow Bytes/s
+     - Bwd Packets/s
+     - Flow IAT Min
+     - Flow Duration
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Total Length of Fwd Packets: Increases PortScan score (matches evidence)
+   - Flow Bytes/s: Increases PortScan score (matches evidence)
+   - Bwd Packets/s: Increases PortScan score (matches evidence)
+   - Flow IAT Min: Increases PortScan score (matches evidence)
+   - Flow Duration: Increases PortScan score (matches evidence)
+
+   All stated directions match the evidence.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features, only their direction of influence on the PortScan score. Therefore, there are no unsupported or invented magnitude claims in the draft.
+
+   **Answer: No**
+
+Since checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+```
+SUPPORTED
+```",,
+24,"1. Total Length of Fwd Packets (increases PortScan score, magnitude 2.0245)
+2. Bwd Packets/s (increases PortScan score, magnitude 1.9783)
+3. Flow Duration (increases PortScan score, magnitude 1.2232)
+4. min_seg_size_forward (increases PortScan score, magnitude 1.0139)
+5. Flow Bytes/s (increases PortScan score, magnitude 0.8425)","The traffic in question closely aligns with the class profile of PortScan, as it exhibits a pattern of reconnaissance probing across multiple ports, characterized by one-sided, short-lived flows. The evidence begins with the **Total Length of Fwd Packets**, which increases the PortScan score—this suggests a large volume of data being sent from the source to the destination, consistent with a scanning activity that may be probing for open ports or attempting to exfiltrate information. This is further reinforced by the **Bwd Packets/s**, which also increases the score, but at a much lower rate, indicating a highly imbalanced traffic pattern where the destination is not responding, a hallmark of one-sided attack traffic. The **Flow Duration** adds to the score, with an unusually short duration suggesting that the flow is not sustained, which is typical of scanning behavior where each probe is brief and targeted. Meanwhile, the **min_seg_size_forward** increases the score as well, pointing to a consistent, minimal packet size, which implies that the attacker is using a uniform tool or method to craft packets, a common trait in automated scanning. Finally, the **Flow Bytes/s** contributes to the score, though with a smaller magnitude, indicating that while there is some data throughput, it is not at the level of a volumetric attack, which is more characteristic of DDoS traffic. Together, these features form a coherent picture of a network flow that is probing multiple ports in a short period, with minimal response from the target, all of which aligns with the behavior expected of a PortScan attack.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Total Length of Fwd Packets magnitude claim is unsupported
+- Bwd Packets/s magnitude claim is unsupported
+- Flow Duration magnitude claim is unsupported
+- min_seg_size_forward magnitude claim is unsupported
+- Flow Bytes/s magnitude claim is unsupported",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: Total Length of Fwd Packets, Bwd Packets/s, Flow Duration, min_seg_size_forward, and Flow Bytes/s.
+   - All these features are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Total Length of Fwd Packets: Increases PortScan score (matches evidence).
+   - Bwd Packets/s: Increases PortScan score (matches evidence).
+   - Flow Duration: Increases PortScan score (matches evidence).
+   - min_seg_size_forward: Increases PortScan score (matches evidence).
+   - Flow Bytes/s: Increases PortScan score (matches evidence).
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not make specific claims about the magnitudes of the features, only their general impact on the PortScan score.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+25,"1. Total Length of Fwd Packets (increases PortScan score, magnitude 2.0198)
+2. Bwd Packets/s (increases PortScan score, magnitude 1.3595)
+3. min_seg_size_forward (increases PortScan score, magnitude 1.0676)
+4. Init_Win_bytes_forward (increases PortScan score, magnitude 0.9625)
+5. Flow Bytes/s (increases PortScan score, magnitude 0.8211)","The traffic in question closely aligns with the class profile of PortScan, as it exhibits a pattern of reconnaissance through extensive probing of multiple ports. The evidence begins with the **Total Length of Fwd Packets**, which increases the PortScan score—this suggests a large volume of data being sent from the source to the destination, consistent with a scan that may be probing for open services or attempting to exfiltrate information. Complementing this is the **Bwd Packets/s**, which also increases the score; the high forward rate paired with a low backward rate indicates one-sided communication, a hallmark of scanning activity where the attacker sends probes but receives minimal or no responses. The **min_seg_size_forward** further elevates the score, pointing to a consistent, minimal segment size, which is often a sign of crafted packets used in automated scans. This uniformity suggests the use of a single tool or method, reinforcing the idea of a coordinated reconnaissance effort. The **Init_Win_bytes_forward** adds to the score, with its fixed, unusual value indicating a lack of proper TCP handshake, a common characteristic in malicious traffic that bypasses normal protocol behavior. Finally, the **Flow Bytes/s** increases the score as well, though its association with volumetric traffic is less direct here—instead, it supports the overall intensity of the flow, which aligns with the high volume of short, one-sided flows typical of a PortScan. Together, these features form a coherent picture of an attack that is not only probing for open ports but also employing crafted packets and abnormal protocol behavior to evade detection.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Total Length of Fwd Packets: magnitude claim not supported
+- Bwd Packets/s: direction mismatch (increase, not decrease)
+- min_seg_size_forward: magnitude claim not supported
+- Init_Win_bytes_forward: magnitude claim not supported
+- Flow Bytes/s: magnitude claim not supported",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - **Total Length of Fwd Packets**: Present in evidence.
+   - **Bwd Packets/s**: Present in evidence.
+   - **min_seg_size_forward**: Present in evidence.
+   - **Init_Win_bytes_forward**: Present in evidence.
+   - **Flow Bytes/s**: Present in evidence.
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **Total Length of Fwd Packets**: Increases PortScan score (matches evidence).
+   - **Bwd Packets/s**: Increases PortScan score (matches evidence).
+   - **min_seg_size_forward**: Increases PortScan score (matches evidence).
+   - **Init_Win_bytes_forward**: Increases PortScan score (matches evidence).
+   - **Flow Bytes/s**: Increases PortScan score (matches evidence).
+
+   All stated directions match the sign of the corresponding attribution.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft does not specify any magnitudes for the features; it only discusses the direction of their impact on the PortScan score. Therefore, there are no unsupported or invented magnitude claims.  
+   **Answer: No**
+
+Since checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+```
+SUPPORTED
+```",,
+26,"1. Bwd Header Length (increases BENIGN score, magnitude 1.1856)
+2. Total Length of Bwd Packets (increases BENIGN score, magnitude 0.8424)
+3. Packet Length Std (increases BENIGN score, magnitude 0.6395)
+4. Packet Length Mean (decreases BENIGN score, magnitude 0.4583)
+5. Flow IAT Min (increases BENIGN score, magnitude 0.3330)","The traffic in question appears to be benign, as evidenced by a pattern of features that align with normal, non-malicious behavior. The Bwd Header Length is notably high, which increases the BENIGN score, suggesting that the traffic involves significant header-only reply streams, likely indicating standard acknowledgments or resets without any payload, a common characteristic of benign communication. This is further supported by the Total Length of Bwd Packets, which also increases the BENIGN score, pointing to minimal data transfer in the reverse direction—consistent with simple, non-malicious interactions. The Packet Length Std, another feature that raises the BENIGN score, indicates a low variability in packet sizes, suggesting uniformity in the traffic, which is typical of automated or machine-generated benign flows. However, the Packet Length Mean slightly decreases the BENIGN score, implying that the average packet size is relatively small, which may indicate control or probe traffic rather than data transfer—still within the bounds of normal behavior. Finally, the Flow IAT Min, which increases the BENIGN score, shows very short gaps between consecutive packets, suggesting a bursty but not necessarily malicious pattern, often seen in legitimate, high-throughput communication. Together, these features form a coherent picture of traffic that, while not entirely uniform, remains within the expected range of benign activity.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Packet Length Mean magnitude claim is unsupported (magnitude -0.4583 is not mentioned in the evidence)",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - Features mentioned in the draft: 
+     - Bwd Header Length
+     - Total Length of Bwd Packets
+     - Packet Length Std
+     - Packet Length Mean
+     - Flow IAT Min
+
+   - Features in the evidence:
+     - Bwd Header Length
+     - Total Length of Bwd Packets
+     - Packet Length Std
+     - Packet Length Mean
+     - Flow IAT Min
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Bwd Header Length: Increases BENIGN score (matches evidence)
+   - Total Length of Bwd Packets: Increases BENIGN score (matches evidence)
+   - Packet Length Std: Increases BENIGN score (matches evidence)
+   - Packet Length Mean: Decreases BENIGN score (matches evidence)
+   - Flow IAT Min: Increases BENIGN score (matches evidence)
+
+   All stated directions match the evidence.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features, only their direction of influence on the BENIGN score. Therefore, there are no unsupported or invented magnitude claims in the draft.
+
+   **Answer: No**
+
+Since checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+```
+SUPPORTED
+```",,
+27,"1. Init_Win_bytes_forward (increases BENIGN score, magnitude 1.9411)
+2. Bwd Packet Length Min (increases BENIGN score, magnitude 0.8581)
+3. Fwd Packet Length Max (increases BENIGN score, magnitude 0.5584)
+4. Total Length of Bwd Packets (increases BENIGN score, magnitude 0.5326)
+5. Flow IAT Min (increases BENIGN score, magnitude 0.5261)","The traffic in question appears to be benign, as evidenced by a pattern of features that align with normal, non-malicious network behavior. The client's initial TCP window size, **Init_Win_bytes_forward**, is notably high, which increases the BENIGN score and suggests a proper handshake and tool fingerprint, typical of legitimate traffic rather than crafted or malicious activity. This is further supported by the **Bwd Packet Length Min**, which also increases the BENIGN score—indicating minimal-only replies from the destination, a sign of simple acknowledgments or rejections without any payload, consistent with normal communication. Meanwhile, the **Fwd Packet Length Max**, which also boosts the BENIGN score, shows that the largest packets sent by the source are relatively small, suggesting no substantial payload was carried, a characteristic often seen in control-only or scan-like traffic that is still benign. The **Total Length of Bwd Packets**, another BENIGN-boosting feature, is near-zero, indicating that the destination sent very little data back, which could reflect unanswered probes or refused services, but in this context, it still fits within the bounds of normal, non-malicious interaction. Finally, the **Flow IAT Min**, which also increases the BENIGN score, shows a short gap between consecutive packets, a pattern that could be concerning in some contexts, but here it aligns with back-to-back bursts typical of legitimate, high-throughput communication. Together, these features form a coherent picture of traffic that, while potentially probing or control-oriented, remains within the bounds of normal, non-malicious behavior.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature direction mismatch: Flow IAT Min (increases BENIGN score) should be a decrease, not an increase.
+- Unsupported magnitude claim: No specific magnitude values provided for the features mentioned.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: **Init_Win_bytes_forward**, **Bwd Packet Length Min**, **Fwd Packet Length Max**, **Total Length of Bwd Packets**, and **Flow IAT Min**.
+   - All these features are present in the evidence list.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **Init_Win_bytes_forward**: Increases BENIGN score (matches evidence).
+   - **Bwd Packet Length Min**: Increases BENIGN score (matches evidence).
+   - **Fwd Packet Length Max**: Increases BENIGN score (matches evidence).
+   - **Total Length of Bwd Packets**: Increases BENIGN score (matches evidence).
+   - **Flow IAT Min**: Increases BENIGN score (matches evidence).
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features; it only discusses the direction of their impact on the BENIGN score.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+28,"1. Init_Win_bytes_backward (increases Web Attack score, magnitude 4.9303)
+2. Fwd IAT Min (increases Web Attack score, magnitude 4.6244)
+3. Flow IAT Min (increases Web Attack score, magnitude 0.8104)
+4. Fwd IAT Std (increases Web Attack score, magnitude 0.3451)
+5. Flow IAT Mean (increases Web Attack score, magnitude 0.2886)","The traffic in question was classified as a **Web Attack** due to a pattern of behavior that aligns closely with the characteristics of web-layer attacks such as SQL injection, cross-site scripting, or brute-force attempts. The evidence begins with **Init_Win_bytes_backward**, which increases the Web Attack score by a significant magnitude. This feature indicates that the destination system never completed a TCP handshake, a common sign of unanswered probes or automated scanning, often seen in reconnaissance or probing attacks. As the story unfolds, **Fwd IAT Min** also increases the score, pointing to near-zero gaps between packets sent by the source, a hallmark of packet bursts that are typical of automated attack tools attempting to overwhelm or probe the target. This is further reinforced by **Flow IAT Min**, which also increases the score, showing that consecutive packets arrived back-to-back, a pattern consistent with flood-like behavior or rapid scanning. The **Fwd IAT Std** adds to the score with a smaller magnitude, suggesting that the source's packet timing is highly regular, indicating automated rather than human-driven traffic. Finally, **Flow IAT Mean** increases the score as well, with a very small mean time between packets, reinforcing the presence of flooding or highly structured traffic that aligns with web-layer attack patterns. Together, these features form a coherent picture of a coordinated attempt to exploit web services through automated, structured, and high-volume traffic, all of which contribute to the classification as a **Web Attack**.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_backward"" is mentioned but no magnitude is provided in the evidence.
+- Feature ""Flow IAT Min"" is mentioned but no magnitude is provided in the evidence.
+- Feature ""Flow IAT Mean"" is mentioned but no magnitude is provided in the evidence.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - **Init_Win_bytes_backward**: Present in evidence.
+   - **Fwd IAT Min**: Present in evidence.
+   - **Flow IAT Min**: Present in evidence.
+   - **Fwd IAT Std**: Present in evidence.
+   - **Flow IAT Mean**: Present in evidence.
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **Init_Win_bytes_backward**: Increases Web Attack score (matches evidence).
+   - **Fwd IAT Min**: Increases Web Attack score (matches evidence).
+   - **Flow IAT Min**: Increases Web Attack score (matches evidence).
+   - **Fwd IAT Std**: Increases Web Attack score (matches evidence).
+   - **Flow IAT Mean**: Increases Web Attack score (matches evidence).
+
+   All stated directions match the sign of the corresponding attributions.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft does not specify any magnitudes for the features, only their impact direction (increase in Web Attack score). Since no specific magnitudes are claimed in the draft, there are no unsupported or invented magnitude claims.  
+   **Answer: No**
+
+Given that checks 1 and 2 pass and check 3 is ""no,"" the verdict is:
+
+```
+SUPPORTED
+```",,
+29,"1. Init_Win_bytes_backward (increases Web Attack score, magnitude 4.9768)
+2. Fwd IAT Min (increases Web Attack score, magnitude 4.5783)
+3. Flow IAT Min (increases Web Attack score, magnitude 0.8800)
+4. Fwd IAT Std (increases Web Attack score, magnitude 0.3544)
+5. Flow IAT Max (increases Web Attack score, magnitude 0.2741)","The traffic in question was classified as a **Web Attack** due to a pattern of behavior that aligns closely with the characteristics of layer-seven attacks such as SQL injection, cross-site scripting, or brute-force attempts against HTTP services. The evidence begins with **Init_Win_bytes_backward**, which increases the Web Attack score by a significant magnitude of 4.9768. This feature indicates that the destination system never completed a TCP handshake, a common sign of unanswered probes or automated scanning, often seen in reconnaissance phases of web-based attacks. Following this, **Fwd IAT Min** also increases the score by 4.5783, suggesting that the source system is sending packets in near-zero time gaps—indicative of a packet burst, a behavior frequently observed in automated attack tools attempting to overwhelm a service. This is further reinforced by **Flow IAT Min**, which also increases the score by 0.8800, pointing to back-to-back packet bursts that are characteristic of flood-like traffic, such as in a denial-of-service scenario or a rapid sequence of malicious requests. The consistency in timing is further supported by **Fwd IAT Std**, which increases the score by 0.3544, showing minimal jitter in the source's packet timing—suggestive of automated, fixed-rate sending rather than human-driven traffic. Finally, **Flow IAT Max** increases the score by 0.2741, indicating the presence of long gaps between packets, which may signal idle periods followed by resumed activity, a behavior often associated with keep-alive or command-and-control channels used in sustained attacks. Together, these features form a coherent picture of traffic that is not only highly structured and automated but also exhibits the timing and volume patterns typical of web-layer attacks.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_backward"" is mentioned but its sign (increase) is not matched.
+- Feature ""Flow IAT Max"" sign (increase) is not matched.
+- Magnitude claim for ""Flow IAT Max"" is invented.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: 
+     - Init_Win_bytes_backward
+     - Fwd IAT Min
+     - Flow IAT Min
+     - Fwd IAT Std
+     - Flow IAT Max
+
+   - The evidence lists:
+     - Init_Win_bytes_backward
+     - Fwd IAT Min
+     - Flow IAT Min
+     - Fwd IAT Std
+     - Flow IAT Max
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Init_Win_bytes_backward: Increases score (matches evidence)
+   - Fwd IAT Min: Increases score (matches evidence)
+   - Flow IAT Min: Increases score (matches evidence)
+   - Fwd IAT Std: Increases score (matches evidence)
+   - Flow IAT Max: Increases score (matches evidence)
+
+   All directions match the evidence.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - Init_Win_bytes_backward: Claimed magnitude 4.9768 (matches evidence)
+   - Fwd IAT Min: Claimed magnitude 4.5783 (matches evidence)
+   - Flow IAT Min: Claimed magnitude 0.8800 (matches evidence)
+   - Fwd IAT Std: Claimed magnitude 0.3544 (matches evidence)
+   - Flow IAT Max: Claimed magnitude 0.2741 (matches evidence)
+
+   All magnitude claims are supported by the evidence.  
+   **Answer: No**
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+30,"1. Init_Win_bytes_forward (increases BENIGN score, magnitude 2.0328)
+2. Fwd Packet Length Max (increases BENIGN score, magnitude 0.7386)
+3. Bwd Packet Length Min (increases BENIGN score, magnitude 0.7309)
+4. Total Length of Bwd Packets (increases BENIGN score, magnitude 0.5253)
+5. Average Packet Size (increases BENIGN score, magnitude 0.3668)","The traffic in question appears to be benign, as evidenced by a pattern of features that align with normal, non-malicious network behavior. The initial TCP window size, or `Init_Win_bytes_forward`, is notably high, which increases the BENIGN score and suggests a proper handshake and tool fingerprint, typical of legitimate client behavior. This is further supported by the largest packet sent by the source, `Fwd Packet Length Max`, which is relatively small, also increasing the BENIGN score and indicating that no substantial payload was carried—common in control or scan traffic. Complementing this, the smallest packet sent by the destination, `Bwd Packet Length Min`, is also small, contributing to the BENIGN score and suggesting minimal or acknowledgment-only responses, which are characteristic of non-malicious interactions. The total length of packets sent from the destination to the source, `Total Length of Bwd Packets`, is near-zero, again increasing the BENIGN score and pointing to unanswered probes or refused services, which are often seen in benign scanning or simple communication. Finally, the average packet size, `Average Packet Size`, is small, further increasing the BENIGN score and reinforcing the idea of control or probe traffic rather than data transfer. Together, these features form a coherent picture of traffic that is consistent with normal, non-malicious activity.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature direction mismatch: Total Length of Bwd Packets should increase BENIGN score, not decrease.
+- Unsupported magnitude claim: Total Length of Bwd Packets has a magnitude of 0.5253, which is not supported by the evidence.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - Features mentioned in the draft:
+     - `Init_Win_bytes_forward`
+     - `Fwd Packet Length Max`
+     - `Bwd Packet Length Min`
+     - `Total Length of Bwd Packets`
+     - `Average Packet Size`
+
+   - Features in the evidence:
+     - `Init_Win_bytes_forward`
+     - `Fwd Packet Length Max`
+     - `Bwd Packet Length Min`
+     - `Total Length of Bwd Packets`
+     - `Average Packet Size`
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - `Init_Win_bytes_forward`: Increases BENIGN score (matches evidence)
+   - `Fwd Packet Length Max`: Increases BENIGN score (matches evidence)
+   - `Bwd Packet Length Min`: Increases BENIGN score (matches evidence)
+   - `Total Length of Bwd Packets`: Increases BENIGN score (matches evidence)
+   - `Average Packet Size`: Increases BENIGN score (matches evidence)
+
+   All stated directions match the sign of the corresponding attributions.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features, only their direction of influence on the BENIGN score. Therefore, there are no unsupported or invented magnitude claims in the draft.
+
+   **Answer: No**
+
+Since checks 1 and 2 pass and check 3 is ""no,"" the draft is adequately supported.
+
+**Verdict:**
+
+```
+SUPPORTED
+```",,
+31,"1. Fwd PSH Flags (increases FTP-Patator score, magnitude 4.6172)
+2. Avg Fwd Segment Size (increases FTP-Patator score, magnitude 4.3261)
+3. Init_Win_bytes_forward (increases FTP-Patator score, magnitude 1.7538)
+4. Packet Length Std (increases FTP-Patator score, magnitude 1.3093)
+5. Fwd Packet Length Std (increases FTP-Patator score, magnitude 1.1351)","The traffic in question closely aligns with the class profile of FTP-Patator, a brute-force credential guessing attack, as evidenced by the pattern of features that collectively suggest coordinated, automated attempts to guess valid login credentials. The attack begins with a high count of Fwd PSH Flags, which increases the FTP-Patator score—this is a hallmark of interactive tools and credential-stuffing clients, where each small packet is pushed to the server in rapid succession, mimicking a human trying multiple passwords. This behavior is further reinforced by the Avg Fwd Segment Size, which also increases the score; the small, consistent payload sizes are indicative of credential-guessing rather than data uploads, as they suggest a lack of meaningful user interaction. The Init_Win_bytes_forward, another feature that raises the score, points to a crafted TCP handshake, with an unusual initial window size that is often seen in automated tools attempting to bypass standard authentication mechanisms. Meanwhile, the Packet Length Std, which increases the score, shows minimal variability in packet sizes, a sign of machine-generated traffic that follows a strict, uniform pattern—common in brute-force attempts. Finally, the Fwd Packet Length Std, also increasing the score, reinforces this uniformity in the forward direction, further supporting the idea of a bot or automated script systematically testing credentials. Together, these features form a coherent picture of an attack that is both methodical and machine-driven, all of which aligns with the behavior expected of an FTP-Patator brute-force attempt.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Avg Fwd Segment Size"" magnitude claim is unsupported (magnitude not provided in evidence) (1)
+- Feature ""Packet Length Std"" direction claim is unsupported (increases FTP-Patator score, magnitude 1.3093, but ""increases"" is not a direction) (2)",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - Features mentioned in the draft:
+     - Fwd PSH Flags
+     - Avg Fwd Segment Size
+     - Init_Win_bytes_forward
+     - Packet Length Std
+     - Fwd Packet Length Std
+
+   - Features in the evidence:
+     - Fwd PSH Flags
+     - Avg Fwd Segment Size
+     - Init_Win_bytes_forward
+     - Packet Length Std
+     - Fwd Packet Length Std
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Fwd PSH Flags: Increases FTP-Patator score (matches)
+   - Avg Fwd Segment Size: Increases FTP-Patator score (matches)
+   - Init_Win_bytes_forward: Increases FTP-Patator score (matches)
+   - Packet Length Std: Increases FTP-Patator score (matches)
+   - Fwd Packet Length Std: Increases FTP-Patator score (matches)
+
+   All directions match the sign of the corresponding attribution.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft explanation does not mention specific magnitudes for any of the features. It only discusses the direction of the impact (increase in FTP-Patator score) and the qualitative behavior associated with each feature. Therefore, there are no unsupported or invented magnitude claims in the draft.
+
+   **Answer: No**
+
+Based on the evaluation:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+The draft explanation passes all checks.
+
+**Verdict:**
+
+```
+SUPPORTED
+```",,
+32,"1. Fwd PSH Flags (increases FTP-Patator score, magnitude 4.6172)
+2. Avg Fwd Segment Size (increases FTP-Patator score, magnitude 4.3261)
+3. Init_Win_bytes_forward (increases FTP-Patator score, magnitude 1.7538)
+4. Packet Length Std (increases FTP-Patator score, magnitude 1.3214)
+5. Fwd Packet Length Std (increases FTP-Patator score, magnitude 1.1351)","The traffic in question closely aligns with the class profile of FTP-Patator, a brute-force credential guessing attack, as evidenced by the pattern of features that collectively suggest coordinated, automated attempts to guess valid login credentials. The attack begins with a high count of Fwd PSH Flags, which increases the FTP-Patator score—this is a hallmark of interactive tools and credential-stuffing clients, where each small packet is pushed to the server in rapid succession, mimicking a human trying multiple passwords. This behavior is further reinforced by the Avg Fwd Segment Size, which also increases the score; the small, consistent payload sizes are indicative of credential-guessing rather than data uploads, as they suggest a lack of meaningful user interaction. The Init_Win_bytes_forward, another feature that raises the score, points to a crafted TCP handshake, with an unusual initial window size that is often seen in automated tools attempting to bypass standard authentication mechanisms. Meanwhile, the Packet Length Std, which increases the score, shows minimal variability in packet sizes, a sign of machine-generated traffic that follows a strict, uniform pattern—common in brute-force attempts. Finally, the Fwd Packet Length Std, also increasing the score, reinforces this uniformity in the forward direction, further supporting the idea of a bot or automated script systematically testing credentials. Together, these features form a coherent picture of an attack that is both methodical and machine-driven, all of which aligns with the behavior expected of an FTP-Patator brute-force attempt.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Avg Fwd Segment Size"" magnitude claim is unsupported. (Feature 2 is incorrect)
+- Feature ""Packet Length Std"" direction claim is incorrect. (Feature 4 is incorrect)",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - Features mentioned in the draft:
+     - Fwd PSH Flags
+     - Avg Fwd Segment Size
+     - Init_Win_bytes_forward
+     - Packet Length Std
+     - Fwd Packet Length Std
+
+   - Features in the evidence:
+     - Fwd PSH Flags
+     - Avg Fwd Segment Size
+     - Init_Win_bytes_forward
+     - Packet Length Std
+     - Fwd Packet Length Std
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Fwd PSH Flags: Increases FTP-Patator score (matches)
+   - Avg Fwd Segment Size: Increases FTP-Patator score (matches)
+   - Init_Win_bytes_forward: Increases FTP-Patator score (matches)
+   - Packet Length Std: Increases FTP-Patator score (matches)
+   - Fwd Packet Length Std: Increases FTP-Patator score (matches)
+
+   All directions match the sign of the corresponding attribution.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft explanation does not mention specific magnitudes for any of the features. It only discusses the direction of the impact (increase in FTP-Patator score) and the qualitative behavior associated with each feature. Therefore, there are no unsupported or invented magnitude claims in the draft.
+
+   **Answer: No**
+
+Based on the evaluation:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+The draft explanation passes all checks.
+
+**Verdict:**
+
+```
+SUPPORTED
+```",,
+33,"1. Init_Win_bytes_backward (decreases BENIGN score, magnitude 1.2187)
+2. Init_Win_bytes_forward (decreases BENIGN score, magnitude 0.7701)
+3. Fwd Packet Length Max (increases BENIGN score, magnitude 0.7453)
+4. Packet Length Mean (decreases BENIGN score, magnitude 0.4735)
+5. Bwd Header Length (increases BENIGN score, magnitude 0.4309)","The traffic in question appears to be benign, as evidenced by a combination of features that align with the characteristics of normal, non-malicious network behavior. The initial server window size, **Init_Win_bytes_backward**, suggests a decrease in the BENIGN score, which may indicate an incomplete or unusual handshake, but this is not necessarily malicious—such values can occur in typical network interactions. In contrast, the **Init_Win_bytes_forward**, representing the client's initial window size, also decreases the BENIGN score, potentially pointing to a non-standard or crafted setup, yet this alone does not confirm an attack. On the other hand, the **Fwd Packet Length Max**, which measures the largest packet sent by the source, increases the BENIGN score, suggesting that the traffic involves real payload transmission rather than small, control-oriented packets typical of scans or probes. This is further supported by the **Packet Length Mean**, which decreases the BENIGN score, indicating smaller average packet sizes, a pattern often seen in control or probe traffic. However, the **Bwd Header Length**, which measures the header bytes in the backward direction, increases the BENIGN score, pointing to header-only responses, which are common in acknowledgment or reset traffic without actual data transfer. Taken together, these features suggest a mix of normal network behavior, including some non-standard handshake elements but overall consistent with benign traffic, as the presence of real payload and header-only responses aligns with typical, non-malicious communication patterns.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The magnitude for Init_Win_bytes_backward is incorrectly stated as decreasing the BENIGN score; it actually increases the BENIGN score.
+- The magnitude for Init_Win_bytes_forward is incorrectly stated as decreasing the BENIGN score; it actually increases the BENIGN score.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - Features mentioned in the draft: 
+     - Init_Win_bytes_backward
+     - Init_Win_bytes_forward
+     - Fwd Packet Length Max
+     - Packet Length Mean
+     - Bwd Header Length
+
+   - Features in the evidence:
+     - Init_Win_bytes_backward
+     - Init_Win_bytes_forward
+     - Fwd Packet Length Max
+     - Packet Length Mean
+     - Bwd Header Length
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Init_Win_bytes_backward: Decreases BENIGN score (matches evidence)
+   - Init_Win_bytes_forward: Decreases BENIGN score (matches evidence)
+   - Fwd Packet Length Max: Increases BENIGN score (matches evidence)
+   - Packet Length Mean: Decreases BENIGN score (matches evidence)
+   - Bwd Header Length: Increases BENIGN score (matches evidence)
+
+   All stated directions match the sign of the corresponding attribution.  
+   **Answer: yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft explanation does not make any specific claims about the magnitudes of the feature attributions. It only discusses the direction of the impact on the BENIGN score.  
+   **Answer: no**
+
+Since checks 1 and 2 pass and check 3 is ""no,"" the draft is adequately supported.
+
+**Verdict:**
+
+```
+SUPPORTED
+```",,
+34,"1. Init_Win_bytes_backward (increases SSH-Patator score, magnitude 6.4185)
+2. Init_Win_bytes_forward (increases SSH-Patator score, magnitude 5.9789)
+3. URG Flag Count (increases SSH-Patator score, magnitude 3.4302)
+4. Bwd Packets/s (increases SSH-Patator score, magnitude 0.6971)
+5. Flow IAT Min (increases SSH-Patator score, magnitude 0.5204)","The traffic in question closely aligns with the class profile of SSH-Patator, a brute-force credential guessing attack against SSH services. The evidence begins with **Init_Win_bytes_backward**, which increases the SSH-Patator score by a significant magnitude of 6.4185. This feature reflects the server's initial TCP window size, and its unusual value suggests that the destination never completed a handshake, a common pattern in unanswered or refused probes—often seen in automated scanning attempts. The **Init_Win_bytes_forward** also increases the score, with a magnitude of 5.9789, indicating a client-side TCP window size that is unusually fixed, a hallmark of crafted traffic used to fingerprint tools like SSH-Patator. These two features together point to a deliberate, tool-driven attempt to probe SSH services. 
+
+The **URG Flag Count** further increases the score, with a magnitude of 3.4302. While the URG flag is rarely used in normal traffic, its presence in both directions here signals an anomalous behavior that deviates from typical communication patterns, reinforcing the suspicion of an attack. Meanwhile, **Bwd Packets/s** contributes to the score with a smaller magnitude of 0.6971, indicating a low rate of packets traveling in the reverse direction. This one-sided traffic pattern—where the forward rate is high and the backward rate is low—is a strong indicator of a coordinated attack, such as a brute-force attempt where the attacker sends many connection requests but receives minimal responses. 
+
+Finally, **Flow IAT Min** increases the score with a magnitude of 0.5204, showing a near-zero minimum inter-arrival time between packets. This suggests that packets are being sent in rapid succession, forming bursts that are characteristic of flood-like behavior, often seen in automated credential guessing attempts. Taken together, these features form a coherent picture of a coordinated, tool-driven attack against an SSH service, where the attacker systematically attempts to guess credentials through brute-force methods, leveraging unusual TCP behaviors and traffic patterns to evade detection.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The magnitude for Init_Win_bytes_backward is incorrectly stated as 6.4185 instead of 6.418.
+- The magnitude for Init_Win_bytes_forward is incorrectly stated as 5.9789 instead of 5.979.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions: **Init_Win_bytes_backward**, **Init_Win_bytes_forward**, **URG Flag Count**, **Bwd Packets/s**, and **Flow IAT Min**.
+   - All these features are present in the evidence.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **Init_Win_bytes_backward**: Increases the score (direction matches).
+   - **Init_Win_bytes_forward**: Increases the score (direction matches).
+   - **URG Flag Count**: Increases the score (direction matches).
+   - **Bwd Packets/s**: Increases the score (direction matches).
+   - **Flow IAT Min**: Increases the score (direction matches).
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - **Init_Win_bytes_backward**: Claimed magnitude is 6.4185, matches evidence.
+   - **Init_Win_bytes_forward**: Claimed magnitude is 5.9789, matches evidence.
+   - **URG Flag Count**: Claimed magnitude is 3.4302, matches evidence.
+   - **Bwd Packets/s**: Claimed magnitude is 0.6971, matches evidence.
+   - **Flow IAT Min**: Claimed magnitude is 0.5204, matches evidence.
+
+   **Answer:** No
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+35,"1. Bwd Header Length (increases SSH-Patator score, magnitude 5.7187)
+2. Total Length of Bwd Packets (increases SSH-Patator score, magnitude 4.9447)
+3. Init_Win_bytes_backward (increases SSH-Patator score, magnitude 2.9159)
+4. Fwd IAT Min (increases SSH-Patator score, magnitude 2.1432)
+5. Fwd Packet Length Std (increases SSH-Patator score, magnitude 1.1178)","The traffic in question closely aligns with the class profile of SSH-Patator, a brute-force credential guessing attack against SSH services. The evidence begins with **Bwd Header Length**, which is notably elevated, indicating a pattern of header-only reply streams in the backward direction—this suggests that the responses are largely acknowledgments or resets without actual content, a hallmark of automated probing or failed authentication attempts. This feature increases the SSH-Patator score, reinforcing the suspicion of a coordinated attack. Supporting this, **Total Length of Bwd Packets** is also high, but with near-zero values in the reverse direction, pointing to a mismatch between the forward and backward traffic—this implies that the destination is responding to probes with minimal data, likely indicating refused services or unanswered probes, a common behavior in brute-force attempts. This feature too increases the SSH-Patator score, further aligning the traffic with the class. Meanwhile, **Init_Win_bytes_backward** is set to -1, a value that signifies the destination never completed a TCP handshake, a strong indicator of unanswered or refused probes—this again increases the SSH-Patator score and supports the notion of a failed or automated connection attempt. The attack is further characterized by **Fwd IAT Min**, which is very low, suggesting that the source is sending packets in rapid succession—this bursty behavior is typical of automated tools attempting to guess credentials in a brute-force manner, and this feature also increases the SSH-Patator score. Finally, **Fwd Packet Length Std** is near-zero, indicating that the forward packets are of uniform size, a pattern commonly observed in machine-generated traffic such as bots or brute-force tools, and this feature too increases the SSH-Patator score. Together, these features form a coherent picture of an automated, coordinated effort to guess SSH credentials through repeated, uniform, and bursty packet transmissions, all of which are consistent with the class profile of SSH-Patator.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Feature ""Init_Win_bytes_backward"" is not present in the evidence.
+- Magnitude claim for ""Init_Win_bytes_backward"" is invented as it is not present in the evidence.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features:
+     - Bwd Header Length
+     - Total Length of Bwd Packets
+     - Init_Win_bytes_backward
+     - Fwd IAT Min
+     - Fwd Packet Length Std
+
+   - All these features are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **Bwd Header Length**: The draft states it increases the SSH-Patator score, which matches the evidence.
+   - **Total Length of Bwd Packets**: The draft states it increases the SSH-Patator score, which matches the evidence.
+   - **Init_Win_bytes_backward**: The draft states it increases the SSH-Patator score, which matches the evidence.
+   - **Fwd IAT Min**: The draft states it increases the SSH-Patator score, which matches the evidence.
+   - **Fwd Packet Length Std**: The draft states it increases the SSH-Patator score, which matches the evidence.
+
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features; it only discusses the direction of their impact (increase in SSH-Patator score). Therefore, there are no unsupported or invented magnitude claims.
+
+   **Answer: No**
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+36,"1. Init_Win_bytes_backward (increases DoS score, magnitude 2.3357)
+2. Init_Win_bytes_forward (increases DoS score, magnitude 1.9015)
+3. Idle Min (increases DoS score, magnitude 1.2307)
+4. Idle Mean (increases DoS score, magnitude 0.9355)
+5. Bwd Packet Length Std (increases DoS score, magnitude 0.7757)","The traffic in question was classified as a denial-of-service (DoS) attack due to a pattern of behavior that aligns closely with the characteristics of an HTTP flood attack, which is defined by high-volume, high-rate flows designed to overwhelm a server. The evidence begins with the server's initial TCP window size, **Init_Win_bytes_backward**, which increases the DoS score. This suggests that the destination system never completed a proper handshake, a common sign of unanswered or refused probes, often seen in coordinated attacks. Complementing this is **Init_Win_bytes_forward**, which also increases the score, indicating that the client-side window size is unusually fixed, a fingerprint often associated with crafted or automated traffic, such as that used in botnet-driven attacks. These two features together point to a lack of normal handshaking behavior, which is a hallmark of malicious traffic attempting to overwhelm the server with a large number of connections. 
+
+Further reinforcing this pattern is **Idle Min**, which increases the DoS score. A short idle gap between bursts of activity suggests that the attacker is sending traffic in rapid, frequent bursts rather than maintaining a steady stream, a tactic used to evade simple rate-limiting mechanisms. This is further supported by **Idle Mean**, which also increases the score, indicating that the average idle time between bursts is regular and predictable, a behavior often seen in periodic beaconing or keep-alive commands used to maintain persistent connections for sustained attack activity. 
+
+Finally, **Bwd Packet Length Std** increases the DoS score as well, showing a near-zero deviation in the sizes of backward packets. This suggests that the server is receiving repeated, identical responses, a pattern commonly observed in brute-force login attempts or in scenarios where the server is being flooded with identical requests, such as in an HTTP flood attack. Taken together, these features form a coherent picture of an attack that leverages both connection-level anomalies and traffic-pattern irregularities to overwhelm the target system, aligning precisely with the class profile of an HTTP flood denial-of-service attack.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The draft invents a magnitude claim for Init_Win_bytes_backward.",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - The draft mentions the following features: **Init_Win_bytes_backward**, **Init_Win_bytes_forward**, **Idle Min**, **Idle Mean**, and **Bwd Packet Length Std**.
+   - All these features are present in the evidence list.
+
+   **Answer:** Yes
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **Init_Win_bytes_backward**: The draft states it increases the DoS score, which matches the evidence.
+   - **Init_Win_bytes_forward**: The draft states it increases the DoS score, which matches the evidence.
+   - **Idle Min**: The draft states it increases the DoS score, which matches the evidence.
+   - **Idle Mean**: The draft states it increases the DoS score, which matches the evidence.
+   - **Bwd Packet Length Std**: The draft states it increases the DoS score, which matches the evidence.
+
+   **Answer:** Yes
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not mention any specific magnitudes for the features; it only discusses the direction of their impact (i.e., that they increase the DoS score).
+
+   **Answer:** No
+
+Based on the evaluation:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+The draft explanation is adequately supported by the evidence.
+
+**Verdict:** `SUPPORTED`",,
+37,"1. Init_Win_bytes_backward (increases DoS score, magnitude 2.3006)
+2. Init_Win_bytes_forward (increases DoS score, magnitude 1.7803)
+3. Idle Min (increases DoS score, magnitude 1.0699)
+4. Idle Mean (increases DoS score, magnitude 0.8888)
+5. Bwd Packet Length Std (increases DoS score, magnitude 0.7847)","The traffic in question exhibits characteristics strongly aligned with a denial-of-service (DoS) attack, as evidenced by the features contributing to the prediction. The high magnitude of **Init_Win_bytes_backward**, which reflects the server's initial TCP window size, suggests that the destination host never completed a proper handshake, a common pattern in unanswered or refused probes—typical of DoS activity. This increases the DoS score, reinforcing the idea of a coordinated, automated attack. Supporting this, **Init_Win_bytes_forward**, representing the client's initial TCP window size, also increases the score, indicating the presence of crafted traffic with unusual, fixed values that often signal a stack or tool fingerprint used in malicious probing. 
+
+The **Idle Min** feature, which measures the shortest idle gap between bursts of activity, further increases the DoS score, pointing to rapid resumption of traffic after brief pauses—behavior consistent with high-frequency, bursty attacks. This is complemented by **Idle Mean**, which also increases the score, suggesting regular, long idles that may indicate periodic beaconing or keep-alive commands, often used to maintain persistent connections in sustained attacks. Finally, **Bwd Packet Length Std**, which captures the variability of backward packet sizes, increases the DoS score as well, indicating near-zero deviation in server responses—consistent with repeated, identical replies, such as those seen in brute-force login attempts or automated query flooding. Together, these features paint a picture of a coordinated, high-volume attack designed to overwhelm the target system through repeated, identical responses and rapid, unresponsive handshakes, all hallmarks of a denial-of-service scenario.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- Unsupported magnitude claim for Init_Win_bytes_backward (stated as 2.3006, but evidence shows 2.3006)
+- Unsupported magnitude claim for Init_Win_bytes_forward (stated as 1.7803, but evidence shows 1.7803)
+- Unsupported magnitude claim for Idle Min (stated as 1.0699, but evidence shows 1.0699)
+- Unsupported magnitude claim for Idle Mean (stated as 0.8888, but evidence shows 0.8888)
+- Unsupported magnitude claim for Bwd Packet Length Std (stated as 0.7847, but evidence shows 0.7847)",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the specified checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - Features mentioned in the draft: 
+     - Init_Win_bytes_backward
+     - Init_Win_bytes_forward
+     - Idle Min
+     - Idle Mean
+     - Bwd Packet Length Std
+
+   - Features in the evidence:
+     - Init_Win_bytes_backward
+     - Init_Win_bytes_forward
+     - Idle Min
+     - Idle Mean
+     - Bwd Packet Length Std
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - Init_Win_bytes_backward: Increases DoS score (matches evidence)
+   - Init_Win_bytes_forward: Increases DoS score (matches evidence)
+   - Idle Min: Increases DoS score (matches evidence)
+   - Idle Mean: Increases DoS score (matches evidence)
+   - Bwd Packet Length Std: Increases DoS score (matches evidence)
+
+   The direction for each feature matches the evidence.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   - The draft does not specify any magnitudes for the features; it only discusses the direction of their impact on the DoS score. Therefore, there are no unsupported or invented magnitude claims in the draft.
+
+   **Answer: No**
+
+Since all checks are satisfied, the verdict is:
+
+```
+SUPPORTED
+```",,
+38,"1. Init_Win_bytes_backward (increases DoS score, magnitude 3.2126)
+2. Bwd Packet Length Std (increases DoS score, magnitude 1.6314)
+3. Init_Win_bytes_forward (increases DoS score, magnitude 1.3605)
+4. Fwd Packet Length Max (increases DoS score, magnitude 0.8354)
+5. Bwd Packets/s (decreases DoS score, magnitude 0.7829)","The traffic in question was classified as a denial-of-service (DoS) attack due to a pattern of behavior that aligns closely with the characteristics of an HTTP flood attack, which is defined by high-volume, high-rate flows aimed at overwhelming a server. The evidence begins with **Init_Win_bytes_backward**, which increases the DoS score by a significant magnitude. This feature reflects the server's initial TCP window size, and a value of -1 suggests that the destination never completed a handshake, a common sign of unanswered or refused probes—typical in a DoS scenario where the server is being bombarded with traffic it cannot process. 
+
+Next, **Bwd Packet Length Std** also increases the DoS score, indicating a near-zero deviation in the variability of backward packet sizes. This suggests that the server is responding with repeated, identical packets, a behavior often seen in brute-force attempts or in scenarios where the server is under attack and sending uniform responses to a flood of requests. 
+
+Then, **Init_Win_bytes_forward** further increases the DoS score, pointing to the client's initial TCP window size. A fixed, unusual value here may indicate that the traffic is crafted, with values of 0 or -1 suggesting no proper handshake, which is a hallmark of malicious or automated traffic attempting to overwhelm the system. 
+
+The **Fwd Packet Length Max** also contributes to the DoS score, showing that the largest packet sent by the source is relatively small. This is consistent with traffic that lacks real payload, such as scans or control-only traffic, which is often used in DoS attacks to probe or disrupt without carrying meaningful data. 
+
+Finally, **Bwd Packets/s** decreases the DoS score, as it reflects the rate of packets sent from the destination. A low backward rate against a high forward rate suggests one-sided traffic, where the attacker is sending a large volume of packets but receiving minimal or no response—exactly what is expected in a DoS attack where the server is overwhelmed and unable to respond. 
+
+Taken together, these features paint a picture of a coordinated attack where the attacker is flooding the server with a high volume of traffic, using crafted packets with minimal payload and no proper handshake, all while the server is unable to respond effectively, leading to the classification as a denial-of-service event.",vte_verifier_phi4_mini,unsupported_token,"UNSUPPORTED
+- The draft mentions all features present in the evidence.
+- The stated directions match the sign of the corresponding attributions.
+- The draft includes an unsupported magnitude claim for ""Init_Win_bytes_backward"" (magnitude 3.2126).",vte_verifier_phi4_14b,supported,"To evaluate the draft explanation against the evidence, let's address each of the checks:
+
+1. **Are all features mentioned in the draft present in the evidence?**
+
+   - **Init_Win_bytes_backward**: Present in evidence.
+   - **Bwd Packet Length Std**: Present in evidence.
+   - **Init_Win_bytes_forward**: Present in evidence.
+   - **Fwd Packet Length Max**: Present in evidence.
+   - **Bwd Packets/s**: Present in evidence.
+
+   All features mentioned in the draft are present in the evidence.  
+   **Answer: Yes**
+
+2. **Does every stated direction match the sign of the corresponding attribution?**
+
+   - **Init_Win_bytes_backward**: Increases DoS score (matches evidence).
+   - **Bwd Packet Length Std**: Increases DoS score (matches evidence).
+   - **Init_Win_bytes_forward**: Increases DoS score (matches evidence).
+   - **Fwd Packet Length Max**: Increases DoS score (matches evidence).
+   - **Bwd Packets/s**: Decreases DoS score (matches evidence).
+
+   The directions stated in the draft match the signs of the corresponding attributions in the evidence.  
+   **Answer: Yes**
+
+3. **Are there unsupported or invented magnitude claims?**
+
+   The draft does not specify any magnitudes for the features; it only describes the direction of their impact on the DoS score. Since no specific magnitude claims are made in the draft, there are no unsupported or invented magnitude claims.  
+   **Answer: No**
+
+Given that all checks are satisfied:
+
+- Check 1: Yes
+- Check 2: Yes
+- Check 3: No
+
+The verdict is:
+
+```
+SUPPORTED
+```",,

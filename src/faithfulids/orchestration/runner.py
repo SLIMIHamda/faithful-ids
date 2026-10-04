@@ -114,6 +114,7 @@ def generate_only(
     binary: bool,
     seed: int,
     budget_s: float | None = None,
+    label: str = "generate",
 ) -> tuple[int, int]:
     """Generate every (generator, instance) explanation and nothing else.
 
@@ -122,7 +123,8 @@ def generate_only(
     the generator is using). Calls already in the ledger are served from it, so
     a later session resumes where an earlier one stopped. ``budget_s`` stops
     cleanly before a session's time limit. Returns ``(done, total)``; the step
-    is complete when they are equal.
+    is complete when they are equal. The Tier-A verify step reuses it on B4/B5
+    alone (``label="verify"``): the drafts replay, the verifier's calls are new.
     """
     import time
 
@@ -132,14 +134,14 @@ def generate_only(
     for gen_id, generator in generators:
         for case in cases:
             if budget_s is not None and time.monotonic() - t0 >= budget_s:
-                print(f"[generate] time budget reached: {done}/{total} done; "
-                      "run the generate step again to continue", flush=True)
+                print(f"[{label}] time budget reached: {done}/{total} done; "
+                      f"run the {label} step again to continue", flush=True)
                 return done, total
             generator.generate(generation_context(case, dataset_id=dataset_id,
                                                   binary=binary, seed=seed))
             done += 1
             if done == 1 or done % 25 == 0 or done == total:
-                print(f"[generate] {done}/{total} (current: {gen_id}, "
+                print(f"[{label}] {done}/{total} (current: {gen_id}, "
                       f"{(time.monotonic() - t0) / 60:.0f} min)", flush=True)
     return done, total
 

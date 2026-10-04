@@ -90,6 +90,25 @@ def test_rule_verifier_reasons():
     assert bad.detail["feature"] == "flow duration"
 
 
+def test_llm_verifier_reads_the_verdict_line():
+    """Amendment 0011: the verdict is the last line holding only the token. Phi-4
+    repeats check 3 ("Are there unsupported ... claims?") before answering
+    SUPPORTED; the first reader searched the whole reply and read that as
+    UNSUPPORTED."""
+    from faithfulids.generation.b4_vte.verifier.verifier import read_verdict
+
+    phi4 = ("3. **Are there unsupported or invented magnitude claims?**\n"
+            "   **Answer:** No\n\nSince all checks are satisfied, the verdict is:\n\n"
+            "```\nSUPPORTED\n```")
+    assert read_verdict(phi4) == (True, "supported")
+    assert read_verdict("UNSUPPORTED\n- Feature X is not in the evidence.") == (
+        False, "unsupported_token")
+    assert read_verdict("**Verdict:** SUPPORTED") == (True, "supported")
+    assert read_verdict("SUPPORTED\nOn reflection:\n`UNSUPPORTED`") == (False, "unsupported_token")
+    # a token inside a sentence is not a verdict line: fail-safe, the draft abstains
+    assert read_verdict("The draft is SUPPORTED by the evidence.") == (False, "no_verdict_token")
+
+
 # --------------------------------------------------------------------------- #
 # Multi-class score-label wording (GenerationContext.score_label).
 # --------------------------------------------------------------------------- #

@@ -169,3 +169,13 @@ def test_ollama_provider_unload_frees_the_model(monkeypatch):
     sent = _fake_ollama(monkeypatch, PIN)
     OllamaProvider(base_url="http://h:1").unload("phi4:14b-q4_K_M")
     assert sent == [("http://h:1/api/generate", {"model": "phi4:14b-q4_K_M", "keep_alive": 0})]
+
+
+def test_ollama_provider_unload_skips_a_model_the_server_lacks(monkeypatch):
+    import urllib.error
+
+    def urlopen(req, timeout=None):
+        raise urllib.error.HTTPError(req.full_url, 404, "model not found", {}, None)
+
+    monkeypatch.setattr("urllib.request.urlopen", urlopen)
+    OllamaProvider(base_url="http://h:1").unload("command-r7b:7b-12-2024-q4_K_M")  # no raise

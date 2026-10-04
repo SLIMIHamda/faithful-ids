@@ -296,6 +296,8 @@ def run_pilot(
     judge: bool | None = None,
     judge_cache_dir: str | Path | None = None,
     judge_provider: Any | None = None,
+    verify_only: bool = False,
+    verification_budget_s: float | None = None,
 ) -> Path | None:
     """Execute the vertical slice on real data and return the run dir.
 
@@ -313,6 +315,11 @@ def run_pilot(
     in a Tier-A score step (amendments 0008, 0009) and stay off elsewhere. The
     verifier reads the draft AFTER its one generation call, so verifying at score
     time is the same instrument, and the generation ledger does not depend on it.
+
+    ``verify_only`` is the Tier-A verify step: it runs the verifier pass alone
+    (resumable, stopping cleanly at ``verification_budget_s``), fills the
+    verifier ledger and returns ``None``; the score step then reads every
+    verdict from that ledger.
     """
     from faithfulids.detectors import get_trainer, load_frozen  # lazy (no torch/xgb import)
 
@@ -340,6 +347,9 @@ def run_pilot(
         # The generate step stores drafts only; no verdict is kept, so the
         # model-free checker stands in and no verifier model is loaded.
         verifier = "rule"
+    if verify_only and (verifier != "llm" or extraction == "none"):
+        raise ValueError("verify_only runs the LLM verifier on replayed drafts: "
+                         "it needs extraction='llm', llm_mode='replay'")
     judge = tier_a_score if judge is None else (judge and extraction != "none")
     axes = exp["design"]["axes"]
     dataset_id = axes["datasets"][0]
@@ -679,9 +689,21 @@ def run_pilot(
         # in the verifier ledger, so run_cells below reads it without the model.
         _only_loaded(vclient, ver_model, [ext_model, judge_model])
         print(f"verify pass: B4/B5 drafts -> {ver_model['weights']['ref']}", flush=True)
-        generate_only(cases, generators, dataset_id=dataset_id,
-                      binary=len(tuple(detector.class_names)) == 2, seed=gen_seed)
+        done, total = generate_only(
+            cases, [(g, gen) for g, gen in generators if g in verifier_models],
+            dataset_id=dataset_id, binary=len(tuple(detector.class_names)) == 2,
+            seed=gen_seed, budget_s=verification_budget_s if verify_only else None,
+            label="verify",
+        )
         _only_loaded(vclient, None, [ver_model])
+        if verify_only:
+            print(f"verification {'COMPLETE' if done == total else 'PARTIAL'}: {done}/{total} "
+                  f"(verifier {ver_model['weights']['ref']}, ledger {vclient.ledger.path.parent})",
+                  flush=True)
+            return None
+    elif verify_only:
+        print("verification COMPLETE: 0/0 (no B4/B5 generator in this run)", flush=True)
+        return None
 
     # -- extractor + erasure (fitted on train) ------------------------------ #
     # "rule": the pilot's rule-assisted engine, no model. "llm": the registered

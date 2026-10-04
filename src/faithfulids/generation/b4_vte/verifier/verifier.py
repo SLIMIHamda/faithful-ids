@@ -10,6 +10,7 @@ any evaluation code.
 
 from __future__ import annotations
 
+import re
 from typing import Any, Mapping
 
 from faithfulids.generation.b4_vte.verifier.verdict import VerifierVerdict
@@ -42,11 +43,26 @@ class Verifier:
         return VerifierVerdict(supported, resp.request_hash, reason)
 
 
+_VERDICT_LINE = re.compile(r"^(?:(?:FINAL\s+)?VERDICT\s*)?(SUPPORTED|UNSUPPORTED)$")
+
+
 def read_verdict(reply: str) -> tuple[bool, str]:
-    """(supported, reason) from a verifier reply: anything not clearly SUPPORTED is not."""
-    text = reply.upper()
-    supported = "SUPPORTED" in text and "UNSUPPORTED" not in text
-    reason = "supported" if supported else (
-        "unsupported_token" if "UNSUPPORTED" in text else "no_verdict_token"
-    )
-    return supported, reason
+    """(supported, reason) from a verifier reply, read off its verdict line.
+
+    The prompt asks for "a single verdict token on its own line", so the verdict
+    is the LAST line holding only ``SUPPORTED`` or ``UNSUPPORTED`` (markdown,
+    code fences, quotes and a "Verdict:" label stripped). Amendment 0011: the
+    first reader searched the whole reply for the word, so a model that repeats
+    the prompt's check 3 ("Are there unsupported ... claims?") before answering
+    SUPPORTED was read as UNSUPPORTED — every Phi-4 approval was. A reply with no
+    verdict line is still not supported (fail-safe: abstain, show B1).
+    """
+    verdict = None
+    for line in reply.splitlines():
+        cleaned = re.sub(r"[\s`*_\"'.:!>#-]+", " ", line).strip().upper()
+        m = _VERDICT_LINE.match(cleaned)
+        if m:
+            verdict = m.group(1)
+    if verdict == "SUPPORTED":
+        return True, "supported"
+    return False, "unsupported_token" if verdict == "UNSUPPORTED" else "no_verdict_token"
