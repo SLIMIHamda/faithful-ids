@@ -861,6 +861,32 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `verifier_threshold` sweep is void (the verifier emits a verdict token, not a
   score). The Tier-A notebook pulls both builds, checks their manifests against
   the pins, and attaches the ledger dataset `slimihamda/faithfulids-tier-a-ledgers`.
+- **Score-step smoke runs on Kaggle (N=20, Qwen3-8B, 7 classes).** v1 (`ea44142`):
+  Ollama 0.35.1, G-001 token, G-002 passed, replay hit all 77 calls, run written;
+  extractor 0 unparseable replies, 6.1 s/call. v2 (`d02c8ab`, verifier + judge):
+  every pin verified, 0 unparseable replies from any instrument; but Phi-4-mini
+  rejected all 40 B4/B5 drafts with reasons false on their face, and the judge got
+  11 of 33 layers on the GPU (Ollama misjudged free memory beside Phi): 28 s/call.
+- **Class-handling contingency applied again (amendment 0001): taxonomy 2.0.0 ->
+  3.0.0, Web Attack excluded, 7 -> 6 classes.** Source: the first Tier-A generate
+  session at N=400 (`faithfulids-tier-a-gen` v1, `d02c8ab`), which stopped at the
+  competence gate before any model call: holdout n=112,902, Web Attack recall 0.947
+  but n=94 < min support 100. The N=400 explained set takes 57 rows per class, and
+  the launcher's per-file cap (`ROWS_PER_FILE=50000`, not registered) loads few Web
+  Attack rows; at N=20 the support was enough. Loading all rows was considered; the
+  author ruled to follow the contingency as it fired. `tools/apply_contingency.py`
+  reproduced the recorded Decision. The 7-class smoke ledgers no longer replay.
+- **Amendment 0010 — verifier model Phi-4 (14B) replaces Phi-4-mini; one more
+  attempt.** Same family, prompt and verdict rule; `phi4:14b-q4_K_M` pinned like
+  the others. Before any Tier-A scoring it re-judges the same 38 distinct smoke
+  drafts (`tools/recheck_verifier.py`, notebook `kaggle/verifier_recheck/`: the
+  stored verifier prompts, unchanged); if more than half of its rejections are
+  wrong on their face, H3 becomes exploratory with the rule checker and no third
+  model is tried. The score step now runs its instrument models one at a time —
+  verify every B4/B5 draft (`generate_only` with the verifier live), then extract,
+  then judge — unloading the others first (`OllamaProvider.unload`); the notebook
+  keeps one model loaded (`OLLAMA_MAX_LOADED_MODELS=1`) and warms each up with
+  `keep_alive: 0`. `read_verdict` factored out of the verifier for the re-check.
 
 ### Metric formula versions / schema
 

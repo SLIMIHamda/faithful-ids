@@ -9,6 +9,16 @@
 > sessions as a private dataset input. Budget: ~2,000 generation calls per model
 > at N=400, i.e. one to several 12 h sessions per model on T4s.
 >
+> The score step serves three pinned models under Ollama, one at a time: the
+> B4/B5 verifier (Phi-4, amendments 0008 + 0010), the extractor (Gemma, 0005) and
+> the plausibility judge (Command R7B, 0009). Each keeps its own ledger under
+> `tier_a/ledgers/{verifier,extraction,judge}/`.
+>
+> **Verifier re-check (amendment 0010):** `verifier_recheck/` sends the verifier
+> prompts stored in the 2026-10-03 smoke run's ledger to the pinned Phi-4 and
+> writes `review.csv` for the author to mark. One T4, no dataset but the ledger
+> dataset, ~20-30 min.
+>
 > **Extractor re-gate (EXP-G-001):** `extractor_regate/` holds its own notebook
 > and `kernel-metadata.json`. It needs no dataset: 2x T4, Internet on. Push it
 > from a terminal with `kaggle kernels push -p kaggle/extractor_regate`. See

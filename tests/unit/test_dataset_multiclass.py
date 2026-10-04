@@ -20,15 +20,17 @@ def test_canonical_class_coarsens_variants_and_excludes_rare():
     assert canonical_class("DoS GoldenEye") == "DoS"
     assert canonical_class("DoS slowloris") == "DoS"
     assert canonical_class("DDoS") == "DDoS"
-    # web variants (incl. the non-ASCII separator CICIDS uses) collapse to "Web Attack"
-    assert canonical_class("Web Attack \x96 Brute Force") == "Web Attack"
-    assert canonical_class("Web Attack \x96 XSS") == "Web Attack"
+    # Web Attack variants (incl. the non-ASCII separator CICIDS uses) are excluded:
+    # under-supported on the N=400 competence holdout (amendment 0001, rung 3,
+    # taxonomy 3.0.0)
+    assert canonical_class("Web Attack \x96 Brute Force") is None
+    assert canonical_class("Web Attack \x96 XSS") is None
     assert canonical_class("  benign ") == "BENIGN"  # normalised
     assert canonical_class("PortScan") == "PortScan"
     # Bot failed the competence recall floor; the applied contingency (amendment
     # 0001, rung 3, taxonomy 2.0.0) excludes it from the task vocabulary
     assert canonical_class("Bot") is None
-    assert load_taxonomy("cicids2017")["version"] == "2.0.0"
+    assert load_taxonomy("cicids2017")["version"] == "3.0.0"
     # rare / unknown -> excluded (None)
     assert canonical_class("Infiltration") is None
     assert canonical_class("Heartbleed") is None
@@ -39,7 +41,8 @@ def test_class_index_map_is_stable_over_the_full_taxonomy():
     m = class_index_map()
     classes = canonical_classes()
     assert m["BENIGN"] == 0 and set(m) == set(classes)
-    assert len(m) == len(classes) == 7  # 8 until the contingency excluded Bot
+    # 8 until the contingency excluded Bot (2.0.0), 7 until it excluded Web Attack (3.0.0)
+    assert len(m) == len(classes) == 6
 
 
 def test_kb_attack_classes_all_map_in_the_taxonomy():
@@ -91,7 +94,7 @@ def test_committed_parent_map_offers_only_the_brute_force_fold():
     from faithfulids.datasets.loaders.cicids2017 import parent_of
 
     assert parent_of("FTP-Patator") == parent_of("SSH-Patator") == "Brute Force"
-    for cls in ("BENIGN", "DoS", "DDoS", "PortScan", "Web Attack"):
+    for cls in ("BENIGN", "DoS", "DDoS", "PortScan"):
         assert parent_of(cls) == cls, f"{cls} must have no lineage sibling"
 
 
@@ -109,7 +112,7 @@ def test_merged_taxonomy_yields_the_rung_two_vocabulary():
 
     merged = merged_taxonomy()
     assert merged["canonical_classes"] == [
-        "BENIGN", "DoS", "DDoS", "PortScan", "Brute Force", "Web Attack",
+        "BENIGN", "DoS", "DDoS", "PortScan", "Brute Force",
     ]
     # raw labels retarget through the merge; exclusions stay excluded
     assert merged["label_map"]["ftp patator"] == "Brute Force"

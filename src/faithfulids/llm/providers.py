@@ -271,6 +271,15 @@ class OllamaProvider:
         print(f"[OllamaProvider] {name}: serving pinned blob sha256-{sha256[:12]}…")
         self._verified.add(name)
 
+    def unload(self, name: str) -> None:
+        """Free a model's GPU memory now (``keep_alive: 0``); a no-op if it is not loaded.
+
+        The score step runs its instrument models one after another: Ollama's
+        scheduler misjudged free memory when two shared a GPU (smoke v2 put 22 of
+        the judge's 33 layers on the CPU: 28 s per call).
+        """
+        self._post("/api/generate", {"model": name, "keep_alive": 0})
+
     def version(self) -> str:
         """The serving Ollama's version (amendment 0005(C): reported with every result)."""
         import json

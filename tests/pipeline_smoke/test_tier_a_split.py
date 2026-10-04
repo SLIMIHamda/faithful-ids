@@ -18,33 +18,44 @@ from faithfulids.provenance import Status, read_manifest, read_status
 from test_pilot_execute import CV, StubAttributor, _synthetic_multiclass_cicids
 
 
-class _CannedExtractor:
+EVENTS: list[tuple[str, str]] = []  # (role or "unload", model name), in call order
+
+
+class _Unloads:
+    def unload(self, name):
+        EVENTS.append(("unload", name))
+
+
+class _CannedExtractor(_Unloads):
     """Stands in for the Ollama-served extractor: one claim per text."""
 
     calls = 0
 
     def complete(self, prompt, params, *, model):
         type(self).calls += 1
+        EVENTS.append(("extractor", model["ollama"]["model_name"]))
         return '[{"feature": "f0", "direction": "+", "rank": 1, "magnitude": null}]', {"tokens": 9}
 
 
-class _CannedVerifier:
+class _CannedVerifier(_Unloads):
     """Stands in for the phi verifier: approves every other draft, the rest get no token."""
 
     calls = 0
 
     def complete(self, prompt, params, *, model):
         type(self).calls += 1
+        EVENTS.append(("verifier", model["ollama"]["model_name"]))
         return ("1. yes\n2. yes\n3. no\nSUPPORTED" if self.calls % 2 else "unsure"), {"tokens": 7}
 
 
-class _CannedJudge:
+class _CannedJudge(_Unloads):
     """Stands in for the Command R7B judge."""
 
     calls = 0
 
     def complete(self, prompt, params, *, model):
         type(self).calls += 1
+        EVENTS.append(("judge", model["ollama"]["model_name"]))
         return '{"clarity": 4, "helpfulness": 3, "believability": 5}', {"tokens": 15}
 
 
@@ -99,11 +110,24 @@ def test_generate_then_score_writes_a_tier_a_run(tmp_path, capsys):
 
     # step 2: no generator provider at all; extractor, verifier and judge are live
     _CannedExtractor.calls = _CannedVerifier.calls = _CannedJudge.calls = 0
+    EVENTS.clear()
     providers = dict(extraction_provider=_CannedExtractor(),
                      verifier_provider=_CannedVerifier(), judge_provider=_CannedJudge())
     run_dir = run_pilot("EXP-A-001", llm_mode="replay", extraction="llm", **providers, **common)
     assert read_status(run_dir) is Status.COMPLETE
     assert _CannedExtractor.calls > 0 and _CannedVerifier.calls > 0 and _CannedJudge.calls > 0
+    # the three instrument models run one at a time: every verdict, then every
+    # extraction, then every rating; each pass first unloads the other models
+    seq = [r for r, _ in EVENTS if r != "unload"]
+    assert [r for i, r in enumerate(seq) if i == 0 or seq[i - 1] != r] == [
+        "verifier", "extractor", "judge"]
+    gemma = "faithfulids-gemma4-26b-a4b-qat"
+    first = {r: EVENTS.index(next(e for e in EVENTS if e[0] == r))
+             for r in ("verifier", "extractor", "judge")}
+    assert ("unload", gemma) in EVENTS[:first["verifier"]]
+    assert any(n.startswith("phi4:") for r, n in EVENTS[first["verifier"]:first["extractor"]]
+               if r == "unload")
+    assert ("unload", gemma) in EVENTS[first["extractor"]:first["judge"]]
     resolved = yaml.safe_load((run_dir / "config.resolved.yaml").read_text(encoding="utf-8"))
     assert resolved["extractor"]["mode"] == "llm_assisted"
     assert resolved["llm_mode"] == "replay"
@@ -117,7 +141,7 @@ def test_generate_then_score_writes_a_tier_a_run(tmp_path, capsys):
     assert resolved["plausibility_judge"]["validated"] is False
     roles = {m.role: m.identity for m in read_manifest(run_dir).models}
     assert roles["extractor"].endswith(".gguf@3eca3b8f6d7b")
-    assert roles["verifier"].startswith("phi4-mini:") and roles["judge"].startswith("command-r7b:")
+    assert roles["verifier"].startswith("phi4:14b") and roles["judge"].startswith("command-r7b:")
     claims = [json.loads(line) for line in
               (run_dir / "artifacts" / "claims.jsonl").read_text(encoding="utf-8").splitlines()]
     assert {c["direction_evidence"] for cs in claims for c in cs["claims"]} == {"llm"}

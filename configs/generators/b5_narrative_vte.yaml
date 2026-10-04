@@ -35,23 +35,23 @@ verifier:
     sha256: cb7f40facd0a874dfa9f567513747204021d2a27564f68411cc4bd87b3f8fc2a
   threshold_ref: statistics:decision_thresholds:verifier_threshold
   threshold_scope: dev_split
-  # AMENDMENT 0008: the same pinned verifier model as b4_vte (see there).
+  # AMENDMENTS 0008, 0010: the same pinned verifier model as b4_vte (see there).
   model:
-    id: vte_verifier_phi4_mini
+    id: vte_verifier_phi4_14b
     provider: local_open_weights
     quantisation: 4bit
     runtime: ollama
-    base_model: microsoft/Phi-4-mini-instruct
+    base_model: microsoft/phi-4
     licence: MIT
     weights:
       source: ollama_library
-      ref: phi4-mini:3.8b-q4_K_M
-      revision: sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db
-      sha256: 3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db
+      ref: phi4:14b-q4_K_M
+      revision: sha256-fd7b6731c33c57f61767612f56517460ec2d1e2e5a3f0163e0eb3d8d8cb5df20
+      sha256: fd7b6731c33c57f61767612f56517460ec2d1e2e5a3f0163e0eb3d8d8cb5df20
     ollama:
-      model_name: phi4-mini:3.8b-q4_K_M
-      template_sha256: 813f53fdc6e58d35bb1c3853c93266380e9ca918a993e8eab193e8ede5d3a603
-      params_sha256: null
+      model_name: phi4:14b-q4_K_M
+      template_sha256: 32695b892af87ef8fca6e13a1a31c67c1441d7398be037e366e2fc763857c06a
+      params_sha256: 45a1c652dddc9efdcefa977ab81cfbe26b6e52bc8e78f2f4c698538783e0ac80
       min_version: 0.30.5
       think: null
 abstention:

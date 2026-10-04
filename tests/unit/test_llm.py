@@ -163,3 +163,9 @@ def test_eval_extractor_pins_the_gguf_it_runs():
     assert m["runtime"] == "ollama" and m["model_family"] == "gemma"
     assert len(m["weights"]["sha256"]) == 64 and len(m["weights"]["revision"]) == 40
     assert m["weights"]["file"].endswith(".gguf") and m["ollama"]["model_name"]
+
+
+def test_ollama_provider_unload_frees_the_model(monkeypatch):
+    sent = _fake_ollama(monkeypatch, PIN)
+    OllamaProvider(base_url="http://h:1").unload("phi4:14b-q4_K_M")
+    assert sent == [("http://h:1/api/generate", {"model": "phi4:14b-q4_K_M", "keep_alive": 0})]

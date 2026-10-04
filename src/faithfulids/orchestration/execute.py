@@ -139,6 +139,24 @@ def _ollama_version(extcfg: dict, extraction: str, provider: Any | None) -> str 
         return f"unknown ({type(exc).__name__})"
 
 
+def _only_loaded(client: Any, keep: dict | None, models: list[dict | None]) -> None:
+    """Unload every pinned instrument model except ``keep`` from the Ollama server.
+
+    The extractor, verifier and judge (~28 GB together) do not fit 2x T4 at once,
+    and Ollama misjudges free memory when two share a GPU (smoke v2: the judge got
+    11 of 33 layers on the GPU). So the score step gives each one the GPUs to
+    itself, in turn. A replay client or a stub provider has nothing to unload.
+    """
+    provider = getattr(client, "provider", None)
+    if not hasattr(provider, "unload"):
+        return
+    keep_name = ((keep or {}).get("ollama") or {}).get("model_name")
+    for m in models:
+        name = ((m or {}).get("ollama") or {}).get("model_name")
+        if name and name != keep_name:
+            provider.unload(name)
+
+
 class _FallbackCounter:
     """Wraps the LLM extractor and counts the items whose reply did not parse.
 
@@ -647,11 +665,28 @@ def run_pilot(
               f"(llm {llm_id}, ledger {ledger.path.parent})", flush=True)
         return None
 
+    # -- the instrument models, one at a time ------------------------------- #
+    # The extractor, verifier and judge do not fit the GPUs together, so the
+    # score step runs them in turn: (1) verify every B4/B5 draft, (2) extract
+    # and score, (3) judge. Each pass unloads the others first.
+    extcfg = load_config("extraction", "eval_extractor")
+    ext_model = extcfg["model"] if extraction == "llm" else None
+    ver_model = next(iter(verifier_models.values()))["model"] if verifier_models else None
+    pcfg = load_config("metric", "plausibility_judge") if judge else None
+    judge_model: dict | None = instrument_model(pcfg["judge"]) if pcfg else None
+    if ver_model is not None:
+        # Pass 1. Drafts replay from the generation ledger; every verdict lands
+        # in the verifier ledger, so run_cells below reads it without the model.
+        _only_loaded(vclient, ver_model, [ext_model, judge_model])
+        print(f"verify pass: B4/B5 drafts -> {ver_model['weights']['ref']}", flush=True)
+        generate_only(cases, generators, dataset_id=dataset_id,
+                      binary=len(tuple(detector.class_names)) == 2, seed=gen_seed)
+        _only_loaded(vclient, None, [ver_model])
+
     # -- extractor + erasure (fitted on train) ------------------------------ #
     # "rule": the pilot's rule-assisted engine, no model. "llm": the registered
     # LLM-assisted extractor (EXP-G-001), on its own ledger so a re-score
     # replays extraction too.
-    extcfg = load_config("extraction", "eval_extractor")
     if extraction == "llm":
         ext_client = llm_extraction_client(
             extcfg, extraction_cache_dir or Path(runs_root) / "_extraction_llm_cache",
@@ -661,6 +696,7 @@ def run_pilot(
             extcfg, llm_client=ext_client, model_config={**extcfg["model"], "id": extcfg["id"]},
             feature_vocabulary=feature_names,
         ))
+        _only_loaded(ext_client, ext_model, [ver_model, judge_model])  # pass 2
     else:
         extractor = build_extractor(extcfg, llm_client=None, model_config=None,
                                     feature_vocabulary=feature_names)
@@ -710,18 +746,16 @@ def run_pilot(
     # Each call is independent; the order is still shuffled with the run seed,
     # as the registered harness specifies.
     judge_record: Any = None
-    judge_model: dict | None = None
-    if judge:
+    if judge_model is not None:
         import random
 
         from faithfulids.metrics.plausibility.judge import PlausibilityJudge
 
-        pcfg = load_config("metric", "plausibility_judge")
-        judge_model = instrument_model(pcfg["judge"])
         jclient = instrument_client(
             judge_model, judge_cache_dir or Path(runs_root) / "_judge_llm_cache",
             provider=judge_provider,
         )
+        _only_loaded(jclient, judge_model, [ext_model, ver_model])  # pass 3
         pj = PlausibilityJudge(pcfg, jclient, judge_model)
         expl = list(artifacts.explanations)
         unparsed = 0

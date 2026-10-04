@@ -38,9 +38,15 @@ class Verifier:
         resp = self.client.complete(
             model_config=self.model, prompt=prompt, params={"temperature": 0, "seed": seed}
         )
-        text = resp.text.upper()
-        supported = "SUPPORTED" in text and "UNSUPPORTED" not in text
-        reason = "supported" if supported else (
-            "unsupported_token" if "UNSUPPORTED" in text else "no_verdict_token"
-        )
+        supported, reason = read_verdict(resp.text)
         return VerifierVerdict(supported, resp.request_hash, reason)
+
+
+def read_verdict(reply: str) -> tuple[bool, str]:
+    """(supported, reason) from a verifier reply: anything not clearly SUPPORTED is not."""
+    text = reply.upper()
+    supported = "SUPPORTED" in text and "UNSUPPORTED" not in text
+    reason = "supported" if supported else (
+        "unsupported_token" if "UNSUPPORTED" in text else "no_verdict_token"
+    )
+    return supported, reason
