@@ -18,6 +18,10 @@
 > the plausibility judge (Command R7B, 0009). Each keeps its own ledger under
 > `tier_a/ledgers/{verifier,extraction,judge}/`.
 >
+> All Ollama notebooks install **Ollama 0.35.1 exactly** (the version of the
+> EXP-G-001 gate run) and stop if the server reports another version. The latest
+> release (0.40.x) changed the inference engine and the model-manifest format.
+>
 > **Verifier re-check (amendment 0010):** `verifier_recheck/` sends the verifier
 > prompts stored in the 2026-10-03 smoke run's ledger to the pinned Phi-4 and
 > writes `review.csv` for the author to mark. One T4, no dataset but the ledger

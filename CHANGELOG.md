@@ -904,6 +904,14 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   `verification COMPLETE|PARTIAL`; the CLI and notebook accept the phase (no gate
   check: no metrics). The verify session pulls only Phi-4; `OllamaProvider.unload`
   skips models the server lacks.
+- **The Kaggle notebooks install Ollama 0.35.1 exactly.** They installed the latest
+  release, and on 2026-10-11 that became 0.40.3 (a new inference engine and a new
+  model-manifest format). The first Qwen3-8B score session stopped at the pin check
+  before any scoring (`verifier: unpinned layers {'v2+json', 'license'}`). Every
+  earlier run, including the EXP-G-001 gate run, used 0.35.1. The Tier-A, extractor
+  re-gate and verifier re-check notebooks now pass `OLLAMA_VERSION=0.35.1` to the
+  install script and stop if the server reports any other version. No instrument
+  changes: the Tier-A runs scored so far ran with this same pin.
 
 ### Metric formula versions / schema
 
