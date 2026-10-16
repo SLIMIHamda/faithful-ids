@@ -1,0 +1,21 @@
+id: qwen3_1_7b_4bit
+schema_version: v1
+kind: llm
+# Exploratory edge-size rung below the Tier-A Qwen3 ladder {4B, 8B, 32B}
+# (amendment 0012, experiment EXP-A-006): NOT in EXP-A-001's roster and outside
+# the confirmatory families. Same family, same 4-bit path and same snapshot date
+# as qwen3_4b_4bit, so the 1.7B-vs-4B contrast is size alone. Ungated
+# (Apache-2.0); model_family 'qwen' is already firewall-disjoint from the
+# verifier (phi) and extractor (gemma). Qwen3 thinking is turned off by the
+# provider (enable_thinking=False, see llm/providers.py).
+model_family: qwen
+provider: local_open_weights
+# 4-bit (nf4) via bitsandbytes — ~1.5 GB of weights, fits a single Kaggle T4.
+quantisation: 4bit
+role: generator_llm
+weights:
+  hf_repo: Qwen/Qwen3-1.7B
+  # Pinned to a real HF commit (main @ 2025-07-26 — the same snapshot date as
+  # the qwen3_4b_4bit and qwen3_8b_4bit pins).
+  revision: 70d244cc86ccca08cf5af4e1e306ecf908b1ad5e
+  sha256: null

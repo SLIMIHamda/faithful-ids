@@ -912,6 +912,25 @@ instrument fault. See `docs/adr/0001-layer2-eps-model-claim-driven.md`.
   re-gate and verifier re-check notebooks now pass `OLLAMA_VERSION=0.35.1` to the
   install script and stop if the server reports any other version. No instrument
   changes: the Tier-A runs scored so far ran with this same pin.
+- **The Tier-A score step is resumable.** The Qwen3-4B score session (kernel
+  `faithfulids-tier-a` v10) took ~11.6 h of Kaggle's 12 h limit: its judge averaged
+  10 s per call against 3 s in the 8B session, with every layer on the GPU.
+  `run_pilot(score_budget_s=...)` (CLI `FAITHFULIDS_SCORE_BUDGET_MIN`, notebook
+  `SCORE_BUDGET_MIN`, default 400 min) first calls the extractor on every shown
+  explanation, then the judge, in the order scoring uses, and stops cleanly when
+  the budget runs out (`score passes PARTIAL`, no run, ledgers kept). Once both
+  passes are complete, scoring replays every call, so the run is identical to an
+  unbudgeted one (tested). `generate_only` gains a `then` callback for this. The
+  notebook writes `SCORE_STATUS_<tag>.txt`.
+- **Amendment 0012 — an exploratory edge-size arm, EXP-A-006 (Qwen3-1.7B).**
+  Registered after the Qwen3-8B and Qwen3-4B EXP-A-001 runs: 8B left no headroom,
+  and 4B kept mention F1 and asserted-direction accuracy at ceiling but often
+  stated no direction (B3 62%, B5 29% of cited features). EXP-A-006 is EXP-A-001's
+  protocol with `qwen3_1_7b_4bit` (HF commit `70d244cc`, same snapshot date as the
+  4B and 8B pins). It is exploratory, has no hypothesis family, is
+  headline-ineligible, and its reported metrics are fixed before its data exist.
+  The notebook takes `EXPERIMENT` (`EXP-A-001` or `EXP-A-006`) and refuses to run
+  the 1.7B model under any other experiment, or another model under EXP-A-006.
 
 ### Metric formula versions / schema
 

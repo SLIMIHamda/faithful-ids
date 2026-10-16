@@ -157,6 +157,52 @@ def _only_loaded(client: Any, keep: dict | None, models: list[dict | None]) -> N
             provider.unload(name)
 
 
+def _judge_order(n: int, seed: int) -> list[int]:
+    """The order in which the judge rates the shown explanations (seeded shuffle,
+    as the registered harness specifies). The budgeted passes use the same one."""
+    import random
+
+    return random.Random(seed).sample(range(n), n)
+
+
+def _score_passes(cases, generators, *, dataset_id: str, binary: bool, seed: int,
+                  budget_s: float, extract: Callable, judge: Any,
+                  load_extractor: Callable[[], None], load_judge: Callable[[], None]) -> bool:
+    """A budgeted score step's model calls, ahead of scoring (Kaggle's 12 h limit).
+
+    Pass 2 extracts every shown explanation, in run_cells order; pass 3 rates
+    them, in the judge's order. Each call lands in its ledger, so a session that
+    runs out of budget loses nothing and the next one continues; scoring then
+    replays every call. Returns True when both passes are complete.
+    """
+    import time
+
+    t0 = time.monotonic()
+    load_extractor()
+    n_ext, total = generate_only(cases, generators, dataset_id=dataset_id, binary=binary,
+                                 seed=seed, budget_s=budget_s, label="extract", then=extract)
+    n_judge, n_judge_total = 0, (total if judge is not None else 0)
+    if n_ext == total and judge is not None:
+        shown: list = []
+        generate_only(cases, generators, dataset_id=dataset_id, binary=binary, seed=seed,
+                      label="replay", then=shown.append)
+        load_judge()
+        for i in _judge_order(len(shown), seed):
+            if time.monotonic() - t0 >= budget_s:
+                print(f"[judge] time budget reached: {n_judge}/{n_judge_total} done; "
+                      "run the score step again to continue", flush=True)
+                break
+            judge.rate(shown[i].text, seed=seed)
+            n_judge += 1
+            if n_judge == 1 or n_judge % 25 == 0 or n_judge == n_judge_total:
+                print(f"[judge] {n_judge}/{n_judge_total} "
+                      f"({(time.monotonic() - t0) / 60:.0f} min)", flush=True)
+    complete = n_ext == total and n_judge == n_judge_total
+    print(f"score passes {'COMPLETE' if complete else 'PARTIAL'}: extract {n_ext}/{total}, "
+          f"judge {n_judge}/{n_judge_total}", flush=True)
+    return complete
+
+
 class _FallbackCounter:
     """Wraps the LLM extractor and counts the items whose reply did not parse.
 
@@ -298,6 +344,7 @@ def run_pilot(
     judge_provider: Any | None = None,
     verify_only: bool = False,
     verification_budget_s: float | None = None,
+    score_budget_s: float | None = None,
 ) -> Path | None:
     """Execute the vertical slice on real data and return the run dir.
 
@@ -320,6 +367,12 @@ def run_pilot(
     (resumable, stopping cleanly at ``verification_budget_s``), fills the
     verifier ledger and returns ``None``; the score step then reads every
     verdict from that ledger.
+
+    ``score_budget_s`` makes the score step resumable too: before scoring, the
+    extractor and then the judge are called on every shown explanation, and the
+    step stops cleanly (``None``, no run) when the budget runs out. Every call is
+    in its ledger, so the next session continues, and scoring replays them all:
+    the run is the one an unbudgeted score step writes.
     """
     from faithfulids.detectors import get_trainer, load_frozen  # lazy (no torch/xgb import)
 
@@ -705,6 +758,18 @@ def run_pilot(
         print("verification COMPLETE: 0/0 (no B4/B5 generator in this run)", flush=True)
         return None
 
+    # The judge (amendment 0009) on its own ledger. Rated in pass 3 below, or
+    # ahead of scoring when the score step runs on a time budget.
+    jclient = pj = None
+    if judge_model is not None:
+        from faithfulids.metrics.plausibility.judge import PlausibilityJudge
+
+        jclient = instrument_client(
+            judge_model, judge_cache_dir or Path(runs_root) / "_judge_llm_cache",
+            provider=judge_provider,
+        )
+        pj = PlausibilityJudge(pcfg, jclient, judge_model)
+
     # -- extractor + erasure (fitted on train) ------------------------------ #
     # "rule": the pilot's rule-assisted engine, no model. "llm": the registered
     # LLM-assisted extractor (EXP-G-001), on its own ledger so a re-score
@@ -714,10 +779,19 @@ def run_pilot(
             extcfg, extraction_cache_dir or Path(runs_root) / "_extraction_llm_cache",
             provider=extraction_provider,
         )
-        extractor = _FallbackCounter(build_extractor(
+        llm_extractor = build_extractor(
             extcfg, llm_client=ext_client, model_config={**extcfg["model"], "id": extcfg["id"]},
             feature_vocabulary=feature_names,
-        ))
+        )
+        extractor = _FallbackCounter(llm_extractor)
+        if score_budget_s is not None and not _score_passes(
+            cases, generators, dataset_id=dataset_id,
+            binary=len(tuple(detector.class_names)) == 2, seed=gen_seed,
+            budget_s=score_budget_s, extract=llm_extractor.extract, judge=pj,
+            load_extractor=lambda: _only_loaded(ext_client, ext_model, [ver_model, judge_model]),
+            load_judge=lambda: _only_loaded(jclient, judge_model, [ext_model, ver_model]),
+        ):
+            return None
         _only_loaded(ext_client, ext_model, [ver_model, judge_model])  # pass 2
     else:
         extractor = build_extractor(extcfg, llm_client=None, model_config=None,
@@ -768,20 +842,11 @@ def run_pilot(
     # Each call is independent; the order is still shuffled with the run seed,
     # as the registered harness specifies.
     judge_record: Any = None
-    if judge_model is not None:
-        import random
-
-        from faithfulids.metrics.plausibility.judge import PlausibilityJudge
-
-        jclient = instrument_client(
-            judge_model, judge_cache_dir or Path(runs_root) / "_judge_llm_cache",
-            provider=judge_provider,
-        )
+    if pj is not None:
         _only_loaded(jclient, judge_model, [ext_model, ver_model])  # pass 3
-        pj = PlausibilityJudge(pcfg, jclient, judge_model)
         expl = list(artifacts.explanations)
         unparsed = 0
-        for i in random.Random(gen_seed).sample(range(len(expl)), len(expl)):
+        for i in _judge_order(len(expl), gen_seed):
             e = expl[i]
             scores = pj.rate(e.text, seed=gen_seed)
             if scores is None:

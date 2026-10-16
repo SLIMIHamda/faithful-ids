@@ -1,0 +1,35 @@
+id: EXP-A-006
+schema_version: v1
+kind: experiment
+tier: tier_a
+title: Exploratory edge-size arm — EXP-A-001's protocol at Qwen3-1.7B
+research_question: >-
+  Below the registered Qwen3 ladder, does grounding break? EXP-A-001 at 8B left
+  no headroom on mention F1 or asserted-direction accuracy; at 4B those stayed
+  at ceiling but B3/B5 often stated no direction at all. This arm runs the same
+  protocol with Qwen3-1.7B, a size that fits on the machine an IDS already runs
+  on, and reports the same metrics beside the 4B and 8B arms. Registered by
+  amendment 0012 AFTER the 4B and 8B results were seen: exploratory, outside
+  every Holm family, headline-ineligible; descriptive estimates only.
+# No hypothesis family: nothing from this arm enters a confirmatory test.
+hypothesis_family: []
+design:
+  mode: factorial
+  axes:
+    # Everything but the LLM is pinned to the anchor (EXP-A-001): same dataset,
+    # K-way detector, generators, n400 sample and seed, so the 1.7B explanations
+    # are of the same instances as the 4B and 8B ones.
+    datasets: [cicids2017_corrected]
+    detectors: [xgboost_multiclass]
+    llms: [qwen3_1_7b_4bit]
+    generators: [b0_raw_shap, b1_template, b2_zeroshot, b3_dte_style, b4_vte, b5_narrative_vte]
+sampling_refs: [sampling:n400_stratified, sampling:stochasticity_k3]
+seed_ref: seeds:tier_a
+gate_dependencies: [EXP-G-001, EXP-G-002]
+metric_refs: [metrics:layer1, metrics:layer2_erasure, metrics:plausibility_judge]
+config_refs:
+  extraction: extraction:eval_extractor
+flags:
+  exploratory: true
+  headline_eligible: false
+status: registered

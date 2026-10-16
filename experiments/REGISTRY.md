@@ -16,6 +16,7 @@ registry so nothing can be silently omitted (hostile-audit A7).
 | EXP-A-003 | tier_a | H1, H2 — dataset spoke, UNSW-NB15 (6 cells @ N=150) | G-001, G-002 | no | registered | — |
 | EXP-A-004 | tier_a | H1, H2 — corner spoke, UNSW × RF (6 cells @ N=150) | G-001, G-002 | no | registered | — |
 | EXP-A-005 | tier_a | H0 — instrument ceiling, B1ℓ at anchor (1 cell @ N=400) | G-001, G-002 | no | registered | — |
+| EXP-A-006 | tier_a | none — edge-size arm, EXP-A-001's protocol at Qwen3-1.7B (6 cells @ N=400; amendment 0012, descriptive only) | G-001, G-002 | **yes** | registered | — |
 | EXP-B-001 | tier_b | H-T — transfer to IDS2018 | G-001, G-002 | no | registered | — |
 | EXP-B-002 | tier_b | H-T — 4-bit quantisation | G-001, G-002 | no | registered | — |
 | EXP-B-003 | tier_b | H-T — RF detector continuity | G-001, G-002 | no | registered | — |

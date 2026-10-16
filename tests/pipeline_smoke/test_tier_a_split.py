@@ -205,6 +205,48 @@ def test_verify_step_fills_the_verifier_ledger_and_score_reuses_it(tmp_path, cap
     assert _CannedVerifier.calls == calls and _ledger_lines(tmp_path / "ver_ledger") == n_verdicts
 
 
+def _metric_rows(run_dir):
+    rows = (run_dir / "artifacts" / "metrics.jsonl").read_text(encoding="utf-8").splitlines()
+    return sorted(rows)
+
+
+def test_budgeted_score_step_resumes_and_writes_the_same_run(tmp_path, capsys):
+    common = _common(tmp_path)
+    run_pilot("EXP-A-001", extraction="none", llm_provider=DeterministicStubProvider(), **common)
+    run_pilot("EXP-A-001", llm_mode="replay", extraction="llm", verify_only=True,
+              verifier_provider=_CannedVerifier(), **common)
+    capsys.readouterr()
+    _CannedExtractor.calls = _CannedJudge.calls = 0
+    providers = dict(extraction_provider=_CannedExtractor(),
+                     verifier_provider=_CannedVerifier(), judge_provider=_CannedJudge())
+    score = dict(llm_mode="replay", extraction="llm", **providers)
+
+    # a zero budget stops before the first extraction; nothing is lost, no run is written
+    assert run_pilot("EXP-A-001", score_budget_s=0, **score, **common) is None
+    out = capsys.readouterr().out
+    assert "score passes PARTIAL: extract 0/" in out and "judge 0/" in out
+    assert not (tmp_path / "runs" / "EXP-A-001").exists()
+
+    # the next session does both passes, then scores from the ledgers
+    run_dir = run_pilot("EXP-A-001", score_budget_s=3600, **score, **common)
+    out = capsys.readouterr().out
+    assert "score passes COMPLETE" in out and "[extract]" in out and "[judge]" in out
+    assert read_status(run_dir) is Status.COMPLETE
+    assert _CannedExtractor.calls == _ledger_lines(tmp_path / "ext_ledger") > 0
+    assert _CannedJudge.calls == _ledger_lines(tmp_path / "judge_ledger") > 0
+
+    # resuming again makes no new model call
+    calls = (_CannedExtractor.calls, _CannedJudge.calls)
+    run_pilot("EXP-A-001", score_budget_s=3600, **score, **{**common, "runs_root": tmp_path / "r2"})
+    assert (_CannedExtractor.calls, _CannedJudge.calls) == calls
+
+    # an unbudgeted score step on fresh extractor and judge ledgers writes the same metrics
+    plain = run_pilot("EXP-A-001", **score, **{
+        **common, "runs_root": tmp_path / "r3",
+        "extraction_cache_dir": tmp_path / "ext2", "judge_cache_dir": tmp_path / "judge2"})
+    assert _metric_rows(plain) == _metric_rows(run_dir)
+
+
 def test_tier_a_scoring_refuses_the_rule_verifier(tmp_path):
     with pytest.raises(ValueError, match="amendment 0008"):
         run_pilot("EXP-A-001", data_dir=tmp_path, runs_root=tmp_path / "runs",

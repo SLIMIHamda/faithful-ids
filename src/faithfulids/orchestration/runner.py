@@ -115,6 +115,7 @@ def generate_only(
     seed: int,
     budget_s: float | None = None,
     label: str = "generate",
+    then: Callable[[ExplanationRecord], Any] | None = None,
 ) -> tuple[int, int]:
     """Generate every (generator, instance) explanation and nothing else.
 
@@ -125,6 +126,8 @@ def generate_only(
     cleanly before a session's time limit. Returns ``(done, total)``; the step
     is complete when they are equal. The Tier-A verify step reuses it on B4/B5
     alone (``label="verify"``): the drafts replay, the verifier's calls are new.
+    ``then`` receives each explanation as shown (the score step's extraction
+    pass calls the extractor on it, in run_cells order).
     """
     import time
 
@@ -137,8 +140,10 @@ def generate_only(
                 print(f"[{label}] time budget reached: {done}/{total} done; "
                       f"run the {label} step again to continue", flush=True)
                 return done, total
-            generator.generate(generation_context(case, dataset_id=dataset_id,
-                                                  binary=binary, seed=seed))
+            record = generator.generate(generation_context(case, dataset_id=dataset_id,
+                                                           binary=binary, seed=seed))
+            if then is not None:
+                then(record)
             done += 1
             if done == 1 or done % 25 == 0 or done == total:
                 print(f"[{label}] {done}/{total} (current: {gen_id}, "

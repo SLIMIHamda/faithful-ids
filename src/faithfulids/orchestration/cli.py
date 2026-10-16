@@ -64,9 +64,13 @@ def cmd_run(args: argparse.Namespace) -> int:
                     file=sys.stderr,
                 )
                 return 2
-            # generate and verify stop cleanly after this many minutes
+            # generate and verify stop cleanly after this many minutes; the score
+            # step's extractor + judge passes have their own budget, which must
+            # leave room for the scoring that follows them (~3-4 h at N=400)
             budget = os.environ.get("FAITHFULIDS_GENERATION_BUDGET_MIN")
             budget_s = float(budget) * 60 if budget else None
+            score_budget = os.environ.get("FAITHFULIDS_SCORE_BUDGET_MIN")
+            score_budget_s = float(score_budget) * 60 if score_budget else None
             tier_kwargs = dict(
                 llm_cache_dir=os.environ.get("FAITHFULIDS_LLM_CACHE_DIR")
                 or runs_root / "_tier_a_llm_cache",
@@ -82,6 +86,7 @@ def cmd_run(args: argparse.Namespace) -> int:
                    if phase == "generate" else {"extraction": "llm", "llm_mode": "replay"}),
                 **({"verify_only": True, "verification_budget_s": budget_s}
                    if phase == "verify" else {}),
+                **({"score_budget_s": score_budget_s} if phase == "score" else {}),
             )
         # Gates guard metric computation; the generate and verify steps compute none.
         if phase not in ("generate", "verify"):
@@ -132,7 +137,9 @@ def cmd_run(args: argparse.Namespace) -> int:
                   "same model, N, data and FAITHFULIDS_LLM_CACHE_DIR.", file=sys.stderr)
             return 4
         if run_dir is None:
-            print(f"{phase} step finished; no run is written until the score step")
+            print("score step stopped at its time budget; run it again to continue (no run "
+                  "written yet)" if phase == "score"
+                  else f"{phase} step finished; no run is written until the score step")
             return 0
         print(f"{'Tier-A' if phase else 'pilot'} run complete: {run_dir}")
         return 0

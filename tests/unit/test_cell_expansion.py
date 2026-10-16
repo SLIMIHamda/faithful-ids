@@ -55,6 +55,24 @@ def test_tier_a_total_is_36_confirmatory_cells_plus_one_ceiling():
     assert load_experiment("EXP-A-005")["flags"]["headline_eligible"] is False
 
 
+def test_edge_size_arm_is_exploratory_and_outside_the_roster():
+    """Amendment 0012: EXP-A-006 is EXP-A-001's protocol at Qwen3-1.7B, registered
+    after the 4B and 8B results — exploratory, no hypothesis family, headline-
+    ineligible, and its model never joins the confirmatory roster."""
+    edge = load_experiment("EXP-A-006")
+    anchor = load_experiment("EXP-A-001")
+    assert edge["flags"] == {"exploratory": True, "headline_eligible": False}
+    assert edge["hypothesis_family"] == []
+    cells = expand_cells(edge)
+    assert len(cells) == 6 and {c.llm for c in cells} == {"qwen3_1_7b_4bit", None}
+    assert "qwen3_1_7b_4bit" not in anchor["design"]["axes"]["llms"]
+    same = ("datasets", "detectors", "generators")
+    assert {k: edge["design"]["axes"][k] for k in same} == {
+        k: anchor["design"]["axes"][k] for k in same}
+    for key in ("sampling_refs", "seed_ref", "gate_dependencies", "metric_refs", "config_refs"):
+        assert edge[key] == anchor[key], key
+
+
 def test_llm_independent_generators_have_no_llm():
     for e in ("EXP-A-001", *SPOKES):
         for c in expand_cells(load_experiment(e)):

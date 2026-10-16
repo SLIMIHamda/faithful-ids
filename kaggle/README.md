@@ -22,6 +22,12 @@
 > EXP-G-001 gate run) and stop if the server reports another version. The latest
 > release (0.40.x) changed the inference engine and the model-manifest format.
 >
+> The score step is resumable as well: its extractor and judge calls stop cleanly
+> after `SCORE_BUDGET_MIN` minutes (default 400; the scoring that follows needs
+> ~3-4 h more at N=400). Repeat it until the log says `Tier-A run complete`.
+> `EXPERIMENT = 'EXP-A-006'` runs the exploratory Qwen3-1.7B arm (amendment 0012)
+> with the same three steps.
+>
 > **Verifier re-check (amendment 0010):** `verifier_recheck/` sends the verifier
 > prompts stored in the 2026-10-03 smoke run's ledger to the pinned Phi-4 and
 > writes `review.csv` for the author to mark. One T4, no dataset but the ledger
